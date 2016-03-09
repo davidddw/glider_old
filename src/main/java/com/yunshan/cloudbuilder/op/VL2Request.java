@@ -23,7 +23,7 @@ public class VL2Request extends RESTClient {
 		this.userid = userid;
 	}
 
-	public ResultSet createVL2(String name, String epc_id, String prefix, String netmask) {
+	public ResultSet createVL2(String name, int epc_id, String prefix, int netmask) {
 		/*
 		 * @params: name, epc_id, prefix, netmask
 		 * @method: POST /v1/vl2s/
@@ -31,8 +31,8 @@ public class VL2Request extends RESTClient {
 	    String vl2Tmpl = "{"
 	            + "\"name\": \"${name}\","
 	            + "\"vlantag\": 0,"
-	            + "\"epc_id\": ${epc_id},"
-	            + "\"userid\": ${userid},"
+	            + "\"epc_id\": ${epc_id?c},"
+	            + "\"userid\": ${userid?c},"
 	            + "\"domain\": \"${domain}\","
 	            + "\"nets\": "
 	            + "[{\"prefix\": \"${prefix}\",\"netmask\": ${netmask} }]"
@@ -53,13 +53,13 @@ public class VL2Request extends RESTClient {
          * @params: 
          * @method: GET /v1/vl2s/
          */
-        return this.RequestAPP("get", "epcs", null, null);
+        return this.RequestAPP("get", "vl2s", null, null);
     }
 	
 	public ResultSet getVL2ById(String vl2_id) {
         /*
          * @params: vl2_id
-         * @method: GET /v1/epcs/<epc_id>/
+         * @method: GET /v1/vl2s/<vl2_id>/
          */
         return this.RequestAPP("get", "vl2s", null, vl2_id);
     }
@@ -70,8 +70,8 @@ public class VL2Request extends RESTClient {
          * @method: PATCH /v1/vl2s/<vl2_id>/
          */
 	    String netTmpl = "{"
-	            + "\"prefix\": \"$prefix\","
-	            + "\"netmask\": $netmask"
+	            + "\"prefix\": \"${prefix}\","
+	            + "\"netmask\": ${netmask}"
 	            + "}";
 	    List<String> interf = new ArrayList<String>();
 	    
@@ -123,8 +123,8 @@ public class VL2Request extends RESTClient {
         return getIntRecordsByKey(vl2, "LCUUID");
     }
 
-    public ResultSet CreateVL2IfNotExist(String name, String epc_id, String prefix,
-            String netmask) {
+    public ResultSet CreateVL2IfNotExist(String name, int epc_id, String prefix,
+            int netmask) {
         /*
          * @params: name, epc_id, prefix, netmask
          * @method: 
@@ -142,9 +142,9 @@ public class VL2Request extends RESTClient {
          * @params: name
          * @method: 
          */
-        ResultSet epcs = getVL2ByName(name);
-        if (epcs.content()!=null) {
-            int vl2id = getIntRecordsByKey(epcs, "ID");
+        ResultSet vl2 = getVL2ByName(name);
+        if (vl2.content()!=null) {
+            int vl2id = getIntRecordsByKey(vl2, "ID");
             return this.deleteVL2s(String.valueOf(vl2id));
         } else {
             return simpleResponse("not exist");
@@ -166,7 +166,7 @@ public class VL2Request extends RESTClient {
 
 	public static void main(String[] args) throws ClientProtocolException, IOException {
 	    VL2Request rc = new VL2Request("10.33.37.28", "19c206ba-9d4e-44ce-8bae-0b8a5857a798", 2);
-	    System.out.println(rc.getVL2s());
+	    System.out.println(rc.DeleteVL2IfExist("test1"));
 	    //System.out.println(rc.getEPCByName("ddw"));
     }
 	

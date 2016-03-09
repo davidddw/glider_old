@@ -166,8 +166,8 @@ public class OrderRequest extends RESTClient {
 		 * 
 		 */
 	    String orderTmpl = "{"
-	            + "\"ORDER_ID\": ${id},"
-	            + "\"USERID\": ${userid},"
+	            + "\"ORDER_ID\": ${id?c},"
+	            + "\"USERID\": ${userid?c},"
 	            + "\"DOMAIN\": \"${domain_lcuuid}\","
 	            + "\"VMS\": ${vms},"
 	            + "\"LBS\": ${lbs},"
@@ -274,7 +274,7 @@ public class OrderRequest extends RESTClient {
     
 	public static void main(String[] args) {
 	    OrderRequest rc = new OrderRequest("10.33.37.28", "19c206ba-9d4e-44ce-8bae-0b8a5857a798", 2);
-	    System.out.println(rc.orderVM("dd", "adfsdf", "centos65"));
+	    System.out.println(rc.orderVM("dd2", "2c02e128-1881-4fd8-90e5-e106c81c25b1", "centos6.5"));
 	    //System.out.println(rc.getEPCByName("ddw"));
     }
 	

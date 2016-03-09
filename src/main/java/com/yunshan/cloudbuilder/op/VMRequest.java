@@ -237,22 +237,23 @@ public class VMRequest extends RESTClient {
         return this.RequestAPP("get", "vms", null, param);
     }
     
-    public ResultSet addVMToEPC(String vmid, String epc_id) {
+    public ResultSet addVMToEPC(int vmid, int epc_id) {
         /*
          * @params: vmid, epc_id
          * @method: PATCH /v1/vms/<fdb_vmid>
          */
         String vmTmpl = "{" 
                 + "\"action\": \"setepc\"," 
-                + "\"epc_id\": ${epc_id}"
+                + "\"epc_id\": ${epc_id?c}"
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("epc_id", epc_id);
+        params.put("vmid", vmid);
         String ret = Utils.freemarkerProcess(params, vmTmpl);
-        return this.RequestAPP("patch", "vms", ret, vmid);
+        return this.RequestAPP("patch", "vms", ret, String.valueOf(vmid));
     }
   
-    public ResultSet setDefaultGW(String vmid, String gateway) {
+    public ResultSet setDefaultGW(int vmid, String gateway) {
         /*
          * @params: vmid, gateway
          * @method: PATCH /v1/vms
@@ -267,10 +268,10 @@ public class VMRequest extends RESTClient {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("gateway", gateway);
         String ret = Utils.freemarkerProcess(params, vmWanTmpl);
-        return this.RequestAPP("patch", "vms", ret, vmid);
+        return this.RequestAPP("patch", "vms", ret, String.valueOf(vmid));
     }
     
-    public ResultSet attachOneLanInterface(String vmid, String index, String state, 
+    public ResultSet attachOneLanInterface(int vmid, String index, String state, 
             String vl2_lcuuid, String vl2_net_index, String address) {
         /*
          * @params: vmid, index, state, vl2_lcuuid, vl2_net_index, address
@@ -295,14 +296,14 @@ public class VMRequest extends RESTClient {
         return this.RequestAPP("put", "vms", ret, param);
     }
     
-    public ResultSet attachOneWanInterface(String vmid, String index, String state, 
+    public ResultSet attachOneWanInterface(int vmid, int index, int state, 
             String ip_resource_lcuuid) {
         /*
          * @params: vmid, index, state, ip_resource_lcuuid
          * @method: PATCH /v1/vms/<fdb_vmid>
          */
         String vmWanTmpl = "{"
-                + "\"state\": ${state},"
+                + "\"state\": ${state?c},"
                 + "\"if_type\": \"WAN\","
                 + "\"wan\": {"
                 + "\"ips\": [{\"ip_resource_lcuuid\": \"$ip_resource_lcuuid\"}],"
@@ -414,7 +415,7 @@ public class VMRequest extends RESTClient {
     public static void main(String[] args) throws ClientProtocolException, IOException {
         VMRequest rc = new VMRequest("10.33.37.28", "KVMPool", 
                 "19c206ba-9d4e-44ce-8bae-0b8a5857a798", 2);
-        System.out.println(rc.getVMs());
+        System.out.println(rc.addVMToEPC(1, 1));
         // System.out.println(rc.getEPCByName("ddw"));
     }
 

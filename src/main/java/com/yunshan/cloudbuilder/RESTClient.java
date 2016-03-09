@@ -199,7 +199,10 @@ public class RESTClient {
             }
             s_logger.info("query response: " + resultSet);
         } else {
-            resultSet.setResultSet(null);
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("OPT_STATUS",
+                    jsonBody.getAsJsonObject().get("OPT_STATUS").getAsString());
+            resultSet.setResultSet(jsonObject);
         }
         return resultSet;
     }
@@ -211,7 +214,7 @@ public class RESTClient {
         jsonObject.addProperty("message", responseBody);
         resultSet.setResultSet(jsonObject);
         s_logger.info("query response: " + resultSet);
-        return resultSet;  
+        return resultSet;
     }
 
     public ResultSet makeRequest(String method, String uri, String data, String param) {
@@ -226,14 +229,14 @@ public class RESTClient {
         case "POST":
             request = new HttpPost(uri);
             break;
-        case "PATCH ":
+        case "PATCH":
             request = new HttpPatch(uri);
             break;
         case "DELETE":
             request = new HttpDelete(uri);
             break;
         default:
-            s_logger.error("Invalid HTTP request type: " +  method);
+            s_logger.error("Invalid HTTP request type: " + method);
             return null;
         }
         s_logger.info("query: " + uri);
@@ -251,28 +254,29 @@ public class RESTClient {
         if (data != null) {
             if (request instanceof HttpPut) {
                 ((HttpPut) request).setEntity(new StringEntity(data, "UTF-8"));
-            } 
+            }
             if (request instanceof HttpPost) {
                 ((HttpPost) request).setEntity(new StringEntity(data, "UTF-8"));
             }
+            if (request instanceof HttpPatch) {
+                ((HttpPatch) request).setEntity(new StringEntity(data, "UTF-8"));
+            }
         }
-        s_logger.info("query body: " +  data);
+        s_logger.info("query body: " + data);
 
         HttpClient client = acceptsUntrustedCerts();
-        RequestConfig requestConfig = RequestConfig.custom()
-                   .setSocketTimeout(CONST_TIME_OUT)
-                   .setConnectTimeout(CONST_TIME_OUT)
-                   .setConnectionRequestTimeout(CONST_TIME_OUT)
-                   .build();
-                
+        RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(CONST_TIME_OUT)
+                .setConnectTimeout(CONST_TIME_OUT).setConnectionRequestTimeout(CONST_TIME_OUT)
+                .build();
+
         request.setConfig(requestConfig);
-        
+
         s_logger.info("Making " + request.getMethod() + " request to: " + uri);
         HttpResponse httpResponse;
         try {
             httpResponse = client.execute(request);
             int status = httpResponse.getStatusLine().getStatusCode();
-            if (status==200) {
+            if (status == 200) {
                 HttpEntity entity = httpResponse.getEntity();
                 if (entity != null) {
                     String json = EntityUtils.toString(entity, "UTF-8");
