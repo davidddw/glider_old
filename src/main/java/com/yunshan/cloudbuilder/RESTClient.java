@@ -5,6 +5,7 @@ import org.apache.log4j.Logger;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
@@ -167,7 +168,7 @@ public class RESTClient {
             if (value.equals(jsonNew.get(key).getAsString()))
                 return new ResultSet(jsonNew);
         }
-        return new ResultSet("200", null);
+        return new ResultSet(200, null);
     }
 
     public String getStringRecordsByKey(ResultSet jsonBody, String key) {
@@ -179,6 +180,16 @@ public class RESTClient {
         JsonElement je = jsonBody.content();
         return (je != null) ? je.getAsJsonObject().get(key).getAsInt() : 0;
     }
+    
+    public JsonObject getJsonObjectRecordsByKey(ResultSet jsonBody, String key) {
+        JsonElement je = jsonBody.content();
+        return (je != null) ? je.getAsJsonObject().get(key).getAsJsonObject() : null;
+    }
+    
+    public JsonArray getJsonArrayRecordsByKey(ResultSet jsonBody, String key) {
+        JsonElement je = jsonBody.content();
+        return (je != null) ? je.getAsJsonObject().get(key).getAsJsonArray() : null;
+    }
 
     protected ResultSet simpleResponse(String responseBody) {
         JsonObject jsonObject = new JsonObject();
@@ -186,7 +197,7 @@ public class RESTClient {
         return new ResultSet(jsonObject);
     }
 
-    protected ResultSet handleResponse(String code, String responseBody) {
+    protected ResultSet handleResponse(int code, String responseBody) {
         ResultSet resultSet = new ResultSet(code);
         Gson gson = new GsonBuilder().create();
         JsonObject jsonBody = gson.fromJson(responseBody, JsonObject.class);
@@ -207,7 +218,7 @@ public class RESTClient {
         return resultSet;
     }
 
-    protected ResultSet handleErrorResponse(String errorCode, String responseBody) {
+    protected ResultSet handleErrorResponse(int errorCode, String responseBody) {
         ResultSet resultSet = new ResultSet(errorCode);
         s_logger.info("responseBody: " + responseBody);
         JsonObject jsonObject = new JsonObject();
@@ -280,14 +291,13 @@ public class RESTClient {
                 HttpEntity entity = httpResponse.getEntity();
                 if (entity != null) {
                     String json = EntityUtils.toString(entity, "UTF-8");
-                    return handleResponse("200", json);
+                    return handleResponse(200, json);
                 } else {
-                    return handleResponse("200", null);
+                    return handleResponse(200, null);
                 }
             } else {
-                String eStatus = String.valueOf(status);
                 String eMessage = httpResponse.getStatusLine().getReasonPhrase();
-                return handleErrorResponse(eStatus, eMessage);
+                return handleErrorResponse(status, eMessage);
             }
         } catch (ConnectTimeoutException e) {
             s_logger.error("ConnectTimeoutException: ", e);

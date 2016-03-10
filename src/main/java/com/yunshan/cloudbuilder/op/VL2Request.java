@@ -23,7 +23,7 @@ public class VL2Request extends RESTClient {
 		this.userid = userid;
 	}
 
-	public ResultSet createVL2(String name, int epc_id, String prefix, int netmask) {
+	private ResultSet createVL2(String name, int epcId, String prefix, int netmask) {
 		/*
 		 * @params: name, epc_id, prefix, netmask
 		 * @method: POST /v1/vl2s/
@@ -39,7 +39,7 @@ public class VL2Request extends RESTClient {
 	            + "}";
 	    Map<String, Object> params = new HashMap<String, Object>();
 	    params.put("name", name);
-	    params.put("epc_id", epc_id);
+	    params.put("epc_id", epcId);
 	    params.put("prefix", prefix);
 	    params.put("netmask", netmask);
 	    params.put("userid", this.userid);
@@ -48,7 +48,7 @@ public class VL2Request extends RESTClient {
 	    return this.RequestAPP("post", "vl2s", ret, null);
 	}
 	
-	public ResultSet getVL2s() {
+	private ResultSet getVL2s() {
 	    /*
          * @params: 
          * @method: GET /v1/vl2s/
@@ -56,15 +56,7 @@ public class VL2Request extends RESTClient {
         return this.RequestAPP("get", "vl2s", null, null);
     }
 	
-	public ResultSet getVL2ById(String vl2_id) {
-        /*
-         * @params: vl2_id
-         * @method: GET /v1/vl2s/<vl2_id>/
-         */
-        return this.RequestAPP("get", "vl2s", null, vl2_id);
-    }
-	
-	public ResultSet modifyVL2(String vl2id, List<Map<String, Object>> netList) {
+	private ResultSet modifyVL2(int vl2Id, List<Map<String, Object>> netList) {
         /*
          * @params: vl2id, netList
          * @method: PATCH /v1/vl2s/<vl2_id>/
@@ -85,15 +77,15 @@ public class VL2Request extends RESTClient {
         Map<String, Object> patchData = new HashMap<String, Object>();
         patchData.put("net_data", net_data);
         String finalret = Utils.freemarkerProcess(patchData, finalTmpl);
-        return this.RequestAPP("patch", "vl2s", finalret, vl2id);
+        return this.RequestAPP("patch", "vl2s", finalret, String.valueOf(vl2Id));
     }
     
-	public ResultSet deleteVL2s(String vl2id) {
+	private ResultSet deleteVL2s(int vl2Id) {
         /*
          * @params: vl2id
          * @method: DELETE /v1/vl2s/<vl2_id>/
          */
-        return this.RequestAPP("delete", "vl2s", null, vl2id);
+        return this.RequestAPP("delete", "vl2s", null, String.valueOf(vl2Id));
     }
 
     public ResultSet getVL2ByName(String name) {
@@ -114,6 +106,14 @@ public class VL2Request extends RESTClient {
         return getIntRecordsByKey(vl2, "ID");
     }
     
+    public ResultSet getVL2ById(int vl2Id) {
+        /*
+         * @params: vl2_id
+         * @method: GET /v1/vl2s/<vl2_id>/
+         */
+        return this.RequestAPP("get", "vl2s", null, String.valueOf(vl2Id));
+    }
+    
     public int getVL2LcuuidByName(String name) {
         /*
          * @params: name
@@ -123,7 +123,7 @@ public class VL2Request extends RESTClient {
         return getIntRecordsByKey(vl2, "LCUUID");
     }
 
-    public ResultSet CreateVL2IfNotExist(String name, int epc_id, String prefix,
+    public ResultSet CreateVL2IfNotExist(String name, int epcId, String prefix,
             int netmask) {
         /*
          * @params: name, epc_id, prefix, netmask
@@ -131,7 +131,7 @@ public class VL2Request extends RESTClient {
          */
         ResultSet vl2 = getVL2ByName(name);
         if (vl2.content()==null) {
-            return this.createVL2(name, epc_id, prefix, netmask);
+            return this.createVL2(name, epcId, prefix, netmask);
         } else {
             return vl2;
         }
@@ -144,8 +144,8 @@ public class VL2Request extends RESTClient {
          */
         ResultSet vl2 = getVL2ByName(name);
         if (vl2.content()!=null) {
-            int vl2id = getIntRecordsByKey(vl2, "ID");
-            return this.deleteVL2s(String.valueOf(vl2id));
+            int vl2Id = getIntRecordsByKey(vl2, "ID");
+            return this.deleteVL2s(vl2Id);
         } else {
             return simpleResponse("not exist");
         }
@@ -156,9 +156,9 @@ public class VL2Request extends RESTClient {
          * @params: name, net
          * @method: 
          */
-        int vl2id = getVL2IdByName(name);
-        if (vl2id!=0) {
-            return this.modifyVL2(String.valueOf(vl2id), net);
+        int vl2Id = getVL2IdByName(name);
+        if (vl2Id!=0) {
+            return this.modifyVL2(vl2Id, net);
         } else {
             return simpleResponse("not exist");
         }

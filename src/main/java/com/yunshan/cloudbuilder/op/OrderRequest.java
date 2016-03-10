@@ -14,7 +14,15 @@ public class OrderRequest extends RESTClient {
     
     private int userid;
     private String domain;
-
+    
+    private static final int VCPU_NUM = 1;
+    private static final int MEM_SIZE = 1024;
+    private static final int SYS_DISK_SIZE = 50;
+    private static final int USER_DISK_SIZE = 0;
+    
+    private static final int LB_VCPU_NUM = 2;
+    private static final int LB_MEM_SIZE = 2048;
+    
 	public OrderRequest(String host, String domain, int userid) {
 		super(host);
 		this.userid = userid;
@@ -32,10 +40,10 @@ public class OrderRequest extends RESTClient {
 	        + "\"PRODUCT_SPECIFICATION_LCUUID\": \"${product_spec}\","
 	        + "\"OS\": \"${os_template}\","
 	        + "\"ROLE\": \"GENERAL_PURPOSE\","
-	        + "\"VCPU_NUM\":1,"
-	        + "\"MEM_SIZE\":1024,"
-	        + "\"SYS_DISK_SIZE\":40,"
-	        + "\"USER_DISK_SIZE\":0,"
+	        + "\"VCPU_NUM\":${VCPU_NUM?c},"
+	        + "\"MEM_SIZE\":${MEM_SIZE?c},"
+	        + "\"SYS_DISK_SIZE\":${SYS_DISK_SIZE?c},"
+	        + "\"USER_DISK_SIZE\":${USER_DISK_SIZE?c},"
 	        + "\"DOMAIN\":\"${domain_lcuuid}\""
 	        + "}";
 	    if (vm_info==null)
@@ -57,10 +65,10 @@ public class OrderRequest extends RESTClient {
             + "\"PASSWD\": \"yunshan3302\","
             + "\"PRODUCT_SPECIFICATION_LCUUID\": \"${product_spec}\","
             + "\"ROLE\" : \"LOAD_BALANCER\","
-            + "\"VCPU_NUM\":2,"
-            + "\"MEM_SIZE\":2048,"
-            + "\"SYS_DISK_SIZE\":40,"
-            + "\"USER_DISK_SIZE\":0,"
+            + "\"VCPU_NUM\":${LB_VCPU_NUM?c},"
+            + "\"MEM_SIZE\":${LB_MEM_SIZE?c},"
+            + "\"SYS_DISK_SIZE\":${SYS_DISK_SIZE?c},"
+            + "\"USER_DISK_SIZE\":${USER_DISK_SIZE?c},"
             + "\"DOMAIN\":\"${domain_lcuuid}\""
             + "}";
         
@@ -201,6 +209,10 @@ public class OrderRequest extends RESTClient {
 	    map.put("product_spec", product_spec);
 	    map.put("os_template", os_template);
 	    map.put("domain_lcuuid", this.domain);
+	    map.put("VCPU_NUM", VCPU_NUM);
+        map.put("MEM_SIZE", MEM_SIZE);
+        map.put("SYS_DISK_SIZE", SYS_DISK_SIZE);
+        map.put("USER_DISK_SIZE", USER_DISK_SIZE);
 	    vm_info.add(map);
 	    return this.customOrder(vm_info, null, null, null, null, null);
 	}
@@ -214,6 +226,10 @@ public class OrderRequest extends RESTClient {
         map.put("name", name);
         map.put("product_spec", product_spec);
         map.put("domain_lcuuid", this.domain);
+        map.put("LB_VCPU_NUM", LB_VCPU_NUM);
+        map.put("LB_MEM_SIZE", LB_MEM_SIZE);
+        map.put("SYS_DISK_SIZE", SYS_DISK_SIZE);
+        map.put("USER_DISK_SIZE", USER_DISK_SIZE);
         lb_info.add(map);
         return this.customOrder(null, lb_info, null, null, null, null);
     }

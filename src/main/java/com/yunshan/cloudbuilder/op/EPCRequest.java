@@ -1,10 +1,7 @@
 package com.yunshan.cloudbuilder.op;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.http.client.ClientProtocolException;
 
 import com.yunshan.cloudbuilder.RESTClient;
 import com.yunshan.cloudbuilder.ResultSet;
@@ -27,7 +24,11 @@ public class EPCRequest extends RESTClient {
 		 * @method: POST /v1/epcs/
 		 * 
 		 */
-	    String epcTmpl = "{\"userid\": ${userid},\"name\": \"${name}\",\"domain\": \"${domain}\"}";
+	    String epcTmpl = "{"
+	            + "\"userid\": ${userid},"
+	            + "\"name\": \"${name}\","
+	            + "\"domain\": \"${domain}\""
+	            + "}";
 	    Map<String, Object> params = new HashMap<String, Object>();
 	    params.put("name", name);
 	    params.put("userid", this.userid);
@@ -36,37 +37,44 @@ public class EPCRequest extends RESTClient {
 	    return this.RequestAPP("post", "epcs", ret, null);
 	}
 	
-	public ResultSet modifyEPC(String name, String epcid) {
+	public ResultSet modifyEPC(String name, int epcid) {
 	    /*
 	     * @params: name, epcid
 	     * @method: PATCH /v1/epcs/<epcid>
 	     */
-	    String epcTmpl = "{\"userid\": ${userid},\"name\": \"${name}\"}";
+	    String epcTmpl = "{"
+	            + "\"userid\": ${userid},"
+	            + "\"name\": \"${name}\""
+	            + "}";
 	    Map<String, Object> params = new HashMap<String, Object>();
         params.put("name", name);
         params.put("userid", this.userid);
         String ret = Utils.freemarkerProcess(params, epcTmpl);
-        return this.RequestAPP("patch", "epcs", ret, epcid);
+        return this.RequestAPP("patch", "epcs", ret, String.valueOf(epcid));
 	}
 	
 	public ResultSet getEPCs() {
+	    /*
+         * @params: 
+         * @method: GET /v1/epcs
+         */
 	    return this.RequestAPP("get", "epcs", null, null);
 	}
 	
-	public ResultSet getEPCById(String epcid) {
+	public ResultSet getEPCById(int epcid) {
 	    /*
 	     * @params: epc_id
 	     * @method: GET /v1/epcs/<epc_id>/
 	     */
-        return this.RequestAPP("get", "epcs", null, epcid);
+        return this.RequestAPP("get", "epcs", null, String.valueOf(epcid));
     }
 	
-	public ResultSet deleteEPC(String epcid) {
+	public ResultSet deleteEPC(int epcid) {
 	    /*
          * @params: epc_id
          * @method: DELETE /v1/epcs/<epc_id>/
          */
-        return this.RequestAPP("delete", "epcs", null, epcid);
+        return this.RequestAPP("delete", "epcs", null, String.valueOf(epcid));
 	}
 	
 	public ResultSet getEPCByName(String name) {
@@ -100,7 +108,7 @@ public class EPCRequest extends RESTClient {
 	    }
 	}
 	
-	public ResultSet DeleteEPCIfNotExist(String name) {
+	public ResultSet DeleteEPCIfExist(String name) {
         /*
          * @params: name
          * @method: 
@@ -108,16 +116,10 @@ public class EPCRequest extends RESTClient {
         ResultSet epcs = getEPCByName(name);
         if (epcs.content()!=null) {
             int epcid = getIntRecordsByKey(epcs, "ID");
-            return this.deleteEPC(String.valueOf(epcid));
+            return this.deleteEPC(epcid);
         } else {
             return simpleResponse("not exist");
         }
-    }
-	
-	public static void main(String[] args) throws ClientProtocolException, IOException {
-	    EPCRequest rc = new EPCRequest("10.33.37.28", "19c206ba-9d4e-44ce-8bae-0b8a5857a798", 2);
-	    System.out.println(rc.getEPCs());
-	    //System.out.println(rc.getEPCByName("ddw"));
     }
 	
 }

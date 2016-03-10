@@ -5,19 +5,19 @@ import com.google.gson.JsonObject;
 
 public class ResultSet {
 	
-	private String status;
+	private int status;
 	private JsonElement content;
 	
-	public ResultSet(String status) {
+	public ResultSet(int status) {
 	    this.status = status;
 	}
 	
 	public ResultSet(JsonElement content) {
-	    this.status = "200";
+	    this.status = 200;
 	    this.content = content;
     }
 	
-	public ResultSet(String status, JsonElement content) {
+	public ResultSet(int status, JsonElement content) {
 		this.status = status;
 		this.content = content;
 	}
@@ -33,7 +33,7 @@ public class ResultSet {
         this.content = content;
 	}
 	
-	public String status() {
+	public int status() {
 		return this.status;
 	}
 	
