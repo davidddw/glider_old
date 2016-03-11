@@ -11,7 +11,9 @@ import org.yaml.snakeyaml.Yaml;
 import com.yunshan.cloudbuilder.op.EPCRequest;
 import com.yunshan.cloudbuilder.op.LBSRequest;
 import com.yunshan.cloudbuilder.op.OrderRequest;
+import com.yunshan.cloudbuilder.op.VGWRequest;
 import com.yunshan.cloudbuilder.op.VMRequest;
+import com.yunshan.cloudbuilder.op.ValveRequest;
 import com.yunshan.config.BWInfo;
 import com.yunshan.config.Configuration;
 import com.yunshan.config.IPInfo;
@@ -27,6 +29,8 @@ public class EnvBuilder {
     private OrderRequest orderRequest = null;
     private EPCRequest epcRequest = null;
     private VMRequest vmRequest = null;
+    private VGWRequest vgwRequest = null;
+    private ValveRequest valveRequest = null;
     private LBSRequest lbRequest = null;
 
     public EnvBuilder(String filename) {
@@ -37,6 +41,9 @@ public class EnvBuilder {
             epcRequest = new EPCRequest(config.getHost(), config.getDomain(), config.getUserid());
             epcRequest.CreateEPCIfNotExist(config.getEpc_name());
             lbRequest = new LBSRequest(config.getHost(), config.getPool_name(), config.getDomain(), config.getUserid());
+            vgwRequest = new VGWRequest(config.getHost(), config.getDomain(), config.getUserid());
+            valveRequest = new ValveRequest(config.getHost(), config.getDomain(), config.getUserid());
+            
         } else {
             s_logger.error("No config in " + filename);
         }
@@ -72,6 +79,7 @@ public class EnvBuilder {
         for (BWInfo bwInfo : config.getBandws()) {
             orderRequest.orderBW(bwInfo.getIsp(), bwInfo.getBandw(), bwInfo.getProduct_spec());
         }
+        orderRequest.execute();
         return this;
     }
     
@@ -79,13 +87,12 @@ public class EnvBuilder {
         for (VMInfo vmInfo : config.getVms()) {
             vmRequest.setVMToEPC(vmInfo.getName(), config.getEpc_name());
         }
-        /*
         for (VGWInfo vgwInfo : config.getVgateways()) {
-            orderRequest.orderVGW(vgwInfo.getName(), vgwInfo.getProduct_spec());
+            vgwRequest.setEPCForVgateway(vgwInfo.getName(), config.getEpc_name());
         }
         for (ValveInfo valveInfo : config.getValves()) {
-            orderRequest.orderValve(valveInfo.getName(), valveInfo.getProduct_spec());
-        }*/
+            valveRequest.setEPCForValve(valveInfo.getName(), config.getEpc_name());
+        }
         for (LBInfo lbInfo : config.getLbs()) {
             lbRequest.setLBToEPC(lbInfo.getName(), config.getEpc_name());
         }

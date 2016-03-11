@@ -220,11 +220,9 @@ public class RESTClient {
 
     protected ResultSet handleErrorResponse(int errorCode, String responseBody) {
         ResultSet resultSet = new ResultSet(errorCode);
-        s_logger.info("responseBody: " + responseBody);
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("message", responseBody);
         resultSet.setResultSet(jsonObject);
-        s_logger.info("query response: " + resultSet);
         return resultSet;
     }
 

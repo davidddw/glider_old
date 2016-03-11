@@ -23,7 +23,7 @@ public class OrderRequestTest {
 
     @Test
     public void testOrderVM() {
-        ResultSet rs = rc.orderVM("dd32", "2c02e128-1881-4fd8-90e5-e106c81c25b1", "centos6.5");
+        ResultSet rs = rc.orderVM("dd32", "2c02e128-1881-4fd8-90e5-e106c81c25b1", "centos6.5").execute();
         assertEquals(200, rs.status());
     }
 

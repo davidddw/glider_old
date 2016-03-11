@@ -1,12 +1,12 @@
 package com.yunshan.cloudbuilder.op;
 
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.http.client.ClientProtocolException;
+import org.apache.commons.lang3.StringUtils;
 
 import com.yunshan.cloudbuilder.RESTClient;
 import com.yunshan.cloudbuilder.ResultSet;
@@ -16,11 +16,13 @@ public class VGWRequest extends RESTClient {
     
     private String domain;
     private int userid;
+    private EPCRequest epcRequest = null;
 
 	public VGWRequest(String host, String domain, int userid) {
 		super(host);
 		this.domain = domain;
 		this.userid = userid;
+		epcRequest = new EPCRequest(host, domain, userid);
 	}
 	
 	private ResultSet createVgateway(String name, String product_spec) {
@@ -86,7 +88,7 @@ public class VGWRequest extends RESTClient {
         return this.RequestTalker("get", "vgateways", null, null);
     }
 	
-	private ResultSet getVgatewayByLcuuid(String lcuuid) {
+	public ResultSet getVgatewayByLcuuid(String lcuuid) {
         /*
          * @params: vgateway_lcuuid
          * @method: GET /v1/vgateways/<vgateway_lcuuid>/
@@ -95,7 +97,7 @@ public class VGWRequest extends RESTClient {
         return this.RequestTalker("get", "vgateways", null, lcuuid);
     }
 	
-	private ResultSet modifyVgatewayLaunchServer(String vgateway_lcuuid, String launch_server) {
+	public ResultSet modifyVgatewayLaunchServer(String vgateway_lcuuid, String launch_server) {
         /*
          * @params: vgateway_lcuuid, launch_server
          * @method: PATCH /v1/vgateways/<vgateway_lcuuid>/
@@ -127,107 +129,214 @@ public class VGWRequest extends RESTClient {
         return this.RequestTalker("patch", "vgateways", ret, vgateway_lcuuid);
     }
 	
-	private ResultSet modifyVgatewaySnat(String vgateway_lcuuid, List<Map<String, Object>> snat) {
+	private ResultSet getSnat(String vgateway_lcuuid) {
+	    /*
+         * @params: vgateway_lcuuid
+         * @method: get /v1/vgateways/<vgateway_lcuuid>/snats/
+         */
+	    String param = vgateway_lcuuid + "/snats";
+	    return this.RequestTalker("get", "vgateways", null, param);
+	}
+	
+	private ResultSet getDnat(String vgateway_lcuuid) {
         /*
          * @params: vgateway_lcuuid
-         * @params: snat(name, isp, protocol,if_index_1,min_addr_1, max_addr_1
-         * min_port_1, max_port_1, if_index_2, min_addr_2, max_addr_2,min_port_2, max_port_2)
+         * @method: get /v1/vgateways/<vgateway_lcuuid>/dnats/
+         */
+        String param = vgateway_lcuuid + "/dnats";
+        return this.RequestTalker("get", "vgateways", null, param);
+    }
+	
+	public ResultSet getRoutes(String vgateway_lcuuid) {
+        /*
+         * @params: vgateway_lcuuid
+         * @method: get /v1/vgateways/<vgateway_lcuuid>/routes/
+         */
+        String param = vgateway_lcuuid + "/routes";
+        return this.RequestTalker("get", "vgateways", null, param);
+    }
+	
+	private ResultSet getForwardAcls(String vgateway_lcuuid) {
+        /*
+         * @params: vgateway_lcuuid
+         * @method: get /v1/vgateways/<vgateway_lcuuid>/forward_acls/
+         */
+        String param = vgateway_lcuuid + "/forward_acls";
+        return this.RequestTalker("get", "vgateways", null, param);
+    }
+	
+	private ResultSet getVpns(String vgateway_lcuuid) {
+        /*
+         * @params: vgateway_lcuuid
+         * @method: get /v1/vgateways/<vgateway_lcuuid>/dnats/
+         */
+        String param = vgateway_lcuuid + "/vpns";
+        return this.RequestTalker("get", "vgateways", null, param);
+    }
+	
+	private ResultSet modifyVgatewaySnat(String vgateway_lcuuid, String name, String isp, String if_index, 
+	        String sip1, String sip2, String dip, boolean override) {
+        /*
+         * @params: vgateway_lcuuid name, isp, if_index, sip1, sip2, dip
          * @method: PUT /v1/vgateways/<vgateway_lcuuid>/snats/
          * 
          */
         String freemarkerTemplate = "{"
                 + "\"NAME\": \"${name}\","
                 + "\"STATE\": 1,"
-                + "\"RULE_ID\": 1,"
+                + "\"RULE_ID\": ${ruleId?c},"
                 + "\"ISP\": \"${isp}\","
-                + "\"PROTOCOL\": ${protocol},"
+                + "\"PROTOCOL\": 0,"
                 + "\"MATCH\": {"
                 + "\"IF_TYPE\": \"ANY\","
-                + "\"IF_INDEX\": \"${if_index_1}\","
-                + "\"MIN_ADDRESS\": \"1\","
-                + "\"MAX_ADDRESS\": \"65535\","
-                + "\"MIN_PORT\": \"${min_port_1}\","
-                + "\"MAX_PORT\": \"${max_port_1}\""
+                + "\"IF_INDEX\": 0,"
+                + "\"MIN_ADDRESS\": \"${sip1}\","
+                + "\"MAX_ADDRESS\": \"${sip2}\","
+                + "\"MIN_PORT\": 1,"
+                + "\"MAX_PORT\": 65535"
                 + "}"
                 + "\"TARGET\": {"
                 + "\"IF_TYPE\": \"WAN\","
-                + "\"IF_INDEX\": \"${if_index_2}\","
-                + "\"MIN_ADDRESS\": \"${min_addr_2}\","
-                + "\"MAX_ADDRESS\": \"${max_addr_2}\","
-                + "\"MIN_PORT\": \"${min_port_2}\","
-                + "\"MAX_PORT\": \"${max_port_2}\""
+                + "\"IF_INDEX\": \"${if_index}\","
+                + "\"MIN_ADDRESS\": \"${dip}\","
+                + "\"MAX_ADDRESS\": \"${dip}\","
+                + "\"MIN_PORT\": 1,"
+                + "\"MAX_PORT\": 65535"
                 + "}"
                 + "}";
+        int ruleId = 1;
         List<String> interf = new ArrayList<String>();
-        for (Map<String, Object> map : snat) {
-            if (!map.containsKey("protocol")) {
-                map.put("protocol", 0);
-            } else if (!map.containsKey("min_port_1")) {
-                map.put("min_port_1", 1);
-            } else if (!map.containsKey("max_port_1")) {
-                map.put("max_port_1", 65535);
-            } else if (!map.containsKey("min_port_2")) {
-                map.put("min_port_2", 1);
-            } else if (!map.containsKey("max_port_2")) {
-                map.put("max_port_2", 65535);
+        if (!override) {
+            ResultSet resultSet = this.getSnat(vgateway_lcuuid);
+            if (resultSet.content()!=null) {
+                interf = Arrays.asList(StringUtils.substringBetween(resultSet.content().toString(), "[", "]").split(","));
+                ruleId += interf.size();
             }
-            interf.add(Utils.freemarkerProcess(map, freemarkerTemplate));
         }
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("name", name);
+        params.put("if_index", if_index);
+        params.put("isp", isp);
+        params.put("sip1", sip1);
+        params.put("sip2", sip2);
+        params.put("dip", dip);
+        params.put("ruleId", ruleId);
+        interf.add(Utils.freemarkerProcess(params, freemarkerTemplate));
         String finalData = "[" + String.join(",", interf) + "]";
         String param = vgateway_lcuuid + "/snats";
         return this.RequestTalker("put", "vgateways", finalData, param);
     }
 	
-	private ResultSet modifyVgatewayDnat(String vgateway_lcuuid, List<Map<String, Object>> dnat) {
+	private ResultSet modifyVgatewayDnat(String vgateway_lcuuid, String name, String isp, String if_index, 
+            String sip, int sport, String dip, int dport, boolean override) {
         /*
-         * @params: vgateway_lcuuid, dnat
+         * @params: vgateway_lcuuid, name, isp, if_index, sip, sport, dip, dport, override
          * @method: PUT /v1/vgateways/<vgateway_lcuuid>/dnats/
          * 
          */
         String freemarkerTemplate = "{"
                 + "\"NAME\": \"${name}\","
                 + "\"STATE\": 1,"
-                + "\"RULE_ID\": 1,"
+                + "\"RULE_ID\": ${ruleId?c},"
                 + "\"ISP\": \"${isp}\","
-                + "\"PROTOCOL\": ${protocol?c},"
+                + "\"PROTOCOL\": 0,"
                 + "\"MATCH\": {"
                 + "\"IF_TYPE\": \"WAN\","
-                + "\"IF_INDEX\": \"${if_index_1}\","
-                + "\"MIN_ADDRESS\": \"${min_addr_1}\","
-                + "\"MAX_ADDRESS\": \"${max_addr_1}\","
-                + "\"MIN_PORT\": \"${min_port_1}\","
-                + "\"MAX_PORT\": \"${max_port_1}\","
+                + "\"IF_INDEX\": \"${if_index}\","
+                + "\"MIN_ADDRESS\": \"${sip}\","
+                + "\"MAX_ADDRESS\": \"${sip}\","
+                + "\"MIN_PORT\": ${sport},"
+                + "\"MAX_PORT\": ${sport}"
                 + "}"
                 + "\"TARGET\": {"
                 + "\"IF_TYPE\": \"ANY\","
-                + "\"IF_INDEX\": \"${if_index_2}\","
-                + "\"MIN_ADDRESS\": \"${min_addr_2}\","
-                + "\"MAX_ADDRESS\": \"${max_addr_2}\","
-                + "\"MIN_PORT\": \"${min_port_2}\","
-                + "\"MAX_PORT\": \"${max_port_2}\","
+                + "\"IF_INDEX\": 0,"
+                + "\"MIN_ADDRESS\": \"${dip}\","
+                + "\"MAX_ADDRESS\": \"${dip}\","
+                + "\"MIN_PORT\": ${dport},"
+                + "\"MAX_PORT\": ${dport}"
                 + "}"
                 + "}";
+        int ruleId = 1;
         List<String> interf = new ArrayList<String>();
-        for (Map<String, Object> map : dnat) {
-            if (!map.containsKey("protocol")) {
-                map.put("protocol", 0);
-            } else if (!map.containsKey("min_port_1")) {
-                map.put("min_port_1", 1);
-            } else if (!map.containsKey("max_port_1")) {
-                map.put("max_port_1", 65535);
-            } else if (!map.containsKey("min_port_2")) {
-                map.put("min_port_2", 1);
-            } else if (!map.containsKey("max_port_2")) {
-                map.put("max_port_2", 65535);
+        if (!override) {
+            ResultSet resultSet = this.getDnat(vgateway_lcuuid);
+            if (resultSet.content()!=null) {
+                interf = Arrays.asList(StringUtils.substringBetween(resultSet.content().toString(), "[", "]").split(","));
+                ruleId += interf.size();
             }
-            interf.add(Utils.freemarkerProcess(map, freemarkerTemplate));
         }
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("name", name);
+        params.put("if_index", if_index);
+        params.put("isp", isp);
+        params.put("sip", sip);
+        params.put("sport", sport);
+        params.put("dip", dip);
+        params.put("dport", dport);
+        params.put("ruleId", ruleId);
+        interf.add(Utils.freemarkerProcess(params, freemarkerTemplate));
         String finalData = "[" + String.join(",", interf) + "]";
         String param = vgateway_lcuuid + "/dnats";
         return this.RequestTalker("put", "vgateways", finalData, param);
     }
 	
-	private ResultSet modifyVgatewayVpn(String vgateway_lcuuid, List<Map<String, Object>> vpn) {
+	private ResultSet modifyVgatewayAcl(String vgateway_lcuuid, String name, String isp, String if_index, 
+            String sip1, String sip2, int sport, boolean override) {
+        /*
+         * @params: vgateway_lcuuid, name, isp, if_index, sip, sport, dip, dport, override
+         * @method: PUT /v1/vgateways/<vgateway_lcuuid>/forward_acls/
+         * 
+         */
+        String freemarkerTemplate = "{"
+                + "\"NAME\": \"${name}\","
+                + "\"STATE\": 1,"
+                + "\"RULE_ID\": ${ruleId?c},"
+                + "\"ISP\": \"${isp}\","
+                + "\"PROTOCOL\": 0,"
+                + "\"MATCH_SRC\": {"
+                + "\"IF_TYPE\": \"LAN\","
+                + "\"IF_INDEX\": \"${if_index}\","
+                + "\"MIN_ADDRESS\": \"${sip1}\","
+                + "\"MAX_ADDRESS\": \"${sip2}\","
+                + "\"MIN_PORT\": ${sport},"
+                + "\"MAX_PORT\": ${sport}"
+                + "}"
+                + "\"MATCH_DST\": {"
+                + "\"IF_TYPE\": \"ANY\","
+                + "\"IF_INDEX\": 0,"
+                + "\"MIN_ADDRESS\": \"0.0.0.0\","
+                + "\"MAX_ADDRESS\": \"255.255.255.255\","
+                + "\"MIN_PORT\": 1,"
+                + "\"MAX_PORT\": 65535"
+                + "}"
+                + "}";
+        int ruleId = 1;
+        List<String> interf = new ArrayList<String>();
+        if (!override) {
+            ResultSet resultSet = this.getForwardAcls(vgateway_lcuuid);
+            if (resultSet.content()!=null) {
+                interf = Arrays.asList(StringUtils.substringBetween(resultSet.content().toString(), "[", "]").split(","));
+                ruleId += interf.size();
+            }
+        }
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("name", name);
+        params.put("if_index", if_index);
+        params.put("isp", isp);
+        params.put("sip1", sip1);
+        params.put("sip2", sip2);
+        params.put("sport", sport);
+        params.put("ruleId", ruleId);
+        interf.add(Utils.freemarkerProcess(params, freemarkerTemplate));
+        String finalData = "[" + String.join(",", interf) + "]";
+        String param = vgateway_lcuuid + "/forward_acls";
+        return this.RequestTalker("put", "vgateways", finalData, param);
+    }
+	
+	private ResultSet modifyVgatewayVpn(String vgateway_lcuuid, String name, String local_ip_addr, 
+	        String local_net_addr, String local_net_mask, String remote_ip_addr, String remote_net_addr, 
+	        String remote_net_mask, String psk, boolean override) {
         /*
          * @params: vgateway_lcuuid, vpn
          * @method: PUT /v1/vgateways/<vgateway_lcuuid>/vpns/
@@ -235,6 +344,7 @@ public class VGWRequest extends RESTClient {
          */
         String freemarkerTemplate = "{"
                 + "\"NAME\": \"${name}\","
+                + "\"RULE_ID\": ${ruleId?c},"
                 + "\"STATE\": 1,"
                 + "\"LEFT\": \"${local_ip_addr}\","
                 + "\"LNETWORK\": {"
@@ -248,11 +358,25 @@ public class VGWRequest extends RESTClient {
                 + "}"
                 + "\"PSK\": \"${psk}\""
                 + "}";
-        
+        int ruleId = 1;
         List<String> interf = new ArrayList<String>();
-        for (Map<String, Object> map : vpn) {
-            interf.add(Utils.freemarkerProcess(map, freemarkerTemplate));
+        if (!override) {
+            ResultSet resultSet = this.getVpns(vgateway_lcuuid);
+            if (resultSet.content()!=null) {
+                interf = Arrays.asList(StringUtils.substringBetween(resultSet.content().toString(), "[", "]").split(","));
+                ruleId += interf.size();
+            }
         }
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("name", name);
+        params.put("local_ip_addr", local_ip_addr);
+        params.put("local_net_addr", local_net_addr);
+        params.put("local_net_mask", local_net_mask);
+        params.put("remote_ip_addr", remote_ip_addr);
+        params.put("remote_net_addr", remote_net_addr);
+        params.put("remote_net_mask", remote_net_mask);
+        params.put("ruleId", ruleId);
+        interf.add(Utils.freemarkerProcess(params, freemarkerTemplate));
         String finalData = "[" + String.join(",", interf) + "]";
         String param = vgateway_lcuuid + "/vpns";
         return this.RequestTalker("put", "vgateways", finalData, param);
@@ -267,85 +391,97 @@ public class VGWRequest extends RESTClient {
         return this.RequestTalker("delete", "vgateways", null, vgateway_lcuuid);
     }
 	
-	private List<String> generateWanData(List<Map<String, Object>> wan_list) {
-	    /*
-         * @params: wan_list(if_index,ip_resource_lcuuid,min_bandwidth,max_bandwidth)
-         * 
-         */
-	    String freemarkerTemplate = "{"
-                + "\"IF_INDEX\": ${if_index?c},"
-                + "\"STATE\": 1,"
-                + "\"IF_TYPE\": \"WAN\","
-                + "\"WAN\": { "
-                + "\"IPS\": ["
-                + "{\"IP_RESOURCE_LCUUID\": \"${ip_resource_lcuuid}\"}"
-                + "],"
-                + "\"QOS\": {"
-                + "\"MIN_BANDWIDTH\": ${min_bandwidth?c},\"MAX_BANDWIDTH\": ${max_bandwidth?c}"
-                + "}"
-                + "}"
-                + "}";
-	    List<String> interf = new ArrayList<String>();
-	    int index = 1;
-	    for (Map<String, Object> map : wan_list) {
-	        map.put("if_index", index);
-	        if (map.containsKey("min_bandwidth")) {
-	            map.put("min_bandwidth", 10485760);
-	        } else if (map.containsKey("max_bandwidth")) {
-	            map.put("max_bandwidth", 10485760);
-	        }
-	        index += 1;
-	        interf.add(Utils.freemarkerProcess(map, freemarkerTemplate));
-	    }
-	    return interf;
-	}
-                
-	private List<String> generateLanData(List<Map<String, Object>> lan_list) {
-        /*
-         * @params: lan_list(if_index,vl2_lcuuid,address,min_bandwidth,max_bandwidth)
-         * 
-         */
-        String freemarkerTemplate = "{"
-                + "\"IF_INDEX\": ${if_index?c},"
-                + "\"STATE\": 1,"
-                + "\"IF_TYPE\": \"LAN\","
-                + "\"LAN\": { "
-                + "\"VL2_LCUUID\": \"${vl2_lcuuid}\","
-                + "\"IPS\": ["
-                + "{\"VL2_NET_INDEX\": 1, \"ADDRESS\": \"${address}\"}"
-                + "],"
-                + "\"QOS\": {"
-                + "\"MIN_BANDWIDTH\": ${min_bandwidth?c},"
-                + "\"MAX_BANDWIDTH\": ${max_bandwidth?c}"
-                + "}"
-                + "}"
-                + "}";
-        List<String> interf = new ArrayList<String>();
-        int index = 10;
-        for (Map<String, Object> map : lan_list) {
-            map.put("if_index", index);
-            if (map.containsKey("min_bandwidth")) {
-                map.put("min_bandwidth", 1048576000);
-            } else if (map.containsKey("max_bandwidth")) {
-                map.put("max_bandwidth", 1048576000);
-            }
-            index += 1;
-            interf.add(Utils.freemarkerProcess(map, freemarkerTemplate));
-        }
-        return interf;
-    }
-	
-	private ResultSet modifyVgateway(String vgateway_lcuuid, List<Map<String, Object>> lan_list, 
-	        List<Map<String, Object>> wan_list) {
+	public ResultSet modifyVgateway(String vgateway_lcuuid, List<Map<String, Object>> lan_list, 
+            List<Map<String, Object>> wan_list) {
         /*
          * @params: vgateway_lcuuid, wan_list, lan_list
          * @method: PATCH /v1/vgateways/<vgateway_lcuuid>/
          * 
          */
-	    List<String> interf = new ArrayList<String>();
-	    interf.addAll(this.generateLanData(lan_list));
-	    interf.addAll(this.generateWanData(wan_list));
-	    String finalData = "[" + String.join(",", interf) + "]";
+        class Data {
+            private List<Map<String, Object>> wan_list;
+            private List<Map<String, Object>> lan_list;
+            private List<String> interf;
+            
+            public Data(List<Map<String, Object>> wan_list, List<Map<String, Object>> lan_list) {
+                this.wan_list = wan_list;
+                this.lan_list = lan_list;
+                interf = new ArrayList<String>();
+            }
+            
+            public String getData() {
+                return "[" + String.join(",", interf) + "]";
+            }
+            
+            public Data generateWanData() {
+                /*
+                 * @params: wan_list(if_index,ip_resource_lcuuid,min_bandwidth,max_bandwidth)
+                 * 
+                 */
+                String freemarkerTemplate = "{"
+                        + "\"IF_INDEX\": ${if_index?c},"
+                        + "\"STATE\": 1,"
+                        + "\"IF_TYPE\": \"WAN\","
+                        + "\"WAN\": { "
+                        + "\"IPS\": ["
+                        + "{\"IP_RESOURCE_LCUUID\": \"${ip_resource_lcuuid}\"}"
+                        + "],"
+                        + "\"QOS\": {"
+                        + "\"MIN_BANDWIDTH\": ${min_bandwidth?c},"
+                        + "\"MAX_BANDWIDTH\": ${max_bandwidth?c}"
+                        + "}"
+                        + "}"
+                        + "}";
+                int index = 1;
+                for (Map<String, Object> map : wan_list) {
+                    map.put("if_index", index);
+                    if (map.containsKey("min_bandwidth")) {
+                        map.put("min_bandwidth", 10485760);
+                    } else if (map.containsKey("max_bandwidth")) {
+                        map.put("max_bandwidth", 10485760);
+                    }
+                    index += 1;
+                    interf.add(Utils.freemarkerProcess(map, freemarkerTemplate));
+                }
+                return this;
+            }
+            
+            public Data generateLanData() {
+                /*
+                 * @params: lan_list(if_index,vl2_lcuuid,address,min_bandwidth,max_bandwidth)
+                 * 
+                 */
+                String freemarkerTemplate = "{"
+                        + "\"IF_INDEX\": ${if_index?c},"
+                        + "\"STATE\": 1,"
+                        + "\"IF_TYPE\": \"LAN\","
+                        + "\"LAN\": { "
+                        + "\"VL2_LCUUID\": \"${vl2_lcuuid}\","
+                        + "\"IPS\": ["
+                        + "{\"VL2_NET_INDEX\": 1, "
+                        + "\"ADDRESS\": \"${address}\"}"
+                        + "],"
+                        + "\"QOS\": {"
+                        + "\"MIN_BANDWIDTH\": ${min_bandwidth?c},"
+                        + "\"MAX_BANDWIDTH\": ${max_bandwidth?c}"
+                        + "}"
+                        + "}"
+                        + "}";
+                int index = 10;
+                for (Map<String, Object> map : lan_list) {
+                    map.put("if_index", index);
+                    if (map.containsKey("min_bandwidth")) {
+                        map.put("min_bandwidth", 1048576000);
+                    } else if (map.containsKey("max_bandwidth")) {
+                        map.put("max_bandwidth", 1048576000);
+                    }
+                    index += 1;
+                    interf.add(Utils.freemarkerProcess(map, freemarkerTemplate));
+                }
+                return this;
+            }
+        }
+        String finalData = new Data(lan_list, wan_list).generateLanData().generateWanData().getData();
         return this.RequestTalker("patch", "vgateways", finalData, vgateway_lcuuid);
     }
 	
@@ -359,7 +495,7 @@ public class VGWRequest extends RESTClient {
         return filterRecordsByKey(resultSet, "NAME", name);
 	}
 	
-	public ResultSet getVgatewayIdByName(String name) {
+	public int getVgatewayIdByName(String name) {
         /*
          * @params: name
          * @method: PATCH /v1/vgateways/<vgateway_lcuuid>/
@@ -373,7 +509,7 @@ public class VGWRequest extends RESTClient {
         }
     }
 
-	public ResultSet getVgatewayUuidByName(String name) {
+	public String getVgatewayUuidByName(String name) {
         /*
          * @params: name
          * @method: PATCH /v1/vgateways/<vgateway_lcuuid>/
@@ -386,52 +522,97 @@ public class VGWRequest extends RESTClient {
             return null;
         }
     }
-	
-	public ResultSet setSnatForVgateway(String name) {
+
+	public ResultSet setSnatForVgateway(String vgwname, String name, String isp, String if_index, 
+            String sip1, String sip2, String dip, boolean override) {
 	    /*
-         * @params: name
+         * @params: snat(name, isp, if_index, sip1, sip2, dip)
          */
-	    String lcuuid = this.getVgatewayUuidByName(name);
-	    return this.modifyVgatewaySnat(lcuuid, snat);
+	    String lcuuid = this.getVgatewayUuidByName(vgwname);
+	    return this.modifyVgatewaySnat(lcuuid, name, isp, if_index, sip1, sip2, dip, override);
 	}
 	
-	def set_snats_for_vgateway(self, **kwargs):
-        '''
-        @params: name
-        '''
-        lcuuid = self.get_vgateway_lcuuid_by_name(name=kwargs['name'])
-        result = self._modify_vgateway_snats(vgateway_lcuuid=lcuuid,
-                                             snat=kwargs['snat'])
-        return result
-
-
-    def create_vgateway_if_not_exist(self, **kwargs):
-        '''
-        @params: name, product_spec, allocation_type,
-                 gw_pool_lcuuid, gw_launch_server
-        '''
-        result = ''
-        vgateway = self.get_vgateway_by_name(name=kwargs['name'])
-        if vgateway.content is None:
-            if kwargs['allocation_type'] == "AUTO":
-                result = self._create_vgateway(
-                    name=kwargs['name'],
-                    product_spec=kwargs['product_spec'])
-            else:
-                result = self._create_vgateway_manual(
-                    name=kwargs['name'],
-                    product_spec=kwargs['product_spec'],
-                    pool_lcuuid=kwargs['gw_pool_lcuuid'],
-                    launch_server=kwargs['gw_launch_server'])
-        else:
-            if kwargs.get('gw_launch_server'):
-                result = self.migrate_vgateway(
-                    name=kwargs['name'],
-                    gw_launch_server=kwargs['gw_launch_server'])
-            else:
-                result = vgateway
-        return result
-
+	public ResultSet setDnatForVgateway(String vgwname, String name, String isp, String if_index, 
+            String sip, int sport, String dip, int dport, boolean override) {
+        /*
+         * @params: snat(name, isp, if_index, sip1, sip2, dip)
+         */
+        String lcuuid = this.getVgatewayUuidByName(vgwname);
+        return this.modifyVgatewayDnat(lcuuid, name, isp, if_index, sip, sport, dip, dport, override);
+    }
+	
+	public ResultSet setForwardAclForVgateway(String vgwname, String name, String isp, String if_index, 
+            String sip1, String sip2, int sport, boolean override) {
+        /*
+         * @params: snat(name, isp, if_index, sip1, sip2, dip)
+         */
+        String lcuuid = this.getVgatewayUuidByName(vgwname);
+        return this.modifyVgatewayAcl(lcuuid, name, isp, if_index, sip1, sip2, sport, override);
+    }
+	
+	public ResultSet setVpnForVgateway(String vgwname, String name, String local_ip_addr, 
+            String local_net_addr, String local_net_mask, String remote_ip_addr, String remote_net_addr, 
+            String remote_net_mask, String psk, boolean override) {
+        /*
+         * @params: snat(name, isp, if_index, sip1, sip2, dip)
+         */
+        String lcuuid = this.getVgatewayUuidByName(vgwname);
+        return this.modifyVgatewayVpn(lcuuid, name, local_ip_addr, local_net_addr, local_net_mask, 
+                remote_ip_addr, remote_net_addr, remote_net_mask, psk, override);
+    }
+	
+	public ResultSet setEPCForVgateway(String vgwname, String epcName) {
+	    /*
+         * @params: name, epc_id
+         */
+	    String lcuuid = this.getVgatewayUuidByName(vgwname);
+	    int epcId = epcRequest.getEPCIdByName(epcName);
+	    return this.modifyVgatewayEPCId(lcuuid, epcId);
+	}
+	
+	private ResultSet migrateVgateway(String name, String gw_launch_server) {
+        /*
+         * @params: name, gw_launch_server
+         */
+        String lcuuid = this.getVgatewayUuidByName(name);
+        return this.modifyVgatewayLaunchServer(lcuuid, gw_launch_server);
+    }
+	
+	public ResultSet createVgatewayIfNotExist(String name, String product_spec, String allocation_type, 
+	        String gw_pool_lcuuid, String gw_launch_server) {
+	    /*
+         * @params: name, product_spec, allocation_type, gw_pool_lcuuid, gw_launch_server
+         */
+	    ResultSet resultSet = this.getVgatewayByName(name);
+	    if (resultSet.content()==null) {
+	        if(allocation_type.equals("AUTO")) {
+	            return this.createVgateway(name, product_spec);
+	        } else {
+	            return this.createVgatewayManually(name, product_spec, gw_pool_lcuuid, gw_launch_server);
+	        }
+	    } else {
+	        if (gw_launch_server!=null) {
+	            return this.migrateVgateway(name, gw_launch_server);
+	        } else {
+	            return resultSet;
+	        }
+	    }
+	}
+	
+	public ResultSet deleteVgatewayNotExist(String name) {
+        /*
+         * @params: name
+         */
+        String lcuuid = this.getVgatewayUuidByName(name);
+        ResultSet resultSet = this.getVgatewayByName(name);
+        if (resultSet.content()!=null) {
+            return this.deleteVgateway(lcuuid);
+        } else {
+            return simpleResponse("vgateway is not exists");
+        }
+    }
+	
+	/*
     def modify_vgateway_finely(self, **kwargs):
         '''
         @params: name, wan, lan
@@ -453,17 +634,6 @@ public class VGWRequest extends RESTClient {
                                            lan_list=kwargs['lan'])
         return result
 
-    
-
-    def set_dnats_for_vgateway(self, **kwargs):
-        '''
-        @params: name
-        '''
-        lcuuid = self.get_vgateway_lcuuid_by_name(name=kwargs['name'])
-        result = self._modify_vgateway_dnats(vgateway_lcuuid=lcuuid,
-                                             dnat=kwargs['dnat'])
-        return result
-
     def set_vpns_for_vgateway(self, **kwargs):
         '''
         @params: name
@@ -471,43 +641,6 @@ public class VGWRequest extends RESTClient {
         lcuuid = self.get_vgateway_lcuuid_by_name(name=kwargs['name'])
         result = self._modify_vgateway_vpns(vgateway_lcuuid=lcuuid,
                                             vpn=kwargs['vpn'])
-        return result
-
-    def migrate_vgateway(self, **kwargs):
-        '''
-        @params: name, gw_launch_server
-        '''
-        lcuuid = self.get_vgateway_lcuuid_by_name(name=kwargs['name'])
-        result = self._modify_vgateway_launch_server(
-            vgateway_lcuuid=lcuuid,
-            launch_server=kwargs['gw_launch_server'])
-        return result
-
-    def set_epc_for_vgateway(self, **kwargs):
-        '''
-        @params: name, epc_id
-        '''
-        lcuuid = self.get_vgateway_lcuuid_by_name(name=kwargs['name'])
-        result = self._modify_vgateway_epc_id(vgateway_lcuuid=lcuuid,
-                                              epc_id=kwargs['epc_id'],
-                                              info=kwargs['name'])
-        return result
-
-    def delete_vgateway_if_exist(self, **kwargs):
-        '''
-        @params: name
-        '''
-        result = ''
-        lcuuid = self.get_vgateway_lcuuid_by_name(name=kwargs['name'])
-        vgateway = self.get_vgateway_by_name(name=kwargs['name'])
-        if vgateway.content is not None:
-            result = self._delete_vgateway(vgateway_lcuuid=lcuuid,
-                                           info=kwargs['name'])
-        else:
-            result = {
-                "DESCRIPTION": "",
-                "OPT_STATUS": "SUCCESS"
-            }
         return result
 
     def get_multi_vgateway_ids_by_name(self, name_list):
@@ -599,77 +732,4 @@ public class VGWRequest extends RESTClient {
                 'param': kwargs['vgateway_lcuuid']}
         return self.process_talker(**args)
 */
-
-
-	public ResultSet getEPCs() {
-	    return this.RequestAPP("get", "epcs", null, null);
-	}
-	
-	public ResultSet getEPCById(String epcid) {
-	    /*
-	     * @params: epc_id
-	     * @method: GET /v1/epcs/<epc_id>/
-	     */
-        return this.RequestAPP("get", "epcs", null, epcid);
-    }
-	
-	public ResultSet deleteEPC(String epcid) {
-	    /*
-         * @params: epc_id
-         * @method: DELETE /v1/epcs/<epc_id>/
-         */
-        return this.RequestAPP("delete", "epcs", null, epcid);
-	}
-	
-	public ResultSet getEPCByName(String name) {
-	    /*
-         * @params: name
-         * @method: 
-         */
-	    ResultSet epcs = this.getEPCs();
-	    return filterRecordsByKey(epcs, "NAME", name);
-	}
-	
-	public int getEPCIdByName(String name) {
-        /*
-         * @params: name
-         * @method: 
-         */
-        ResultSet epcs = getEPCByName(name);
-        return getIntRecordsByKey(epcs, "ID");
-    }
-	
-	public ResultSet CreateEPCIfNotExist(String name) {
-	    /*
-         * @params: name
-         * @method: 
-         */
-	    ResultSet epcs = getEPCByName(name);
-	    if (epcs.content()==null) {
-	        return this.createEPC(name);
-	    } else {
-	        return epcs;
-	    }
-	}
-	
-	public ResultSet DeleteEPCIfNotExist(String name) {
-        /*
-         * @params: name
-         * @method: 
-         */
-        ResultSet epcs = getEPCByName(name);
-        if (epcs.content()!=null) {
-            int epcid = getIntRecordsByKey(epcs, "ID");
-            return this.deleteEPC(String.valueOf(epcid));
-        } else {
-            return simpleResponse("not exist");
-        }
-    }
-	
-	public static void main(String[] args) throws ClientProtocolException, IOException {
-	    VGWRequest rc = new VGWRequest("10.33.37.28", "19c206ba-9d4e-44ce-8bae-0b8a5857a798", 2);
-	    System.out.println(rc.DeleteEPCIfNotExist("ddd"));
-	    //System.out.println(rc.getEPCByName("ddw"));
-    }
-	
 }

@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 import com.yunshan.cloudbuilder.RESTClient;
 import com.yunshan.cloudbuilder.ResultSet;
 import com.yunshan.cloudbuilder.Utils;
@@ -23,10 +22,21 @@ public class OrderRequest extends RESTClient {
     private static final int LB_VCPU_NUM = 2;
     private static final int LB_MEM_SIZE = 2048;
     
+    private List<Map<String, Object>> vm_info = new ArrayList<Map<String, Object>>();
+    private List<Map<String, Object>> lb_info = new ArrayList<Map<String, Object>>();
+    private List<Map<String, Object>> vgateway_info = new ArrayList<Map<String, Object>>();
+    private List<Map<String, Object>> valve_info = new ArrayList<Map<String, Object>>();
+    private List<Map<String, Object>> ip_info = new ArrayList<Map<String, Object>>();
+    private List<Map<String, Object>> bandw_info = new ArrayList<Map<String, Object>>();
+    private VGWRequest vgwRequest = null;
+    private ValveRequest valveRequest = null;
+    
 	public OrderRequest(String host, String domain, int userid) {
 		super(host);
 		this.userid = userid;
 		this.domain = domain;
+		vgwRequest = new VGWRequest(host, domain, userid);
+        valveRequest = new ValveRequest(host, domain, userid);
 	}
 	
 	private String generateVmData(List<Map<String, Object>> vm_info) {
@@ -162,12 +172,7 @@ public class OrderRequest extends RESTClient {
         return  "[" + String.join(",", list) + "]";
     }
 
-	public ResultSet customOrder(List<Map<String, Object>> vm_info, 
-	        List<Map<String, Object>> lb_info,
-	        List<Map<String, Object>> vgateway_info,
-	        List<Map<String, Object>> valve_info,
-	        List<Map<String, Object>> ip_info,
-	        List<Map<String, Object>> bandw_info) {
+	public ResultSet execute() {
 		/*
 		 * @params: id, userid, domain_lcuuid
 		 * @method: POST /v1/orders/
@@ -195,15 +200,13 @@ public class OrderRequest extends RESTClient {
 	    params.put("domain_lcuuid", this.domain);
 	    params.put("id", 10000);
 	    String ret = Utils.freemarkerProcess(params, freemarkerTemplate);
-	    s_logger.error(ret);
 	    return this.RequestAPP("post", "orders", ret, null);
 	}
 	
-	public ResultSet orderVM(String name, String product_spec, String os_template) {
+	public OrderRequest orderVM(String name, String product_spec, String os_template) {
 	    /*
 	     * @params: name, product_spec, template
 	     */
-	    List<Map<String, Object>> vm_info = new ArrayList<Map<String, Object>>();
 	    Map<String, Object> map = new HashMap<String, Object>();
 	    map.put("name", name);
 	    map.put("product_spec", product_spec);
@@ -214,14 +217,13 @@ public class OrderRequest extends RESTClient {
         map.put("SYS_DISK_SIZE", SYS_DISK_SIZE);
         map.put("USER_DISK_SIZE", USER_DISK_SIZE);
 	    vm_info.add(map);
-	    return this.customOrder(vm_info, null, null, null, null, null);
+	    return this;
 	}
 	
-	public ResultSet orderLB(String name, String product_spec) {
+	public OrderRequest orderLB(String name, String product_spec) {
         /*
          * @params: name, product_spec
          */
-        List<Map<String, Object>> lb_info = new ArrayList<Map<String, Object>>();
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("name", name);
         map.put("product_spec", product_spec);
@@ -231,61 +233,63 @@ public class OrderRequest extends RESTClient {
         map.put("SYS_DISK_SIZE", SYS_DISK_SIZE);
         map.put("USER_DISK_SIZE", USER_DISK_SIZE);
         lb_info.add(map);
-        return this.customOrder(null, lb_info, null, null, null, null);
+        return this;
     }
 
-	public ResultSet orderVGW(String name, String product_spec) {
+	public OrderRequest orderVGW(String name, String product_spec) {
         /*
          * @params: name, product_spec
          */
-        List<Map<String, Object>> vgateway_info = new ArrayList<Map<String, Object>>();
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put("name", name);
-        map.put("product_spec", product_spec);
-        map.put("domain_lcuuid", this.domain);
-        vgateway_info.add(map);
-        return this.customOrder(null, null, vgateway_info, null, null, null);
+	    Map<String, Object> map = new HashMap<String, Object>();
+	    ResultSet resultSet = vgwRequest.getVgatewayByName(name);
+	    if (resultSet.content()==null) {
+	        map.put("name", name);
+	        map.put("product_spec", product_spec);
+	        map.put("domain_lcuuid", this.domain);
+	        vgateway_info.add(map);
+	    } 
+	    return this;
     }
 
-	public ResultSet orderValve(String name, String product_spec) {
+	public OrderRequest orderValve(String name, String product_spec) {
         /*
          * @params: name, product_spec
          */
-        List<Map<String, Object>> valve_info = new ArrayList<Map<String, Object>>();
         Map<String, Object> map = new HashMap<String, Object>();
-        map.put("name", name);
-        map.put("product_spec", product_spec);
-        map.put("domain_lcuuid", this.domain);
-        valve_info.add(map);
-        return this.customOrder(null, null, null, valve_info, null, null);
+        ResultSet resultSet = valveRequest.getValveByName(name);
+        if (resultSet.content()==null) {
+            map.put("name", name);
+            map.put("product_spec", product_spec);
+            map.put("domain_lcuuid", this.domain);
+            valve_info.add(map);
+        }
+        return this;
     }
     
-	public ResultSet orderIP(int isp, int number, String product_spec) {
+	public OrderRequest orderIP(int isp, int number, String product_spec) {
         /*
          * @params: isp, number, product_spec
          */
-        List<Map<String, Object>> ip_info = new ArrayList<Map<String, Object>>();
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("isp", isp);
         map.put("number", number);
         map.put("product_spec", product_spec);
         map.put("domain_lcuuid", this.domain);
         ip_info.add(map);
-        return this.customOrder(null, null, null, null, ip_info, null);
+        return this;
     }
 	
-	public ResultSet orderBW(int isp, int bandw, String product_spec) {
+	public OrderRequest orderBW(int isp, int bandw, String product_spec) {
         /*
          * @params: isp, bandw, product_spec
          */
-        List<Map<String, Object>> bandw_info = new ArrayList<Map<String, Object>>();
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("isp", isp);
         map.put("bandw", bandw);
         map.put("product_spec", product_spec);
         map.put("domain_lcuuid", this.domain);
         bandw_info.add(map);
-        return this.customOrder(null, null, null, null, null, bandw_info);
+        return this;
     }
 	
 }
