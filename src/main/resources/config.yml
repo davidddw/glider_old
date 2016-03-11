@@ -1,0 +1,193 @@
+---
+  host: 10.33.37.26                                       # oss ip address
+  userid: 10000
+  orderid: 10001
+  domain: 49cb0c40-0746-4ee8-8ad0-d5f08c74c534            # oss domain id
+  pool_name: KVMPool                                      # pool name
+  epc_name: autotest
+  info: autotest
+
+  vms:
+  - name: test001
+    info: test001 with IP 10.25.1.1
+    product_spec: df4de4fc-7994-4949-ad68-0efd48f9d111    # vm product spec
+    template: centos6.5                                   # vm template
+    vm_gw: 10.25.1.1
+    vm_ip:
+    - vl2_name: vl2-xxx-1501
+      vl2_net_index: 1
+      if_index: 0
+      address: 10.25.1.10
+
+  - name: test002
+    info: test002 with IP 10.25.1.11
+    product_spec: df4de4fc-7994-4949-ad68-0efd48f9d111    # vm product spec
+    template: centos6.5                                   # vm template
+    vm_gw: 10.25.1.1
+    vm_ip:
+    - vl2_name: vl2-xxx-1501
+      vl2_net_index: 1
+      if_index: 0
+      address: 10.25.1.11
+
+  - name: test003
+    info: test003 with IP 10.25.2.10
+    product_spec: df4de4fc-7994-4949-ad68-0efd48f9d111    # vm product spec
+    template: centos6.5                                   # vm template
+    vm_gw: 10.25.2.1
+    vm_ip:
+    - vl2_name: vl2-xxx-1502
+      vl2_net_index: 1
+      if_index: 0
+      address: 10.25.2.10
+
+  - name: test004
+    info: test004 with IP 10.25.2.11
+    product_spec: df4de4fc-7994-4949-ad68-0efd48f9d111    # vm product spec
+    template: centos6.5                                   # vm template
+    vm_gw: 10.25.2.1
+    vm_ip:
+    - vl2_name: vl2-xxx-1502
+      vl2_net_index: 1
+      if_index: 0
+      address: 10.25.2.11
+
+  - name: test005
+    info: test005 with 192.168.190.192,10.25.2.2
+    product_spec: df4de4fc-7994-4949-ad68-0efd48f9d111    # vm product spec
+    template: centos6.5                                   # vm template
+    vm_gw: 192.168.0.1                                    # wan gateway
+    vm_ip:
+    - vl2_name: vl2-xxx-1502
+      vl2_net_index: 1
+      if_index: 0
+      address: 10.25.2.2
+    - wan_ip: 192.168.190.192                             # wan IP
+      if_index: 1
+      bandwidth: 10485760
+
+  - name: test006
+    info: test006 with 192.168.190.193
+    product_spec: df4de4fc-7994-4949-ad68-0efd48f9d111    # vm product spec
+    template: centos6.5                                   # vm template
+    vm_gw: 192.168.0.1                                    # wan gateway
+    vm_ip:
+    - vl2_name: vl2-valve
+      vl2_net_index: 1
+      if_index: 0
+      address: 192.168.190.193                            # wan IP
+
+  vl2s:
+  - name: vl2-xxx-1501
+    info: vl2-xxx-1501 with 10.25.1.0/24
+    prefix: 10.25.1.0
+    netmask: 24
+
+  - name: vl2-xxx-1502
+    info: vl2-xxx-1502 with 10.25.2.0/24
+    prefix: 10.25.2.0
+    netmask: 24
+
+  - name: vl2-valve
+    info: vl2-valve with 192.168.0.0/16
+    prefix: 192.168.0.0                                   # wan netmask
+    netmask: 16
+
+  vgateways:
+  - name: vgateway-1501
+    info: vgateway-1501 with 192.168.190.191
+    product_spec: ff767ffb-1993-4941-8925-de3650ca492e    # vgw product spec
+    wan:
+    - if_index: 1
+      state: 1
+      ip: 192.168.190.191                                 # wan IP
+      bandwidth: 10485760
+    lan:
+    - if_index: 10
+      state: 1
+      vl2_name: vl2-xxx-1501
+      vl2_lcuuid:
+      address: 10.25.1.1
+
+    rules:
+      snat_rules:
+      - sip1: 10.25.1.1
+        info: snat with 192.168.190.191
+        sip2: 10.25.1.255
+        dip: 192.168.190.191                              # wan IP
+
+      dnat_rules:
+      - sip: 192.168.190.191                              # wan IP
+        info: dnat with 192.168.190.191 to 10.25.1.11
+        sport: 60022
+        dip: 10.25.1.11
+        dport: 22
+
+  lbs:
+  - name: lb003
+    info: lb003 with 192.168.190.190
+    lb_gw: 192.168.0.1
+    product_spec: cdd9895e-86c6-4e25-ba02-1695dcca4de6    # lb product spec
+    lb_ip:
+    - wan_ip: 192.168.190.190                             # wan IP
+      info: config 192.168.190.190
+      if_index: 0
+      bandwidth: 10485760
+
+    - vl2_name: vl2-xxx-1502
+      info: config 10.25.2.1
+      vl2_net_index: 1
+      address: 10.25.2.1
+      if_index: 1
+
+    lb_listener:
+    - name: lb-listener-001
+      info: config lb-listener-001
+      protocol: http
+      port: 80
+      balance: roundrobin
+      vms:
+      - name: test003
+        port: 80
+        weight: 1
+        state: ENABLE
+
+      - name: test004
+        port: 80
+        weight: 1
+        state: ENABLE
+
+  valves:
+  - name: valve-1501
+    info: valve-1501
+    general_bandwidth: 0
+    product_spec: 81a60ad8-94de-4891-b6bb-ce79ada522b6    # valves product spec
+    wan:
+    - if_index: 1
+      ip: 192.168.190.193                                 # valves ip
+    lan:
+    - if_index: 10
+      vl2_name: vl2-valve
+      vl2_lcuuid:
+
+  ips:
+  - isp: 1
+    info: buy 35 address for ISP 1
+    number: 35
+    product_spec: cc2482f3-2b8f-4210-a6fd-7d0a7490e7e4    # isp product spec
+
+  - isp: 2
+    info: buy 35 address for ISP 2
+    number: 35
+    product_spec: cc2482f3-2b8f-4210-a6fd-7d0a7490e7e5    # isp product spec
+
+  bandws:
+  - isp: 1
+    info: buy 100M for ISP 1
+    bandw: 100
+    product_spec: ed77f5ae-f5d9-4149-ba47-b7e4ece075d8    # band product spec
+  - isp: 2
+    info: buy 100M for ISP 1
+    bandw: 100
+    product_spec: ed77f5ae-f5d9-4149-ba47-b7e4ece075d9    # band product spec
+...
