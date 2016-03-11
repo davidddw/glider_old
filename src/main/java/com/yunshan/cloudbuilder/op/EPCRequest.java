@@ -24,7 +24,7 @@ public class EPCRequest extends RESTClient {
 		 * @method: POST /v1/epcs/
 		 * 
 		 */
-	    String epcTmpl = "{"
+	    String freemarkerTemplate = "{"
 	            + "\"userid\": ${userid},"
 	            + "\"name\": \"${name}\","
 	            + "\"domain\": \"${domain}\""
@@ -33,7 +33,7 @@ public class EPCRequest extends RESTClient {
 	    params.put("name", name);
 	    params.put("userid", this.userid);
 	    params.put("domain", this.domain);
-	    String ret = Utils.freemarkerProcess(params, epcTmpl);
+	    String ret = Utils.freemarkerProcess(params, freemarkerTemplate);
 	    return this.RequestAPP("post", "epcs", ret, null);
 	}
 	
@@ -42,14 +42,14 @@ public class EPCRequest extends RESTClient {
 	     * @params: name, epcid
 	     * @method: PATCH /v1/epcs/<epcid>
 	     */
-	    String epcTmpl = "{"
+	    String freemarkerTemplate = "{"
 	            + "\"userid\": ${userid},"
 	            + "\"name\": \"${name}\""
 	            + "}";
 	    Map<String, Object> params = new HashMap<String, Object>();
         params.put("name", name);
         params.put("userid", this.userid);
-        String ret = Utils.freemarkerProcess(params, epcTmpl);
+        String ret = Utils.freemarkerProcess(params, freemarkerTemplate);
         return this.RequestAPP("patch", "epcs", ret, String.valueOf(epcid));
 	}
 	

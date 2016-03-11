@@ -8,52 +8,43 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-import com.yunshan.cloudbuilder.op.EPCRequest;
-
 public class Client {
     
-    public static void parseCommand() {
+    public static void parseCommand(String[] args) {
         CommandLineParser parser = new DefaultParser();
         // create the Options
         Options options = new Options();
-        options.addOption("a", "all", false, "do not hide entries starting with ." );
-        options.addOption("A", "almost-all", false, "do not list implied . and .." );
-        options.addOption("b", "escape", false, "print octal escapes for nongraphic characters" );
-        options.addOption(Option.builder().longOpt("blocksize")
-                .required(true).desc("use SIZE-byte blocks").hasArg().argName("SIZE").build());
-        options.addOption( "B", "ignore-backups", false, "do not list implied entried "
-                                                         + "ending with ~");
-        options.addOption( "c", false, "with -lt: sort by, and show, ctime (time of last " 
-                                       + "modification of file status information) with "
-                                       + "-l:show ctime and sort by name otherwise: sort "
-                                       + "by ctime" );
-        options.addOption( "C", false, "list entries by columns" );
+        options.addOption(Option.builder("a").longOpt("autocreate")
+                .required(false).desc("auto create env from yaml config.")
+                .hasArg(true).argName("autocreate").build());
 
-        String[] args1 = new String[]{ "--blocksize=10" };
+        options.addOption(Option.builder("h").longOpt("help")
+                .required(false).desc("help for glider.")
+                .hasArg(true).argName("help").build());
         
-        HelpFormatter formatter = new HelpFormatter();
-        formatter.printHelp( "ant", options );
-
+        args = new String[]{ "--autocreate=d:/autotest.yml" };
         try {
             // parse the command line arguments
-            CommandLine line = parser.parse( options, args1 );
+            CommandLine line = parser.parse(options, args);
 
             // validate that block-size has been set
-            if( line.hasOption( "blocksize" ) ) {
-                // print the value of block-size
-                System.out.println( line.getOptionValue( "blocksize" ) );
+            HelpFormatter formatter = new HelpFormatter();
+            if (line.hasOption("help")) {
+                formatter.printHelp("glider", options);
+            } else if(line.hasOption("autocreate")) {
+                String filename = line.getOptionValue("autocreate");
+                new EnvBuilder(filename).build();
+            } else {
+                formatter.printHelp("glider", options);
             }
         }
-        catch( ParseException exp ) {
-            System.out.println( "Unexpected exception:" + exp.getMessage() );
+        catch(ParseException exp) {
+            System.out.println("Unexpected exception:" + exp.getMessage());
         }
-           //EPCRequest rc = new EPCRequest("10.33.37.28", "19c206ba-9d4e-44ce-8bae-0b8a5857a798", 2);
-           //System.out.println(rc.getEPCs());
-       }
-
-    
+    }
+        
     public static void main(String[] args) throws ParseException {
-        parseCommand();
+        parseCommand(args);
     }
         
 }

@@ -11,7 +11,8 @@ import java.util.Map;
 
 import org.apache.commons.cli.ParseException;
 import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.Constructor;
+
+import com.yunshan.config.Configuration;
 
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -32,22 +33,14 @@ public class Utils {
         return null;
     }
     
-    protected static <T> T loadFromFile(String fileName, Class<T> clazz) throws IOException 
-    { 
-        Yaml yaml = new Yaml(new Constructor(clazz)); 
-        InputStream input = new FileInputStream(new File(fileName)); 
-        T config = (T) yaml.load(input); 
-        return config; 
-    } 
-    
     public static void readYamlFromFile(String filename) throws FileNotFoundException {
         Yaml yaml = new Yaml();
         InputStream stream = new FileInputStream(new File(filename));
-        Map<String, Object> map = (Map<String, Object>) yaml.load(stream);
-        System.out.println(map.get("host"));
+        Configuration config = yaml.loadAs(stream, Configuration.class);
+        System.out.println(config.getDomain());
     }
     
     public static void main(String[] args) throws ParseException, FileNotFoundException {
-        readYamlFromFile("d:\\config.yml");
+        readYamlFromFile("d:\\autotest.yml");
     }
 }

@@ -1,6 +1,6 @@
 ---
-  host: 10.33.37.26                                       # oss ip address
-  userid: 10000
+  host: 10.33.37.28                                       # oss ip address
+  userid: 2
   orderid: 10001
   domain: 49cb0c40-0746-4ee8-8ad0-d5f08c74c534            # oss domain id
   pool_name: KVMPool                                      # pool name

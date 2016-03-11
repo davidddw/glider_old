@@ -1,12 +1,9 @@
 package com.yunshan.cloudbuilder.op;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.http.client.ClientProtocolException;
 
 import com.yunshan.cloudbuilder.RESTClient;
 import com.yunshan.cloudbuilder.ResultSet;
@@ -28,7 +25,7 @@ public class VL2Request extends RESTClient {
 		 * @params: name, epc_id, prefix, netmask
 		 * @method: POST /v1/vl2s/
 		 */
-	    String vl2Tmpl = "{"
+	    String freemarkerTemplate = "{"
 	            + "\"name\": \"${name}\","
 	            + "\"vlantag\": 0,"
 	            + "\"epc_id\": ${epc_id?c},"
@@ -44,7 +41,7 @@ public class VL2Request extends RESTClient {
 	    params.put("netmask", netmask);
 	    params.put("userid", this.userid);
 	    params.put("domain", this.domain);
-	    String ret = Utils.freemarkerProcess(params, vl2Tmpl);
+	    String ret = Utils.freemarkerProcess(params, freemarkerTemplate);
 	    return this.RequestAPP("post", "vl2s", ret, null);
 	}
 	
@@ -61,22 +58,22 @@ public class VL2Request extends RESTClient {
          * @params: vl2id, netList
          * @method: PATCH /v1/vl2s/<vl2_id>/
          */
-	    String netTmpl = "{"
+	    String freemarkerTemplate = "{"
 	            + "\"prefix\": \"${prefix}\","
 	            + "\"netmask\": ${netmask}"
 	            + "}";
 	    List<String> interf = new ArrayList<String>();
 	    
 	    for(Map<String, Object> map : netList) {
-	        interf.add(Utils.freemarkerProcess(map, netTmpl));
+	        interf.add(Utils.freemarkerProcess(map, freemarkerTemplate));
         }
-	    String finalTmpl = "{"
+	    String finalFreemarkerTemplate = "{"
                 + "\"nets\": ${net_data}"
                 + "}";
         String net_data = "[" + String.join(",", interf) + "]";
         Map<String, Object> patchData = new HashMap<String, Object>();
         patchData.put("net_data", net_data);
-        String finalret = Utils.freemarkerProcess(patchData, finalTmpl);
+        String finalret = Utils.freemarkerProcess(patchData, finalFreemarkerTemplate);
         return this.RequestAPP("patch", "vl2s", finalret, String.valueOf(vl2Id));
     }
     
@@ -164,10 +161,4 @@ public class VL2Request extends RESTClient {
         }
     }
 
-	public static void main(String[] args) throws ClientProtocolException, IOException {
-	    VL2Request rc = new VL2Request("10.33.37.28", "19c206ba-9d4e-44ce-8bae-0b8a5857a798", 2);
-	    System.out.println(rc.DeleteVL2IfExist("test1"));
-	    //System.out.println(rc.getEPCByName("ddw"));
-    }
-	
 }

@@ -34,7 +34,7 @@ public class OrderRequest extends RESTClient {
 	     * @params: name, product_spec, os_template, domain_lcuuid
 	     */
 	    List<String> list = new ArrayList<String>();
-	    String vmTmpl = "{"
+	    String freemarkerTemplate = "{"
 	        + "\"NAME\": \"${name}\","
 	        + "\"PASSWD\": \"yunshan3302\","
 	        + "\"PRODUCT_SPECIFICATION_LCUUID\": \"${product_spec}\","
@@ -49,7 +49,7 @@ public class OrderRequest extends RESTClient {
 	    if (vm_info==null)
             return list.toString();
         for (Map<String, Object> map : vm_info) {
-            String ret = Utils.freemarkerProcess(map, vmTmpl);
+            String ret = Utils.freemarkerProcess(map, freemarkerTemplate);
             list.add(ret);
         }
         return  "[" + String.join(",", list) + "]";
@@ -60,7 +60,7 @@ public class OrderRequest extends RESTClient {
          * @params: name, product_spec, domain_lcuuid
          */
         List<String> list = new ArrayList<String>();
-        String vmTmpl = "{"
+        String freemarkerTemplate = "{"
             + "\"NAME\": \"${name}\","
             + "\"PASSWD\": \"yunshan3302\","
             + "\"PRODUCT_SPECIFICATION_LCUUID\": \"${product_spec}\","
@@ -75,7 +75,7 @@ public class OrderRequest extends RESTClient {
         if (lb_info==null)
             return list.toString();
         for (Map<String, Object> map : lb_info) {
-            String ret = Utils.freemarkerProcess(map, vmTmpl);
+            String ret = Utils.freemarkerProcess(map, freemarkerTemplate);
             list.add(ret);
         }
         return  "[" + String.join(",", list) + "]";
@@ -86,7 +86,7 @@ public class OrderRequest extends RESTClient {
          * @params: name, product_spec, domain_lcuuid
          */
         List<String> list = new ArrayList<String>();
-        String vmTmpl = "{"
+        String freemarkerTemplate = "{"
             + "\"NAME\": \"${name}\","
             + "\"PRODUCT_SPECIFICATION_LCUUID\": \"${product_spec}\","
             + "\"DOMAIN\":\"${domain_lcuuid}\""
@@ -95,7 +95,7 @@ public class OrderRequest extends RESTClient {
         if (vgateway_info==null)
             return list.toString();
         for (Map<String, Object> map : vgateway_info) {
-            String ret = Utils.freemarkerProcess(map, vmTmpl);
+            String ret = Utils.freemarkerProcess(map, freemarkerTemplate);
             list.add(ret);
         }
         return  "[" + String.join(",", list) + "]";
@@ -106,7 +106,7 @@ public class OrderRequest extends RESTClient {
          * @params: name, product_spec, domain_lcuuid
          */
         List<String> list = new ArrayList<String>();
-        String vmTmpl = "{"
+        String freemarkerTemplate = "{"
             + "\"NAME\": \"${name}\","
             + "\"PRODUCT_SPECIFICATION_LCUUID\": \"${product_spec}\","
             + "\"DOMAIN\":\"${domain_lcuuid}\""
@@ -115,7 +115,7 @@ public class OrderRequest extends RESTClient {
         if (valve_info==null)
             return list.toString();
         for (Map<String, Object> map : valve_info) {
-            String ret = Utils.freemarkerProcess(map, vmTmpl);
+            String ret = Utils.freemarkerProcess(map, freemarkerTemplate);
             list.add(ret);
         }
         return  "[" + String.join(",", list) + "]";
@@ -123,10 +123,10 @@ public class OrderRequest extends RESTClient {
 	
 	private String generateIPData(List<Map<String, Object>> ip_info) {
         /*
-         * @params: isp, number, product_spec, os_template, domain_lcuuid
+         * @params: isp, number, product_spec
          */
         List<String> list = new ArrayList<String>();
-        String vmTmpl = "{"
+        String freemarkerTemplate = "{"
             + "\"ISP\": ${isp},"
             + "\"IP_NUM\": ${number},"
             + "\"PRODUCT_SPECIFICATION_LCUUID\": \"${product_spec}\","
@@ -136,7 +136,7 @@ public class OrderRequest extends RESTClient {
         if (ip_info==null)
             return list.toString();
         for (Map<String, Object> map : ip_info) {
-            String ret = Utils.freemarkerProcess(map, vmTmpl);
+            String ret = Utils.freemarkerProcess(map, freemarkerTemplate);
             list.add(ret);
         }
         return  "[" + String.join(",", list) + "]";
@@ -147,7 +147,7 @@ public class OrderRequest extends RESTClient {
          * @params: isp, bandw, product_spec, domain_lcuuid
          */
         List<String> list = new ArrayList<String>();
-        String vmTmpl = "{"
+        String freemarkerTemplate = "{"
             + "\"ISP\": ${isp},"
             + "\"BANDWIDTH\": ${bandw},"
             + "\"PRODUCT_SPECIFICATION_LCUUID\": \"${product_spec}\","
@@ -156,7 +156,7 @@ public class OrderRequest extends RESTClient {
         if (bandw_info==null)
             return list.toString();
         for (Map<String, Object> map : bandw_info) {
-            String ret = Utils.freemarkerProcess(map, vmTmpl);
+            String ret = Utils.freemarkerProcess(map, freemarkerTemplate);
             list.add(ret);
         }
         return  "[" + String.join(",", list) + "]";
@@ -173,7 +173,7 @@ public class OrderRequest extends RESTClient {
 		 * @method: POST /v1/orders/
 		 * 
 		 */
-	    String orderTmpl = "{"
+	    String freemarkerTemplate = "{"
 	            + "\"ORDER_ID\": ${id?c},"
 	            + "\"USERID\": ${userid?c},"
 	            + "\"DOMAIN\": \"${domain_lcuuid}\","
@@ -194,7 +194,7 @@ public class OrderRequest extends RESTClient {
 	    params.put("userid", this.userid);
 	    params.put("domain_lcuuid", this.domain);
 	    params.put("id", 10000);
-	    String ret = Utils.freemarkerProcess(params, orderTmpl);
+	    String ret = Utils.freemarkerProcess(params, freemarkerTemplate);
 	    s_logger.error(ret);
 	    return this.RequestAPP("post", "orders", ret, null);
 	}
@@ -260,7 +260,7 @@ public class OrderRequest extends RESTClient {
         return this.customOrder(null, null, null, valve_info, null, null);
     }
     
-	public ResultSet orderIP(String isp, String number, String product_spec) {
+	public ResultSet orderIP(int isp, int number, String product_spec) {
         /*
          * @params: isp, number, product_spec
          */
@@ -274,7 +274,7 @@ public class OrderRequest extends RESTClient {
         return this.customOrder(null, null, null, null, ip_info, null);
     }
 	
-	public ResultSet orderBW(String isp, String bandw, String product_spec) {
+	public ResultSet orderBW(int isp, int bandw, String product_spec) {
         /*
          * @params: isp, bandw, product_spec
          */
@@ -286,12 +286,6 @@ public class OrderRequest extends RESTClient {
         map.put("domain_lcuuid", this.domain);
         bandw_info.add(map);
         return this.customOrder(null, null, null, null, null, bandw_info);
-    }
-    
-	public static void main(String[] args) {
-	    OrderRequest rc = new OrderRequest("10.33.37.28", "19c206ba-9d4e-44ce-8bae-0b8a5857a798", 2);
-	    System.out.println(rc.orderVM("dd2", "2c02e128-1881-4fd8-90e5-e106c81c25b1", "centos6.5"));
-	    //System.out.println(rc.getEPCByName("ddw"));
     }
 	
 }

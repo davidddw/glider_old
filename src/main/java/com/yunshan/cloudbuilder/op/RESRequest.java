@@ -1,9 +1,5 @@
 package com.yunshan.cloudbuilder.op;
 
-import java.io.IOException;
-
-import org.apache.http.client.ClientProtocolException;
-
 import com.yunshan.cloudbuilder.RESTClient;
 import com.yunshan.cloudbuilder.ResultSet;
 
@@ -51,12 +47,6 @@ public class RESRequest extends RESTClient {
          */
         ResultSet rs = this.getValidIp(name);
         return getStringRecordsByKey(rs, "LCUUID");
-    }
-
-	public static void main(String[] args) throws ClientProtocolException, IOException {
-	    RESRequest rc = new RESRequest("10.33.37.28");
-	    System.out.println(rc.getPoolLcuuidByName("KVMPool"));
-	    //System.out.println(rc.getEPCByName("ddw"));
     }
 	
 }

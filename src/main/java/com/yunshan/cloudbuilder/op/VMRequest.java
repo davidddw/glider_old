@@ -16,6 +16,8 @@ public class VMRequest extends RESTClient {
     private int userid;
     private String pool_lcuuid;
     
+    private EPCRequest epcRequest = null;
+    
     private static final int BANDWIDTH = 10485760;
 
     public VMRequest(String host, String poolName, String domain, int userid) {
@@ -23,6 +25,7 @@ public class VMRequest extends RESTClient {
         this.domain=domain;
         this.userid=userid;
         RESRequest rs = new RESRequest(host);
+        epcRequest = new EPCRequest(host, domain, userid);
         this.pool_lcuuid = rs.getPoolLcuuidByName(poolName);
     }
 
@@ -36,7 +39,7 @@ public class VMRequest extends RESTClient {
          * @method: POST /v1/vms/
          * 
          */
-        String vmTmpl = "{" 
+        String freemarkerTemplate = "{" 
                 + "\"allocation_type\": \"manual\"," 
                 + "\"userid\": ${userid},"
                 + "\"domain\": \"${domain}\"," 
@@ -66,7 +69,7 @@ public class VMRequest extends RESTClient {
         params.put("pool_lcuuid", (pool_lcuuid != null) ? pool_lcuuid : this.pool_lcuuid);
         params.put("userid", this.userid);
         params.put("domain", this.domain);
-        String ret = Utils.freemarkerProcess(params, vmTmpl);
+        String ret = Utils.freemarkerProcess(params, freemarkerTemplate);
         return this.RequestAPP("post", "vms", ret, null);
     }
 
@@ -85,12 +88,12 @@ public class VMRequest extends RESTClient {
          * 
          * @method: PATCH /v1/vms/
          */
-        String vmTmpl = "{" 
+        String freemarkerTemplate = "{" 
                 + "\"action\": \"${action}\"" 
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("action", "stop");
-        String ret = Utils.freemarkerProcess(params, vmTmpl);
+        String ret = Utils.freemarkerProcess(params, freemarkerTemplate);
         return this.RequestAPP("patch", "vms", ret, String.valueOf(vmid));
     }
 
@@ -100,12 +103,12 @@ public class VMRequest extends RESTClient {
          * 
          * @method: PATCH /v1/vms/
          */
-        String vmTmpl = "{" 
+        String freemarkerTemplate = "{" 
                 + "\"action\": \"${action}\"" 
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("action", "start");
-        String ret = Utils.freemarkerProcess(params, vmTmpl);
+        String ret = Utils.freemarkerProcess(params, freemarkerTemplate);
         return this.RequestAPP("patch", "vms", ret, String.valueOf(vmid));
     }
 
@@ -115,12 +118,12 @@ public class VMRequest extends RESTClient {
          * 
          * @method: PATCH /v1/vms/
          */
-        String vmTmpl = "{" 
+        String freemarkerTemplate = "{" 
                 + "\"action\": \"${action}\"" 
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("action", "isolate");
-        String ret = Utils.freemarkerProcess(params, vmTmpl);
+        String ret = Utils.freemarkerProcess(params, freemarkerTemplate);
         return this.RequestAPP("patch", "vms", ret, String.valueOf(vmid));
     }
 
@@ -130,12 +133,12 @@ public class VMRequest extends RESTClient {
          * 
          * @method: PATCH /v1/vms/
          */
-        String vmTmpl = "{" 
+        String freemarkerTemplate = "{" 
                 + "\"action\": \"${action}\"" 
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("action", "reconnect");
-        String ret = Utils.freemarkerProcess(params, vmTmpl);
+        String ret = Utils.freemarkerProcess(params, freemarkerTemplate);
         return this.RequestAPP("patch", "vms", ret, String.valueOf(vmid));
     }
 
@@ -145,12 +148,12 @@ public class VMRequest extends RESTClient {
          * 
          * @method: PATCH /v1/vms/
          */
-        String vmTmpl = "{" 
+        String freemarkerTemplate = "{" 
                 + "\"action\": \"${action}\"" 
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("action", "snapshot");
-        String ret = Utils.freemarkerProcess(params, vmTmpl);
+        String ret = Utils.freemarkerProcess(params, freemarkerTemplate);
         return this.RequestAPP("patch", "vms", ret, String.valueOf(vmid));
     }
 
@@ -160,12 +163,12 @@ public class VMRequest extends RESTClient {
          * 
          * @method: PATCH /v1/vms/
          */
-        String vmTmpl = "{" 
+        String freemarkerTemplate = "{" 
                 + "\"action\": \"${action}\"" 
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("action", "recoversnapshot");
-        String ret = Utils.freemarkerProcess(params, vmTmpl);
+        String ret = Utils.freemarkerProcess(params, freemarkerTemplate);
         return this.RequestAPP("patch", "vms", ret, String.valueOf(vmid));
     }
 
@@ -175,12 +178,12 @@ public class VMRequest extends RESTClient {
          * 
          * @method: PATCH /v1/vms/
          */
-        String vmTmpl = "{" 
+        String freemarkerTemplate = "{" 
                 + "\"action\": \"${action}\"" 
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("action", "delsnapshot");
-        String ret = Utils.freemarkerProcess(params, vmTmpl);
+        String ret = Utils.freemarkerProcess(params, freemarkerTemplate);
         return this.RequestAPP("patch", "vms", ret, String.valueOf(vmid));
     }
 
@@ -191,7 +194,7 @@ public class VMRequest extends RESTClient {
          * 
          * @method: PATCH /v1/vms/
          */
-        String vmTmpl = "{" 
+        String freemarkerTemplate = "{" 
                 + "\"action\": \"modify\"," 
                 + "\"name\": \"${name}\","
                 + "\"vcpu_num\": \"${vcpu_num?c}\"," 
@@ -205,7 +208,7 @@ public class VMRequest extends RESTClient {
         params.put("vcpu_num", vcpu_num);
         params.put("mem_size", mem_size);
         params.put("product_spec", product_spec);
-        String ret = Utils.freemarkerProcess(params, vmTmpl);
+        String ret = Utils.freemarkerProcess(params, freemarkerTemplate);
         return this.RequestAPP("patch", "vms", ret, String.valueOf(vmid));
     }
     
@@ -233,14 +236,14 @@ public class VMRequest extends RESTClient {
          * @params: vmid, epc_id
          * @method: PATCH /v1/vms/<fdb_vmid>
          */
-        String vmTmpl = "{" 
+        String freemarkerTemplate = "{" 
                 + "\"action\": \"setepc\"," 
                 + "\"epc_id\": ${epc_id?c}"
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("epc_id", epcId);
         params.put("vmid", vmId);
-        String ret = Utils.freemarkerProcess(params, vmTmpl);
+        String ret = Utils.freemarkerProcess(params, freemarkerTemplate);
         return this.RequestAPP("patch", "vms", ret, String.valueOf(vmId));
     }
   
@@ -249,7 +252,7 @@ public class VMRequest extends RESTClient {
          * @params: vmid, gateway
          * @method: PATCH /v1/vms
          */
-        String vmWanTmpl = "{"
+        String freemarkerTemplate = "{"
                 + "\"action\": \"modifyinterface\","
                 + "\"gateway\": \"${gateway}\","
                 + "\"loopback_ips\": [],"
@@ -258,7 +261,7 @@ public class VMRequest extends RESTClient {
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("gateway", gateway);
-        String ret = Utils.freemarkerProcess(params, vmWanTmpl);
+        String ret = Utils.freemarkerProcess(params, freemarkerTemplate);
         return this.RequestAPP("patch", "vms", ret, String.valueOf(vmId));
     }
     
@@ -268,7 +271,7 @@ public class VMRequest extends RESTClient {
          * @params: vmid, index, state, vl2_lcuuid, vl2_net_index, address
          * @method: PATCH /v1/vms/<fdb_vmid>
          */
-        String vmLanTmpl = "{"
+        String freemarkerTemplate = "{"
                 + "\"state\": ${state},"
                 + "\"if_type\": \"LAN\","
                 + "\"lan\": {"
@@ -282,7 +285,7 @@ public class VMRequest extends RESTClient {
         params.put("vl2_lcuuid", vl2_lcuuid);
         params.put("vl2_net_index", vl2_net_index);
         params.put("address", address);
-        String ret = Utils.freemarkerProcess(params, vmLanTmpl);
+        String ret = Utils.freemarkerProcess(params, freemarkerTemplate);
         String param = vmId + "/interfaces/" + index;
         return this.RequestAPP("put", "vms", ret, param);
     }
@@ -293,7 +296,7 @@ public class VMRequest extends RESTClient {
          * @params: vmid, index, state, ip_resource_lcuuid
          * @method: PATCH /v1/vms/<fdb_vmid>
          */
-        String vmWanTmpl = "{"
+        String freemarkerTemplate = "{"
                 + "\"state\": ${state?c},"
                 + "\"if_type\": \"WAN\","
                 + "\"wan\": {"
@@ -305,7 +308,7 @@ public class VMRequest extends RESTClient {
         params.put("state", state);
         params.put("ip_resource_lcuuid", ip_resource_lcuuid);
         params.put("bandwidth", BANDWIDTH);
-        String ret = Utils.freemarkerProcess(params, vmWanTmpl);
+        String ret = Utils.freemarkerProcess(params, freemarkerTemplate);
         String param = vmId + "/interfaces/" + index;
         return this.RequestAPP("put", "vms", ret, param);
     }
@@ -346,7 +349,7 @@ public class VMRequest extends RESTClient {
                 interf.add(Utils.freemarkerProcess(map, vmLanTmpl));
             }
         }
-        String finalTmpl = "{"
+        String freemarkerTemplate = "{"
                 + "\"action\": \"modifyinterface\","
                 + "\"gateway\": \"${gateway}\","
                 + "\"loopback_ips\": [],"
@@ -356,7 +359,7 @@ public class VMRequest extends RESTClient {
         Map<String, Object> patchData = new HashMap<String, Object>();
         patchData.put("gateway", gateway);
         patchData.put("interfaces", interface_data);
-        String finalret = Utils.freemarkerProcess(patchData, finalTmpl);
+        String finalret = Utils.freemarkerProcess(patchData, freemarkerTemplate);
         return this.RequestAPP("patch", "vms", finalret, String.valueOf(vmid));
     }
     
@@ -365,7 +368,7 @@ public class VMRequest extends RESTClient {
          * @params: vmid, name, product_spec
          * @method: POST /v1/vm_snapshot/<vmuuid>/snapshots
          */
-        String snapTmpl = "{"
+        String freemarkerTemplate = "{"
                 + "\"NAME\": \"${name}\","
                 + "\"DESCRIPTION\": \"${name}\","
                 + "\"PRODUCT_SPECIFICATION_LCUUID\": \"${product_spec}\""
@@ -373,7 +376,7 @@ public class VMRequest extends RESTClient {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("name", name);
         params.put("product_spec", product_spec);
-        String ret = Utils.freemarkerProcess(params, snapTmpl);
+        String ret = Utils.freemarkerProcess(params, freemarkerTemplate);
         String param = vmuuid + "/snapshots";
         return this.RequestAPP("post", "vm_snapshot", ret, param);
     }
@@ -457,12 +460,13 @@ public class VMRequest extends RESTClient {
         return this.RequestAPP("get", "vms", null, String.valueOf(vmid));
     }
     
-    public ResultSet setVMToEPC(String name, int epcId) {
+    public ResultSet setVMToEPC(String name, String epcName) {
         /*
          * @params: name, epc_id
          * 
          */
         int vmId = getVmIdByName(name);
+        int epcId = epcRequest.getEPCIdByName(epcName);
         return this.addVMToEPC(vmId, epcId);
     }
     
