@@ -208,13 +208,13 @@ public class RESTClient {
             } else if (elementField.isJsonObject()) {
                 resultSet.setResultSet(jsonBody.getAsJsonObject("DATA"));
             }
-            s_logger.info("query response: " + resultSet);
         } else {
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("OPT_STATUS",
                     jsonBody.getAsJsonObject().get("OPT_STATUS").getAsString());
             resultSet.setResultSet(jsonObject);
         }
+        s_logger.info("Query response: " + resultSet);
         return resultSet;
     }
 
@@ -223,6 +223,7 @@ public class RESTClient {
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("message", responseBody);
         resultSet.setResultSet(jsonObject);
+        s_logger.info("Query response: " + resultSet);
         return resultSet;
     }
 
@@ -248,8 +249,7 @@ public class RESTClient {
             s_logger.error("Invalid HTTP request type: " + method);
             return null;
         }
-        s_logger.info("query: " + uri);
-        s_logger.info("query method is: " + method);
+        s_logger.debug("query method is: " + method);
 
         if (headers != null) {
             String headerStr = "";
@@ -257,7 +257,7 @@ public class RESTClient {
                 request.setHeader(header.getKey(), header.getValue());
                 headerStr = header.getKey() + ":" + header.getValue() + ",";
             }
-            s_logger.info("header: " + headerStr);
+            s_logger.debug("header: " + headerStr);
         }
 
         if (data != null) {
@@ -271,16 +271,13 @@ public class RESTClient {
                 ((HttpPatch) request).setEntity(new StringEntity(data, "UTF-8"));
             }
         }
-        s_logger.info("query body: " + data);
-
         HttpClient client = acceptsUntrustedCerts();
         RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(CONST_TIME_OUT)
                 .setConnectTimeout(CONST_TIME_OUT).setConnectionRequestTimeout(CONST_TIME_OUT)
                 .build();
-
         request.setConfig(requestConfig);
-
         s_logger.info("Making " + request.getMethod() + " request to: " + uri);
+        s_logger.info("Query body: " + data);
         HttpResponse httpResponse;
         try {
             httpResponse = client.execute(request);

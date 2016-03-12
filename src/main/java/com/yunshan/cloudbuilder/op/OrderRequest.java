@@ -5,11 +5,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import com.yunshan.cloudbuilder.RESTClient;
 import com.yunshan.cloudbuilder.ResultSet;
 import com.yunshan.cloudbuilder.Utils;
 
 public class OrderRequest extends RESTClient {
+    
+    protected static final Logger s_logger = Logger.getLogger(OrderRequest.class);
     
     private int userid;
     private String domain;
@@ -45,21 +49,21 @@ public class OrderRequest extends RESTClient {
 	     */
 	    List<String> list = new ArrayList<String>();
 	    String freemarkerTemplate = "{"
-	        + "\"NAME\": \"${name}\","
+	        + "\"NAME\": \"$name\","
 	        + "\"PASSWD\": \"yunshan3302\","
-	        + "\"PRODUCT_SPECIFICATION_LCUUID\": \"${product_spec}\","
-	        + "\"OS\": \"${os_template}\","
+	        + "\"PRODUCT_SPECIFICATION_LCUUID\": \"$product_spec\","
+	        + "\"OS\": \"$os_template\","
 	        + "\"ROLE\": \"GENERAL_PURPOSE\","
-	        + "\"VCPU_NUM\":${VCPU_NUM?c},"
-	        + "\"MEM_SIZE\":${MEM_SIZE?c},"
-	        + "\"SYS_DISK_SIZE\":${SYS_DISK_SIZE?c},"
-	        + "\"USER_DISK_SIZE\":${USER_DISK_SIZE?c},"
-	        + "\"DOMAIN\":\"${domain_lcuuid}\""
+	        + "\"VCPU_NUM\":$VCPU_NUM,"
+	        + "\"MEM_SIZE\":$MEM_SIZE,"
+	        + "\"SYS_DISK_SIZE\":$SYS_DISK_SIZE,"
+	        + "\"USER_DISK_SIZE\":$USER_DISK_SIZE,"
+	        + "\"DOMAIN\":\"$domain_lcuuid\""
 	        + "}";
 	    if (vm_info==null)
             return list.toString();
         for (Map<String, Object> map : vm_info) {
-            String ret = Utils.freemarkerProcess(map, freemarkerTemplate);
+            String ret = Utils.velocityProcess(map, freemarkerTemplate);
             list.add(ret);
         }
         return  "[" + String.join(",", list) + "]";
@@ -71,21 +75,21 @@ public class OrderRequest extends RESTClient {
          */
         List<String> list = new ArrayList<String>();
         String freemarkerTemplate = "{"
-            + "\"NAME\": \"${name}\","
+            + "\"NAME\": \"$name\","
             + "\"PASSWD\": \"yunshan3302\","
-            + "\"PRODUCT_SPECIFICATION_LCUUID\": \"${product_spec}\","
+            + "\"PRODUCT_SPECIFICATION_LCUUID\": \"$product_spec\","
             + "\"ROLE\" : \"LOAD_BALANCER\","
-            + "\"VCPU_NUM\":${LB_VCPU_NUM?c},"
-            + "\"MEM_SIZE\":${LB_MEM_SIZE?c},"
-            + "\"SYS_DISK_SIZE\":${SYS_DISK_SIZE?c},"
-            + "\"USER_DISK_SIZE\":${USER_DISK_SIZE?c},"
-            + "\"DOMAIN\":\"${domain_lcuuid}\""
+            + "\"VCPU_NUM\":$LB_VCPU_NUM,"
+            + "\"MEM_SIZE\":$LB_MEM_SIZE,"
+            + "\"SYS_DISK_SIZE\":$SYS_DISK_SIZE,"
+            + "\"USER_DISK_SIZE\":$USER_DISK_SIZE,"
+            + "\"DOMAIN\":\"$domain_lcuuid\""
             + "}";
         
         if (lb_info==null)
             return list.toString();
         for (Map<String, Object> map : lb_info) {
-            String ret = Utils.freemarkerProcess(map, freemarkerTemplate);
+            String ret = Utils.velocityProcess(map, freemarkerTemplate);
             list.add(ret);
         }
         return  "[" + String.join(",", list) + "]";
@@ -97,15 +101,15 @@ public class OrderRequest extends RESTClient {
          */
         List<String> list = new ArrayList<String>();
         String freemarkerTemplate = "{"
-            + "\"NAME\": \"${name}\","
-            + "\"PRODUCT_SPECIFICATION_LCUUID\": \"${product_spec}\","
-            + "\"DOMAIN\":\"${domain_lcuuid}\""
+            + "\"NAME\": \"$name\","
+            + "\"PRODUCT_SPECIFICATION_LCUUID\": \"$product_spec\","
+            + "\"DOMAIN\":\"$domain_lcuuid\""
             + "}";
         
         if (vgateway_info==null)
             return list.toString();
         for (Map<String, Object> map : vgateway_info) {
-            String ret = Utils.freemarkerProcess(map, freemarkerTemplate);
+            String ret = Utils.velocityProcess(map, freemarkerTemplate);
             list.add(ret);
         }
         return  "[" + String.join(",", list) + "]";
@@ -117,15 +121,15 @@ public class OrderRequest extends RESTClient {
          */
         List<String> list = new ArrayList<String>();
         String freemarkerTemplate = "{"
-            + "\"NAME\": \"${name}\","
-            + "\"PRODUCT_SPECIFICATION_LCUUID\": \"${product_spec}\","
-            + "\"DOMAIN\":\"${domain_lcuuid}\""
+            + "\"NAME\": \"$name\","
+            + "\"PRODUCT_SPECIFICATION_LCUUID\": \"$product_spec\","
+            + "\"DOMAIN\":\"$domain_lcuuid\""
             + "}";
         
         if (valve_info==null)
             return list.toString();
         for (Map<String, Object> map : valve_info) {
-            String ret = Utils.freemarkerProcess(map, freemarkerTemplate);
+            String ret = Utils.velocityProcess(map, freemarkerTemplate);
             list.add(ret);
         }
         return  "[" + String.join(",", list) + "]";
@@ -137,16 +141,16 @@ public class OrderRequest extends RESTClient {
          */
         List<String> list = new ArrayList<String>();
         String freemarkerTemplate = "{"
-            + "\"ISP\": ${isp},"
-            + "\"IP_NUM\": ${number},"
-            + "\"PRODUCT_SPECIFICATION_LCUUID\": \"${product_spec}\","
-            + "\"DOMAIN\":\"${domain_lcuuid}\""
+            + "\"ISP\": $isp,"
+            + "\"IP_NUM\": $number,"
+            + "\"PRODUCT_SPECIFICATION_LCUUID\": \"$product_spec\","
+            + "\"DOMAIN\":\"$domain_lcuuid\""
             + "}";
         
         if (ip_info==null)
             return list.toString();
         for (Map<String, Object> map : ip_info) {
-            String ret = Utils.freemarkerProcess(map, freemarkerTemplate);
+            String ret = Utils.velocityProcess(map, freemarkerTemplate);
             list.add(ret);
         }
         return  "[" + String.join(",", list) + "]";
@@ -158,15 +162,15 @@ public class OrderRequest extends RESTClient {
          */
         List<String> list = new ArrayList<String>();
         String freemarkerTemplate = "{"
-            + "\"ISP\": ${isp},"
-            + "\"BANDWIDTH\": ${bandw},"
-            + "\"PRODUCT_SPECIFICATION_LCUUID\": \"${product_spec}\","
-            + "\"DOMAIN\":\"${domain_lcuuid}\""
+            + "\"ISP\": $isp,"
+            + "\"BANDWIDTH\": $bandw,"
+            + "\"PRODUCT_SPECIFICATION_LCUUID\": \"$product_spec\","
+            + "\"DOMAIN\":\"$domain_lcuuid\""
             + "}";
         if (bandw_info==null)
             return list.toString();
         for (Map<String, Object> map : bandw_info) {
-            String ret = Utils.freemarkerProcess(map, freemarkerTemplate);
+            String ret = Utils.velocityProcess(map, freemarkerTemplate);
             list.add(ret);
         }
         return  "[" + String.join(",", list) + "]";
@@ -179,15 +183,15 @@ public class OrderRequest extends RESTClient {
 		 * 
 		 */
 	    String freemarkerTemplate = "{"
-	            + "\"ORDER_ID\": ${id?c},"
-	            + "\"USERID\": ${userid?c},"
-	            + "\"DOMAIN\": \"${domain_lcuuid}\","
-	            + "\"VMS\": ${vms},"
-	            + "\"LBS\": ${lbs},"
-	            + "\"VGWS\": ${vgs},"
-	            + "\"BWTS\": ${vas},"
-	            + "\"IPS\": ${ips},"
-	            + "\"BANDWIDTHS\": ${bandw}"
+	            + "\"ORDER_ID\": $id,"
+	            + "\"USERID\": $userid,"
+	            + "\"DOMAIN\": \"$domain_lcuuid\","
+	            + "\"VMS\": $vms,"
+	            + "\"LBS\": $lbs,"
+	            + "\"VGWS\": $vgs,"
+	            + "\"BWTS\": $vas,"
+	            + "\"IPS\": $ips,"
+	            + "\"BANDWIDTHS\": $bandw"
 	            + "}";
 	    Map<String, Object> params = new HashMap<String, Object>();
 	    params.put("vms", this.generateVmData(vm_info));
@@ -199,7 +203,8 @@ public class OrderRequest extends RESTClient {
 	    params.put("userid", this.userid);
 	    params.put("domain_lcuuid", this.domain);
 	    params.put("id", 10000);
-	    String ret = Utils.freemarkerProcess(params, freemarkerTemplate);
+	    String ret = Utils.velocityProcess(params, freemarkerTemplate);
+	    s_logger.info("Execute -> execute order function.");
 	    return this.RequestAPP("post", "orders", ret, null);
 	}
 	

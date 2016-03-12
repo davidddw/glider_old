@@ -5,12 +5,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import com.yunshan.cloudbuilder.RESTClient;
 import com.yunshan.cloudbuilder.ResultSet;
 import com.yunshan.cloudbuilder.Utils;
 import com.yunshan.cloudbuilder.VMState;
 
 public class LBSRequest extends RESTClient {
+    
+    protected static final Logger s_logger = Logger.getLogger(LBSRequest.class);
 
     private String domain;
     private int userid;
@@ -40,19 +44,19 @@ public class LBSRequest extends RESTClient {
          */
         String freemarkerTemplate = "{" 
                 + "\"allocation_type\": \"manual\"," 
-                + "\"userid\": ${userid},"
-                + "\"domain\": \"${domain}\"," 
+                + "\"userid\": $userid,"
+                + "\"domain\": \"$domain\"," 
                 + "\"order_id\": 20000,"
                 + "\"passwd\": \"yunshan3302\"," 
-                + "\"name\": \"${name}\"," 
-                + "\"os\": \"${os}\","
-                + "\"pool_lcuuid\": \"${pool_lcuuid}\","
-                + "\"launch_server\": \"${launch_server}\","
-                + "\"product_specification_lcuuid\": \"${product_spec}\","
-                + "\"vcpu_num\": ${vcpu_num?c}," 
-                + "\"mem_size\": ${mem_size?c},"
-                + "\"sys_disk_size\": ${sys_disk_size?c}," 
-                + "\"user_disk_size\": ${user_disk_size?c},"
+                + "\"name\": \"$name\"," 
+                + "\"os\": \"$os\","
+                + "\"pool_lcuuid\": \"$pool_lcuuid\","
+                + "\"launch_server\": \"$launch_server\","
+                + "\"product_specification_lcuuid\": \"$product_spec\","
+                + "\"vcpu_num\": $vcpu_num," 
+                + "\"mem_size\": $mem_size,"
+                + "\"sys_disk_size\": $sys_disk_size," 
+                + "\"user_disk_size\": $user_disk_size,"
                 + "\"role\": \"LOAD_BALANCER\"" 
                 + "}";
         
@@ -68,7 +72,8 @@ public class LBSRequest extends RESTClient {
         params.put("pool_lcuuid", (pool_lcuuid != null) ? pool_lcuuid : this.pool_lcuuid);
         params.put("userid", this.userid);
         params.put("domain", this.domain);
-        String ret = Utils.freemarkerProcess(params, freemarkerTemplate);
+        String ret = Utils.velocityProcess(params, freemarkerTemplate);
+        s_logger.info("execute -> createLB function.");
         return this.RequestAPP("post", "lbs", ret, null);
     }
     
@@ -78,6 +83,7 @@ public class LBSRequest extends RESTClient {
          * 
          * @method: DELETE /v1/lbs/
          */
+        s_logger.info("execute -> deleteLB function.");
         return this.RequestAPP("delete", "lbs", null, String.valueOf(lbId));
     }
 
@@ -90,19 +96,20 @@ public class LBSRequest extends RESTClient {
          */
         String freemarkerTemplate = "{" 
                 + "\"action\": \"modify\"," 
-                + "\"name\": \"${name}\","
-                + "\"vcpu_num\": \"${vcpu_num?c}\"," 
-                + "\"mem_size\": \"${mem_size?c}\","
+                + "\"name\": \"$name\","
+                + "\"vcpu_num\": \"$vcpu_num\"," 
+                + "\"mem_size\": \"$mem_size\","
                 + "\"sys_disk_size\": \"30\"," 
                 + "\"user_disk_size\": \"0\","
-                + "\"product_specification_lcuuid\": \"${product_spec}\"" 
+                + "\"product_specification_lcuuid\": \"$product_spec\"" 
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("name", name);
         params.put("vcpu_num", vcpu_num);
         params.put("mem_size", mem_size);
         params.put("product_spec", product_spec);
-        String ret = Utils.freemarkerProcess(params, freemarkerTemplate);
+        String ret = Utils.velocityProcess(params, freemarkerTemplate);
+        s_logger.info("execute -> modifyLB function.");
         return this.RequestAPP("patch", "lbs", ret, String.valueOf(lbId));
     }
 
@@ -113,11 +120,12 @@ public class LBSRequest extends RESTClient {
          */
         String freemarkerTemplate = "{" 
                 + "\"action\": \"setepc\"," 
-                + "\"epc_id\": ${epc_id?c}"
+                + "\"epc_id\": $epc_id"
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("epc_id", epcId);
-        String ret = Utils.freemarkerProcess(params, freemarkerTemplate);
+        String ret = Utils.velocityProcess(params, freemarkerTemplate);
+        s_logger.info("execute -> addLBToEPC function.");
         return this.RequestAPP("patch", "lbs", ret, String.valueOf(lbId));
     }
     
@@ -126,6 +134,7 @@ public class LBSRequest extends RESTClient {
          * @params: vmid
          * 
          */
+        s_logger.info("execute -> getLBById function.");
         return this.RequestAPP("get", "lbs", null, String.valueOf(lbId));
     }
     
@@ -136,11 +145,11 @@ public class LBSRequest extends RESTClient {
          * @method: PATCH /v1/vms/<fdb_vmid>
          */
         String freemarkerTemplate = "{" 
-                + "\"NAME\": \"${name}\"," 
-                + "\"PROTOCOL\": \"${protocol}\"," 
-                + "\"IP\": \"${ip}\"," 
-                + "\"PORT\": ${port?c}," 
-                + "\"BALANCE\": \"${balance}\"," 
+                + "\"NAME\": \"$name\"," 
+                + "\"PROTOCOL\": \"$protocol\"," 
+                + "\"IP\": \"$ip\"," 
+                + "\"PORT\": $port," 
+                + "\"BALANCE\": \"$balance\"," 
                 + "\"SESSION\": {\"SESSION_STRICKY\": \"NONE\"},"
                 + "\"HEALTH_CHECK\": 0"
                 + "}";
@@ -151,8 +160,9 @@ public class LBSRequest extends RESTClient {
         params.put("ip", ip);
         params.put("port", port);
         params.put("balance", (balance != null) ? balance : "roundrobin");
-        String ret = Utils.freemarkerProcess(params, freemarkerTemplate);
+        String ret = Utils.velocityProcess(params, freemarkerTemplate);
         String param = lcuuid + "/lb-listeners/";
+        s_logger.info("execute -> createLBListener function.");
         return this.RequestAPP("post", "lbs", ret, param);
     }
     
@@ -162,6 +172,7 @@ public class LBSRequest extends RESTClient {
          * @method: PATCH /v1/vms/<fdb_vmid>
          */
         String param = lb_lcuuid + "/lb-listeners/" + lb_listener_lcuuid;
+        s_logger.info("execute -> deleteLBListener function.");
         return this.RequestAPP("delete", "lbs", null, param);
     }
     
@@ -171,6 +182,7 @@ public class LBSRequest extends RESTClient {
          * @method: GET /v1/lbs/<lb_lcuuid>/lb-listeners
          */
         String param = lblcuuid + "/lb-listeners";
+        s_logger.info("execute -> getLBListener function.");
         return this.RequestAPP("get", "lbs", null, param);
     }
     
@@ -180,10 +192,10 @@ public class LBSRequest extends RESTClient {
          * @method: POST /v1/lb-forward-rules/
          */
         String freemarkerTemplate = "{" 
-                + "\"NAME\": \"${name}\"," 
-                + "\"TYPE\": \"${type}\"," 
-                + "\"CONTENT\": \"${content}\"," 
-                + "\"USERID\": ${$userid?c}" 
+                + "\"NAME\": \"$name\"," 
+                + "\"TYPE\": \"$type\"," 
+                + "\"CONTENT\": \"$content\"," 
+                + "\"USERID\": $userid" 
                 + "}";
         
         Map<String, Object> params = new HashMap<String, Object>();
@@ -191,7 +203,8 @@ public class LBSRequest extends RESTClient {
         params.put("type", type);
         params.put("content", content);
         params.put("userid", userid);
-        String ret = Utils.freemarkerProcess(params, freemarkerTemplate);
+        String ret = Utils.velocityProcess(params, freemarkerTemplate);
+        s_logger.info("execute -> createLBForwardRules function.");
         return this.RequestAPP("post", "lb-forward-rules", ret, null);
     }
 
@@ -202,14 +215,15 @@ public class LBSRequest extends RESTClient {
          */
         String freemarkerTemplate = "{"
                 + "\"action\": \"modifyinterface\","
-                + "\"gateway\": \"${gateway}\","
+                + "\"gateway\": \"$gateway\","
                 + "\"loopback_ips\": [],"
                 + "\"interfaces\": []"
                 + "}";
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("gateway", gateway);
-        String ret = Utils.freemarkerProcess(params, freemarkerTemplate);
+        String ret = Utils.velocityProcess(params, freemarkerTemplate);
+        s_logger.info("execute -> createLBForwardRules function.");
         return this.RequestAPP("patch", "vms", ret, String.valueOf(lbId));
     }
     
@@ -222,14 +236,14 @@ public class LBSRequest extends RESTClient {
          * @method: POST /v1/lbs/<lb_lcuuid>/lb-listeners/<lb_listener_lcuuid>/
          */
         String freemarkerTemplate = "{" 
-                + "\"NAME\": \"${name}\"," 
-                + "\"PROTOCOL\": \"${protocol}\"," 
-                + "\"IP\": \"${ip}\"," 
-                + "\"PORT\": ${port?c}," 
-                + "\"BALANCE\": \"${balance}\"," 
+                + "\"NAME\": \"$name\"," 
+                + "\"PROTOCOL\": \"$protocol\"," 
+                + "\"IP\": \"$ip\"," 
+                + "\"PORT\": $port," 
+                + "\"BALANCE\": \"$balance\"," 
                 + "\"SESSION\": {\"SESSION_STRICKY\": \"NONE\"},"
                 + "\"HEALTH_CHECK\": 0,"
-                + "\"BK_VMS\": \"${bk_vms}\""
+                + "\"BK_VMS\": \"$bk_vms\""
                 + "}";
         
         Map<String, Object> params = new HashMap<String, Object>();
@@ -239,12 +253,12 @@ public class LBSRequest extends RESTClient {
         params.put("port", port);
         params.put("balance", (balance != null) ? balance : "roundrobin");
         params.put("bk_vms", bk_vms);
-        String ret = Utils.freemarkerProcess(params, freemarkerTemplate);
+        String ret = Utils.velocityProcess(params, freemarkerTemplate);
         String param = lb_lcuuid + "/lb-listeners/" + lb_listener_lcuuid;
+        s_logger.info("execute -> putLBListener function.");
         return this.RequestAPP("put", "lbs", ret, param);
     }
     
-
     public ResultSet patchLBListenerbkVms(String state,
             String vm_lcuuid, String lb_lcuuid, String lb_listener_lcuuid) {
         /*
@@ -256,12 +270,12 @@ public class LBSRequest extends RESTClient {
          * @method: POST /v1/lbs/<lb_lcuuid>/lb-listeners/<lb_listener_lcuuid>/
          */
         String freemarkerTemplate = "{" 
-                + "\"STATE\": \"${state}\"" 
+                + "\"STATE\": \"$state\"" 
                 + "}";
         
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("state", (state != null) ? state : "ENABLE");
-        String ret = Utils.freemarkerProcess(params, freemarkerTemplate);
+        String ret = Utils.velocityProcess(params, freemarkerTemplate);
         String param = lb_lcuuid + "/lb-listeners/" + lb_listener_lcuuid + "/lb-bk-vms/" + vm_lcuuid;
         return this.RequestAPP("patch", "lbs", ret, param);
     }
@@ -273,11 +287,11 @@ public class LBSRequest extends RESTClient {
          * @method: PATCH /v1/vms/<fdb_vmid>
          */
         String vmLanTmpl = "{"
-                + "\"state\": ${state},"
+                + "\"state\": $state,"
                 + "\"if_type\": \"LAN\","
                 + "\"lan\": {"
-                + "\"vl2_lcuuid\": \"${vl2_lcuuid}\","
-                + "\"ips\": [{\"vl2_net_index\": ${vl2_net_index}, \"address\": \"${address}\"}],"
+                + "\"vl2_lcuuid\": \"$vl2_lcuuid\","
+                + "\"ips\": [{\"vl2_net_index\": $vl2_net_index, \"address\": \"$address\"}],"
                 + "\"qos\": {\"min_bandwidth\": 0, \"max_bandwidth\": 0}"
                 + "}"
                 + "}";
@@ -286,7 +300,7 @@ public class LBSRequest extends RESTClient {
         params.put("vl2_lcuuid", vl2_lcuuid);
         params.put("vl2_net_index", vl2_net_index);
         params.put("address", address);
-        String ret = Utils.freemarkerProcess(params, vmLanTmpl);
+        String ret = Utils.velocityProcess(params, vmLanTmpl);
         String param = lbId + "/interfaces/" + index;
         return this.RequestAPP("put", "vms", ret, param);
     }
@@ -298,18 +312,18 @@ public class LBSRequest extends RESTClient {
          * @method: PATCH /v1/vms/<fdb_vmid>
          */
         String vmWanTmpl = "{"
-                + "\"state\": ${state?c},"
+                + "\"state\": $state,"
                 + "\"if_type\": \"WAN\","
                 + "\"wan\": {"
                 + "\"ips\": [{\"ip_resource_lcuuid\": \"$ip_resource_lcuuid\"}],"
-                + "\"qos\": {\"min_bandwidth\": ${bandwidth?c}, \"max_bandwidth\": ${bandwidth?c}}"
+                + "\"qos\": {\"min_bandwidth\": $bandwidth, \"max_bandwidth\": $bandwidth}"
                 + "}"
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("state", state);
         params.put("ip_resource_lcuuid", ip_resource_lcuuid);
         params.put("bandwidth", (bandwidth != 0) ? bandwidth : BANDWIDTH);
-        String ret = Utils.freemarkerProcess(params, vmWanTmpl);
+        String ret = Utils.velocityProcess(params, vmWanTmpl);
         String param = lbId + "/interfaces/" + index;
         return this.RequestAPP("put", "vms", ret, param);
     }
@@ -325,42 +339,42 @@ public class LBSRequest extends RESTClient {
          * @method: PATCH /v1/vms/<fdb_vmid>
          */
         String vmLanTmpl = "{"
-                + "\"state\": ${state},"
+                + "\"state\": $state,"
                 + "\"if_type\": \"LAN\","
                 + "\"lan\": {"
-                + "\"vl2_lcuuid\": \"${vl2_lcuuid}\","
-                + "\"ips\": [{\"vl2_net_index\": ${vl2_net_index}, \"address\": \"${address}\"}],"
+                + "\"vl2_lcuuid\": \"$vl2_lcuuid\","
+                + "\"ips\": [{\"vl2_net_index\": $vl2_net_index, \"address\": \"$address\"}],"
                 + "\"qos\": {\"min_bandwidth\": 0, \"max_bandwidth\": 0}"
                 + "}"
                 + "}";
         String vmWanTmpl = "{"
-                + "\"state\": ${state},"
+                + "\"state\": $state,"
                 + "\"if_type\": \"WAN\","
                 + "\"wan\": {"
-                + "\"ips\": [{\"ip_resource_lcuuid\": \"${ip_resource_lcuuid}\"}],"
-                + "\"qos\": {\"min_bandwidth\": ${bandwidth}, \"max_bandwidth\": ${bandwidth}}"
+                + "\"ips\": [{\"ip_resource_lcuuid\": \"$ip_resource_lcuuid\"}],"
+                + "\"qos\": {\"min_bandwidth\": $bandwidth, \"max_bandwidth\": $bandwidth}"
                 + "}"
                 + "}";
         List<String> interf = new ArrayList<String>();
         
         for(Map<String, Object> map : interfaces) {
             if (map.containsKey("ip_resource_lcuuid")) {
-                interf.add(Utils.freemarkerProcess(map, vmWanTmpl));
+                interf.add(Utils.velocityProcess(map, vmWanTmpl));
             } else {
-                interf.add(Utils.freemarkerProcess(map, vmLanTmpl));
+                interf.add(Utils.velocityProcess(map, vmLanTmpl));
             }
         }
         String finalTmpl = "{"
                 + "\"action\": \"modifyinterface\","
-                + "\"gateway\": \"${gateway}\","
+                + "\"gateway\": \"$gateway\","
                 + "\"loopback_ips\": [],"
-                + "\"interfaces\": ${interface_data}"
+                + "\"interfaces\": $interface_data"
                 + "}";
         String interface_data = "[" + String.join(",", interf) + "]";
         Map<String, Object> patchData = new HashMap<String, Object>();
         patchData.put("gateway", gateway);
-        patchData.put("interfaces", interface_data);
-        String finalret = Utils.freemarkerProcess(patchData, finalTmpl);
+        patchData.put("interface_data", interface_data);
+        String finalret = Utils.velocityProcess(patchData, finalTmpl);
         return this.RequestAPP("patch", "vms", finalret, String.valueOf(lbId));
     }
 
@@ -382,8 +396,9 @@ public class LBSRequest extends RESTClient {
         }
     }
     
-    public ResultSet attachMultiIPAddress(int lbId, String gateway, 
+    public ResultSet attachMultiIPAddress(String name, String gateway, 
             List<Map<String, Object>> interfaces) {
+        int lbId = this.getLBIdByName(name);
         return this.attachMultiInterface(lbId, gateway, interfaces);
     }
     

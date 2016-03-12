@@ -3,34 +3,40 @@ package com.yunshan.cloudbuilder;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.cli.ParseException;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
 import org.yaml.snakeyaml.Yaml;
 
 import com.yunshan.config.Configuration;
 
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
-
 public class Utils {
-    public static String freemarkerProcess(Map<String, Object> input, String templateStr) {
-        Template t;
-        try {
-            t = new Template(null, new StringReader(templateStr), null);
-            StringWriter writer = new StringWriter();
-            t.process(input, writer);
-            return writer.toString();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (TemplateException e) {
-            e.printStackTrace();
-        } 
-        return null;
+//    public static String freemarkerProcess(Map<String, Object> input, String templateStr) {
+//        Template t;
+//        try {
+//            t = new Template(null, new StringReader(templateStr), null);
+//            StringWriter writer = new StringWriter();
+//            t.process(input, writer);
+//            return writer.toString();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        } catch (TemplateException e) {
+//            e.printStackTrace();
+//        } 
+//        return null;
+//    }
+    
+    public static String velocityProcess(Map<String, Object> input, String templateStr) {
+        VelocityEngine ve = new VelocityEngine();
+        ve.init();
+        VelocityContext context = new VelocityContext(input);
+        StringWriter writer = new StringWriter();
+        ve.evaluate(context, writer, "", templateStr); 
+        return writer.toString();
     }
     
     public static void readYamlFromFile(String filename) throws FileNotFoundException {
@@ -40,7 +46,17 @@ public class Utils {
         System.out.println(config.getDomain());
     }
     
-    public static void main(String[] args) throws ParseException, FileNotFoundException {
-        readYamlFromFile("d:\\autotest.yml");
+    public static void main(String[] args) {
+        String freemarkerTemplate = "{"
+                + "\"userid\": $userid,"
+                + "\"name\": \"$name\","
+                + "\"domain\": \"$domain\""
+                + "}";
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("name", "david");
+        params.put("userid", 11000000);
+        params.put("domain", "sadfa");
+        String ret = Utils.velocityProcess(params, freemarkerTemplate);
+        System.out.println(ret);
     }
 }

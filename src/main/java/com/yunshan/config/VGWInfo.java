@@ -7,8 +7,8 @@ public class VGWInfo {
     private String name;
     private String info;
     private String product_spec;
-    private List<Map<String, String>> wan;
-    private List<Map<String, String>> lan;
+    private List<Map<String, Object>> wan;
+    private List<Map<String, Object>> lan;
     private RuleInfo rules;
     public String getName() {
         return name;
@@ -28,16 +28,16 @@ public class VGWInfo {
     public void setProduct_spec(String product_spec) {
         this.product_spec = product_spec;
     }
-    public List<Map<String, String>> getWan() {
+    public List<Map<String, Object>> getWan() {
         return wan;
     }
-    public void setWan(List<Map<String, String>> wan) {
+    public void setWan(List<Map<String, Object>> wan) {
         this.wan = wan;
     }
-    public List<Map<String, String>> getLan() {
+    public List<Map<String, Object>> getLan() {
         return lan;
     }
-    public void setLan(List<Map<String, String>> lan) {
+    public void setLan(List<Map<String, Object>> lan) {
         this.lan = lan;
     }
     public RuleInfo getRules() {

@@ -3,11 +3,15 @@ package com.yunshan.cloudbuilder.op;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import com.yunshan.cloudbuilder.RESTClient;
 import com.yunshan.cloudbuilder.ResultSet;
 import com.yunshan.cloudbuilder.Utils;
 
 public class EPCRequest extends RESTClient {
+    
+    protected static final Logger s_logger = Logger.getLogger(EPCRequest.class);
     
     private String domain;
     private int userid;
@@ -25,15 +29,16 @@ public class EPCRequest extends RESTClient {
 		 * 
 		 */
 	    String freemarkerTemplate = "{"
-	            + "\"userid\": ${userid},"
-	            + "\"name\": \"${name}\","
-	            + "\"domain\": \"${domain}\""
+	            + "\"userid\": $userid,"
+	            + "\"name\": \"$name\","
+	            + "\"domain\": \"$domain\""
 	            + "}";
 	    Map<String, Object> params = new HashMap<String, Object>();
 	    params.put("name", name);
 	    params.put("userid", this.userid);
 	    params.put("domain", this.domain);
-	    String ret = Utils.freemarkerProcess(params, freemarkerTemplate);
+	    String ret = Utils.velocityProcess(params, freemarkerTemplate);
+	    s_logger.info("Execute -> createEPC function.");
 	    return this.RequestAPP("post", "epcs", ret, null);
 	}
 	
@@ -43,13 +48,14 @@ public class EPCRequest extends RESTClient {
 	     * @method: PATCH /v1/epcs/<epcid>
 	     */
 	    String freemarkerTemplate = "{"
-	            + "\"userid\": ${userid},"
-	            + "\"name\": \"${name}\""
+	            + "\"userid\": $userid,"
+	            + "\"name\": \"$name\""
 	            + "}";
 	    Map<String, Object> params = new HashMap<String, Object>();
         params.put("name", name);
         params.put("userid", this.userid);
-        String ret = Utils.freemarkerProcess(params, freemarkerTemplate);
+        String ret = Utils.velocityProcess(params, freemarkerTemplate);
+        s_logger.info("execute -> modifyEPC function.");
         return this.RequestAPP("patch", "epcs", ret, String.valueOf(epcid));
 	}
 	
@@ -58,6 +64,7 @@ public class EPCRequest extends RESTClient {
          * @params: 
          * @method: GET /v1/epcs
          */
+	    s_logger.info("execute -> getEPCs function.");
 	    return this.RequestAPP("get", "epcs", null, null);
 	}
 	
@@ -66,6 +73,7 @@ public class EPCRequest extends RESTClient {
 	     * @params: epc_id
 	     * @method: GET /v1/epcs/<epc_id>/
 	     */
+	    s_logger.info("execute -> getEPCById function.");
         return this.RequestAPP("get", "epcs", null, String.valueOf(epcid));
     }
 	
@@ -74,6 +82,7 @@ public class EPCRequest extends RESTClient {
          * @params: epc_id
          * @method: DELETE /v1/epcs/<epc_id>/
          */
+	    s_logger.info("execute -> deleteEPC function.");
         return this.RequestAPP("delete", "epcs", null, String.valueOf(epcid));
 	}
 	

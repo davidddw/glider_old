@@ -1,6 +1,7 @@
 package com.yunshan.config;
 
 import java.util.List;
+import java.util.Map;
 
 public class VMInfo {
     private String name;
@@ -8,7 +9,7 @@ public class VMInfo {
     private String product_spec;
     private String template;
     private String vm_gw;
-    private List<VMNetInfo> vm_ip;
+    private List<Map<String, Object>> vm_ip;
     public String getName() {
         return name;
     }
@@ -39,10 +40,10 @@ public class VMInfo {
     public void setVm_gw(String vm_gw) {
         this.vm_gw = vm_gw;
     }
-    public List<VMNetInfo> getVm_ip() {
+    public List<Map<String, Object>> getVm_ip() {
         return vm_ip;
     }
-    public void setVm_ip(List<VMNetInfo> vm_ip) {
+    public void setVm_ip(List<Map<String, Object>> vm_ip) {
         this.vm_ip = vm_ip;
     }
     @Override

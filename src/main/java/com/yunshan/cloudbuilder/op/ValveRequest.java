@@ -5,15 +5,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import com.yunshan.cloudbuilder.RESTClient;
 import com.yunshan.cloudbuilder.ResultSet;
 import com.yunshan.cloudbuilder.Utils;
 
 public class ValveRequest extends RESTClient {
     
+    protected static final Logger s_logger = Logger.getLogger(ValveRequest.class);
+    
     private String domain;
     private int userid;
     private EPCRequest epcRequest = null;
+    
+    private static final int BANDWIDTH = 10485760;
 
 	public ValveRequest(String host, String domain, int userid) {
 		super(host);
@@ -29,14 +35,14 @@ public class ValveRequest extends RESTClient {
          * 
          */
         String freemarkerTemplate = "{"
-                + "\"USERID\": ${userid?c},"
+                + "\"USERID\": $userid,"
                 + "\"WANS\": 3,"
                 + "\"LANS\": 1,"
                 + "\"IPS\": 9,"
                 + "\"BW_WEIGHT\": {\"1\": 2, \"2\": 3, \"3\": 2, \"4\": 1},"
-                + "\"NAME\": \"${name}\","
-                + "\"DOMAIN\": \"${domain}\","
-                + "\"PRODUCT_SPECIFICATION_LCUUID\": \"${product_spec}\""
+                + "\"NAME\": \"$name\","
+                + "\"DOMAIN\": \"$domain\","
+                + "\"PRODUCT_SPECIFICATION_LCUUID\": \"$product_spec\""
                 + "}";
 
         Map<String, Object> params = new HashMap<String, Object>();
@@ -44,7 +50,7 @@ public class ValveRequest extends RESTClient {
         params.put("product_spec", product_spec);
         params.put("userid", this.userid);
         params.put("domain", this.domain);
-        String ret = Utils.freemarkerProcess(params, freemarkerTemplate);
+        String ret = Utils.velocityProcess(params, freemarkerTemplate);
         return this.RequestTalker("post", "valves", ret, null);
     }
 
@@ -56,16 +62,16 @@ public class ValveRequest extends RESTClient {
          * 
          */
         String freemarkerTemplate = "{"
-                + "\"USERID\": ${userid},"
+                + "\"USERID\": $userid,"
                 + "\"WANS\": 3,"
                 + "\"LANS\": 1,"
                 + "\"IPS\": 9,"
                 + "\"BW_WEIGHT\": {\"1\": 2, \"2\": 3, \"3\": 2, \"4\": 1},"
-                + "\"NAME\": \"${name}\","
-                + "\"DOMAIN\": \"${domain}\","
-                + "\"GW_POOL_LCUUID\": \"${pool_lcuuid}\","
-                + "\"GW_LAUNCH_SERVER\": \"${launch_server}\","
-                + "\"PRODUCT_SPECIFICATION_LCUUID\": \"${product_spec}\""
+                + "\"NAME\": \"$name\","
+                + "\"DOMAIN\": \"$domain\","
+                + "\"GW_POOL_LCUUID\": \"$pool_lcuuid\","
+                + "\"GW_LAUNCH_SERVER\": \"$launch_server\","
+                + "\"PRODUCT_SPECIFICATION_LCUUID\": \"$product_spec\""
                 + "}";
         
         Map<String, Object> params = new HashMap<String, Object>();
@@ -75,7 +81,7 @@ public class ValveRequest extends RESTClient {
         params.put("launch_server", launch_server);
         params.put("userid", this.userid);
         params.put("domain", this.domain);
-        String ret = Utils.freemarkerProcess(params, freemarkerTemplate);
+        String ret = Utils.velocityProcess(params, freemarkerTemplate);
         return this.RequestTalker("post", "valves", ret, null);
     }
     
@@ -104,12 +110,12 @@ public class ValveRequest extends RESTClient {
          * 
          */
         String freemarkerTemplate = "{"
-                + "\"GW_LAUNCH_SERVER\": \"${launch_server}\""
+                + "\"GW_LAUNCH_SERVER\": \"$launch_server\""
                 + "}";
         
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("launch_server", launch_server);
-        String ret = Utils.freemarkerProcess(params, freemarkerTemplate);
+        String ret = Utils.velocityProcess(params, freemarkerTemplate);
         return this.RequestTalker("patch", "valves", ret, valve_lcuuid);
     }
 	
@@ -120,12 +126,12 @@ public class ValveRequest extends RESTClient {
          * 
          */
         String freemarkerTemplate = "{"
-                + "\"EPC_ID\": ${epc_id?c}"
+                + "\"EPC_ID\": $epc_id"
                 + "}";
         
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("epc_id", epc_id);
-        String ret = Utils.freemarkerProcess(params, freemarkerTemplate);
+        String ret = Utils.velocityProcess(params, freemarkerTemplate);
         return this.RequestTalker("patch", "valves", ret, valve_lcuuid);
     }
 	
@@ -138,8 +144,8 @@ public class ValveRequest extends RESTClient {
         return this.RequestTalker("delete", "valves", null, valve_lcuuid);
     }
 	
-	public ResultSet modifyValve(String valve_lcuuid, List<Map<String, Object>> lan_list, 
-	        List<Map<String, Object>> wan_list) {
+	private ResultSet modifyValve(String valve_lcuuid, List<Map<String, Object>> wan_list, 
+	        List<Map<String, Object>> lan_list) {
         /*
          * @params: vgateway_lcuuid, wan_list, lan_list
          * @method: PATCH /v1/vgateways/<valve_lcuuid>/
@@ -157,7 +163,7 @@ public class ValveRequest extends RESTClient {
 	        }
 	        
 	        public String getData() {
-	            return "[" + String.join(",", interf) + "]";
+	            return (interf.size() > 1) ? "[" + String.join(",", interf) + "]" : String.join(",", interf);
 	        }
 	        
 	        public Data generateWanData() {
@@ -166,29 +172,26 @@ public class ValveRequest extends RESTClient {
 	             * 
 	             */
 	            String freemarkerTemplate = "{"
-	                    + "\"IF_INDEX\": ${if_index?c},"
+	                    + "\"IF_INDEX\": $if_index,"
 	                    + "\"STATE\": 1,"
 	                    + "\"IF_TYPE\": \"WAN\","
 	                    + "\"WAN\": { "
 	                    + "\"IPS\": ["
-	                    + "{\"IP_RESOURCE_LCUUID\": \"${ip_resource_lcuuid}\"}"
+	                    + "{\"IP_RESOURCE_LCUUID\": \"$ip_resource_lcuuid\"}"
 	                    + "],"
 	                    + "\"QOS\": {"
-	                    + "\"MIN_BANDWIDTH\": ${min_bandwidth?c},"
-	                    + "\"MAX_BANDWIDTH\": ${max_bandwidth?c}"
+	                    + "\"MIN_BANDWIDTH\": $min_bandwidth,"
+	                    + "\"MAX_BANDWIDTH\": $max_bandwidth"
 	                    + "}"
 	                    + "}"
 	                    + "}";
 	            int index = 1;
 	            for (Map<String, Object> map : wan_list) {
 	                map.put("if_index", index);
-	                if (map.containsKey("min_bandwidth")) {
-	                    map.put("min_bandwidth", 10485760);
-	                } else if (map.containsKey("max_bandwidth")) {
-	                    map.put("max_bandwidth", 10485760);
-	                }
+	                map.put("min_bandwidth", BANDWIDTH);
+	                map.put("max_bandwidth", BANDWIDTH);
 	                index += 1;
-	                interf.add(Utils.freemarkerProcess(map, freemarkerTemplate));
+	                interf.add(Utils.velocityProcess(map, freemarkerTemplate));
 	            }
 	            return this;
 	        }
@@ -199,11 +202,11 @@ public class ValveRequest extends RESTClient {
 	             * 
 	             */
 	            String freemarkerTemplate = "{"
-	                    + "\"IF_INDEX\": ${if_index?c},"
+	                    + "\"IF_INDEX\": $if_index,"
 	                    + "\"STATE\": 1,"
 	                    + "\"IF_TYPE\": \"LAN\","
 	                    + "\"LAN\": { "
-	                    + "\"VL2_LCUUID\": \"${vl2_lcuuid}\","
+	                    + "\"VL2_LCUUID\": \"$vl2_lcuuid\","
 	                    + "\"IPS\": ["
 	                    + "{\"VL2_NET_INDEX\": 1, "
 	                    + "\"ADDRESS\": \"0.0.0.0\"}"
@@ -217,25 +220,31 @@ public class ValveRequest extends RESTClient {
 	            int index = 10;
 	            for (Map<String, Object> map : lan_list) {
 	                map.put("if_index", index);
-	                if (map.containsKey("min_bandwidth")) {
-	                    map.put("min_bandwidth", 1048576000);
-	                } else if (map.containsKey("max_bandwidth")) {
-	                    map.put("max_bandwidth", 1048576000);
-	                }
 	                index += 1;
-	                interf.add(Utils.freemarkerProcess(map, freemarkerTemplate));
+	                interf.add(Utils.velocityProcess(map, freemarkerTemplate));
 	            }
 	            return this;
 	        }
 	    }
-	    String finalData = new Data(lan_list, wan_list).generateLanData().generateWanData().getData();
+	    String finalData = new Data(wan_list, lan_list).generateLanData().generateWanData().getData();
 	    String freemarkerTemplate = "{"
-                + "\"INTERFACES\": ${interface_data},"
+	            + "\"GENERAL_BANDWIDTH\": 1048576,"
+                + "\"INTERFACES\": $interface_data"
                 + "}";
 	    Map<String, Object> params = new HashMap<String, Object>();
         params.put("interface_data", finalData);
-        String ret = Utils.freemarkerProcess(params, freemarkerTemplate);
+        String ret = Utils.velocityProcess(params, freemarkerTemplate);
 	    return this.RequestTalker("patch", "valves", ret, valve_lcuuid);
+    }
+	
+	public ResultSet modifyValveFinely(String name, List<Map<String, Object>> wan_list, 
+            List<Map<String, Object>> lan_list) {
+        /*
+         * @params: name, wan, lan
+         * 
+         */
+        String lcuuid = this.getValveUuidByName(name);
+        return this.modifyValve(lcuuid, wan_list, lan_list);
     }
 	
 	public ResultSet getValveByName(String name) {

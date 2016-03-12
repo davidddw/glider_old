@@ -1,13 +1,14 @@
 package com.yunshan.config;
 
 import java.util.List;
+import java.util.Map;
 
 public class LBInfo {
     private String name;
     private String info;
     private String lb_gw;
     private String product_spec;
-    private List<VMNetInfo> lb_ip;
+    private List<Map<String, Object>> lb_ip;
     private List<LBListenerInfo> lb_listener;
     public String getName() {
         return name;
@@ -33,10 +34,10 @@ public class LBInfo {
     public void setProduct_spec(String product_spec) {
         this.product_spec = product_spec;
     }
-    public List<VMNetInfo> getLb_ip() {
+    public List<Map<String, Object>> getLb_ip() {
         return lb_ip;
     }
-    public void setLb_ip(List<VMNetInfo> lb_ip) {
+    public void setLb_ip(List<Map<String, Object>> lb_ip) {
         this.lb_ip = lb_ip;
     }
     public List<LBListenerInfo> getLb_listener() {

@@ -7,12 +7,15 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import com.yunshan.cloudbuilder.RESTClient;
 import com.yunshan.cloudbuilder.ResultSet;
 import com.yunshan.cloudbuilder.Utils;
 
 public class VGWRequest extends RESTClient {
+    
+    protected static final Logger s_logger = Logger.getLogger(VGWRequest.class);
     
     private String domain;
     private int userid;
@@ -32,12 +35,12 @@ public class VGWRequest extends RESTClient {
          * 
          */
         String freemarkerTemplate = "{"
-                + "\"USERID\": ${userid},"
+                + "\"USERID\": $userid,"
                 + "\"WANS\": 3,"
                 + "\"LANS\": 3,"
-                + "\"NAME\": \"${name}\","
-                + "\"DOMAIN\": \"${domain}\","
-                + "\"PRODUCT_SPECIFICATION_LCUUID\": \"${product_spec}\""
+                + "\"NAME\": \"$name\","
+                + "\"DOMAIN\": \"$domain\","
+                + "\"PRODUCT_SPECIFICATION_LCUUID\": \"$product_spec\""
                 + "}";
 
         Map<String, Object> params = new HashMap<String, Object>();
@@ -45,7 +48,7 @@ public class VGWRequest extends RESTClient {
         params.put("product_spec", product_spec);
         params.put("userid", this.userid);
         params.put("domain", this.domain);
-        String ret = Utils.freemarkerProcess(params, freemarkerTemplate);
+        String ret = Utils.velocityProcess(params, freemarkerTemplate);
         return this.RequestTalker("post", "vgateways", ret, null);
     }
 
@@ -57,15 +60,15 @@ public class VGWRequest extends RESTClient {
          * 
          */
         String freemarkerTemplate = "{"
-                + "\"USERID\": ${userid},"
+                + "\"USERID\": $userid,"
                 + "\"WANS\": 3,"
                 + "\"LANS\": 3,"
                 + "\"RATE\": 1572864000,"
-                + "\"NAME\": \"${name}\","
-                + "\"DOMAIN\": \"${domain}\","
-                + "\"GW_POOL_LCUUID\": \"${pool_lcuuid}\","
-                + "\"GW_LAUNCH_SERVER\": \"${launch_server}\","
-                + "\"PRODUCT_SPECIFICATION_LCUUID\": \"${product_spec}\""
+                + "\"NAME\": \"$name\","
+                + "\"DOMAIN\": \"$domain\","
+                + "\"GW_POOL_LCUUID\": \"$pool_lcuuid\","
+                + "\"GW_LAUNCH_SERVER\": \"$launch_server\","
+                + "\"PRODUCT_SPECIFICATION_LCUUID\": \"$product_spec\""
                 + "}";
         
         Map<String, Object> params = new HashMap<String, Object>();
@@ -75,7 +78,7 @@ public class VGWRequest extends RESTClient {
         params.put("launch_server", launch_server);
         params.put("userid", this.userid);
         params.put("domain", this.domain);
-        String ret = Utils.freemarkerProcess(params, freemarkerTemplate);
+        String ret = Utils.velocityProcess(params, freemarkerTemplate);
         return this.RequestTalker("post", "vgateways", ret, null);
     }
     
@@ -104,12 +107,12 @@ public class VGWRequest extends RESTClient {
          * 
          */
         String freemarkerTemplate = "{"
-                + "\"GW_LAUNCH_SERVER\": \"${launch_server}\""
+                + "\"GW_LAUNCH_SERVER\": \"$launch_server\""
                 + "}";
         
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("launch_server", launch_server);
-        String ret = Utils.freemarkerProcess(params, freemarkerTemplate);
+        String ret = Utils.velocityProcess(params, freemarkerTemplate);
         return this.RequestTalker("patch", "vgateways", ret, vgateway_lcuuid);
     }
 	
@@ -120,12 +123,12 @@ public class VGWRequest extends RESTClient {
          * 
          */
         String freemarkerTemplate = "{"
-                + "\"EPC_ID\": ${epc_id?c}"
+                + "\"EPC_ID\": $epc_id"
                 + "}";
         
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("epc_id", epc_id);
-        String ret = Utils.freemarkerProcess(params, freemarkerTemplate);
+        String ret = Utils.velocityProcess(params, freemarkerTemplate);
         return this.RequestTalker("patch", "vgateways", ret, vgateway_lcuuid);
     }
 	
@@ -182,24 +185,24 @@ public class VGWRequest extends RESTClient {
          * 
          */
         String freemarkerTemplate = "{"
-                + "\"NAME\": \"${name}\","
+                + "\"NAME\": \"$name\","
                 + "\"STATE\": 1,"
-                + "\"RULE_ID\": ${ruleId?c},"
-                + "\"ISP\": \"${isp}\","
+                + "\"RULE_ID\": $ruleId,"
+                + "\"ISP\": \"$isp\","
                 + "\"PROTOCOL\": 0,"
                 + "\"MATCH\": {"
                 + "\"IF_TYPE\": \"ANY\","
                 + "\"IF_INDEX\": 0,"
-                + "\"MIN_ADDRESS\": \"${sip1}\","
-                + "\"MAX_ADDRESS\": \"${sip2}\","
+                + "\"MIN_ADDRESS\": \"$sip1\","
+                + "\"MAX_ADDRESS\": \"$sip2\","
                 + "\"MIN_PORT\": 1,"
                 + "\"MAX_PORT\": 65535"
                 + "}"
                 + "\"TARGET\": {"
                 + "\"IF_TYPE\": \"WAN\","
-                + "\"IF_INDEX\": \"${if_index}\","
-                + "\"MIN_ADDRESS\": \"${dip}\","
-                + "\"MAX_ADDRESS\": \"${dip}\","
+                + "\"IF_INDEX\": \"$if_index\","
+                + "\"MIN_ADDRESS\": \"$dip\","
+                + "\"MAX_ADDRESS\": \"$dip\","
                 + "\"MIN_PORT\": 1,"
                 + "\"MAX_PORT\": 65535"
                 + "}"
@@ -221,8 +224,8 @@ public class VGWRequest extends RESTClient {
         params.put("sip2", sip2);
         params.put("dip", dip);
         params.put("ruleId", ruleId);
-        interf.add(Utils.freemarkerProcess(params, freemarkerTemplate));
-        String finalData = "[" + String.join(",", interf) + "]";
+        interf.add(Utils.velocityProcess(params, freemarkerTemplate));
+        String finalData = (interf.size() > 1) ? "[" + String.join(",", interf) + "]" : String.join(",", interf);
         String param = vgateway_lcuuid + "/snats";
         return this.RequestTalker("put", "vgateways", finalData, param);
     }
@@ -235,26 +238,26 @@ public class VGWRequest extends RESTClient {
          * 
          */
         String freemarkerTemplate = "{"
-                + "\"NAME\": \"${name}\","
+                + "\"NAME\": \"$name\","
                 + "\"STATE\": 1,"
-                + "\"RULE_ID\": ${ruleId?c},"
-                + "\"ISP\": \"${isp}\","
+                + "\"RULE_ID\": $ruleId,"
+                + "\"ISP\": \"$isp\","
                 + "\"PROTOCOL\": 0,"
                 + "\"MATCH\": {"
                 + "\"IF_TYPE\": \"WAN\","
-                + "\"IF_INDEX\": \"${if_index}\","
-                + "\"MIN_ADDRESS\": \"${sip}\","
-                + "\"MAX_ADDRESS\": \"${sip}\","
-                + "\"MIN_PORT\": ${sport},"
-                + "\"MAX_PORT\": ${sport}"
+                + "\"IF_INDEX\": \"$if_index\","
+                + "\"MIN_ADDRESS\": \"$sip\","
+                + "\"MAX_ADDRESS\": \"$sip\","
+                + "\"MIN_PORT\": $sport,"
+                + "\"MAX_PORT\": $sport"
                 + "}"
                 + "\"TARGET\": {"
                 + "\"IF_TYPE\": \"ANY\","
                 + "\"IF_INDEX\": 0,"
-                + "\"MIN_ADDRESS\": \"${dip}\","
-                + "\"MAX_ADDRESS\": \"${dip}\","
-                + "\"MIN_PORT\": ${dport},"
-                + "\"MAX_PORT\": ${dport}"
+                + "\"MIN_ADDRESS\": \"$dip\","
+                + "\"MAX_ADDRESS\": \"$dip\","
+                + "\"MIN_PORT\": $dport,"
+                + "\"MAX_PORT\": $dport"
                 + "}"
                 + "}";
         int ruleId = 1;
@@ -275,8 +278,8 @@ public class VGWRequest extends RESTClient {
         params.put("dip", dip);
         params.put("dport", dport);
         params.put("ruleId", ruleId);
-        interf.add(Utils.freemarkerProcess(params, freemarkerTemplate));
-        String finalData = "[" + String.join(",", interf) + "]";
+        interf.add(Utils.velocityProcess(params, freemarkerTemplate));
+        String finalData = (interf.size() > 1) ? "[" + String.join(",", interf) + "]" : String.join(",", interf);
         String param = vgateway_lcuuid + "/dnats";
         return this.RequestTalker("put", "vgateways", finalData, param);
     }
@@ -289,18 +292,18 @@ public class VGWRequest extends RESTClient {
          * 
          */
         String freemarkerTemplate = "{"
-                + "\"NAME\": \"${name}\","
+                + "\"NAME\": \"$name\","
                 + "\"STATE\": 1,"
-                + "\"RULE_ID\": ${ruleId?c},"
-                + "\"ISP\": \"${isp}\","
+                + "\"RULE_ID\": $ruleId,"
+                + "\"ISP\": \"$isp}\","
                 + "\"PROTOCOL\": 0,"
                 + "\"MATCH_SRC\": {"
                 + "\"IF_TYPE\": \"LAN\","
-                + "\"IF_INDEX\": \"${if_index}\","
-                + "\"MIN_ADDRESS\": \"${sip1}\","
-                + "\"MAX_ADDRESS\": \"${sip2}\","
-                + "\"MIN_PORT\": ${sport},"
-                + "\"MAX_PORT\": ${sport}"
+                + "\"IF_INDEX\": \"$if_index\","
+                + "\"MIN_ADDRESS\": \"$sip1\","
+                + "\"MAX_ADDRESS\": \"$sip2\","
+                + "\"MIN_PORT\": $sport,"
+                + "\"MAX_PORT\": $sport"
                 + "}"
                 + "\"MATCH_DST\": {"
                 + "\"IF_TYPE\": \"ANY\","
@@ -328,8 +331,8 @@ public class VGWRequest extends RESTClient {
         params.put("sip2", sip2);
         params.put("sport", sport);
         params.put("ruleId", ruleId);
-        interf.add(Utils.freemarkerProcess(params, freemarkerTemplate));
-        String finalData = "[" + String.join(",", interf) + "]";
+        interf.add(Utils.velocityProcess(params, freemarkerTemplate));
+        String finalData = (interf.size() > 1) ? "[" + String.join(",", interf) + "]" : String.join(",", interf);
         String param = vgateway_lcuuid + "/forward_acls";
         return this.RequestTalker("put", "vgateways", finalData, param);
     }
@@ -343,20 +346,20 @@ public class VGWRequest extends RESTClient {
          * 
          */
         String freemarkerTemplate = "{"
-                + "\"NAME\": \"${name}\","
-                + "\"RULE_ID\": ${ruleId?c},"
+                + "\"NAME\": \"$name\","
+                + "\"RULE_ID\": $ruleId,"
                 + "\"STATE\": 1,"
-                + "\"LEFT\": \"${local_ip_addr}\","
+                + "\"LEFT\": \"$local_ip_addr\","
                 + "\"LNETWORK\": {"
-                + "\"ADDRESS\": \"${local_net_addr}\","
-                + "\"NETMASK\": \"${local_net_mask}\""
+                + "\"ADDRESS\": \"$local_net_addr\","
+                + "\"NETMASK\": \"$local_net_mask\""
                 + "}"
-                + "\"RIGHT\": \"${remote_ip_addr}\","
+                + "\"RIGHT\": \"$remote_ip_addr\","
                 + "\"RNETWORK\": {"
-                + "\"ADDRESS\": \"${remote_net_addr}\","
-                + "\"NETMASK\": \"${remote_net_mask}\""
+                + "\"ADDRESS\": \"$remote_net_addr\","
+                + "\"NETMASK\": \"$remote_net_mask\""
                 + "}"
-                + "\"PSK\": \"${psk}\""
+                + "\"PSK\": \"$psk}\""
                 + "}";
         int ruleId = 1;
         List<String> interf = new ArrayList<String>();
@@ -376,8 +379,8 @@ public class VGWRequest extends RESTClient {
         params.put("remote_net_addr", remote_net_addr);
         params.put("remote_net_mask", remote_net_mask);
         params.put("ruleId", ruleId);
-        interf.add(Utils.freemarkerProcess(params, freemarkerTemplate));
-        String finalData = "[" + String.join(",", interf) + "]";
+        interf.add(Utils.velocityProcess(params, freemarkerTemplate));
+        String finalData = (interf.size() > 1) ? "[" + String.join(",", interf) + "]" : String.join(",", interf);
         String param = vgateway_lcuuid + "/vpns";
         return this.RequestTalker("put", "vgateways", finalData, param);
     }
@@ -391,8 +394,8 @@ public class VGWRequest extends RESTClient {
         return this.RequestTalker("delete", "vgateways", null, vgateway_lcuuid);
     }
 	
-	public ResultSet modifyVgateway(String vgateway_lcuuid, List<Map<String, Object>> lan_list, 
-            List<Map<String, Object>> wan_list) {
+	private ResultSet modifyVgateway(String vgateway_lcuuid, List<Map<String, Object>> wan_list, 
+            List<Map<String, Object>> lan_list) {
         /*
          * @params: vgateway_lcuuid, wan_list, lan_list
          * @method: PATCH /v1/vgateways/<vgateway_lcuuid>/
@@ -410,7 +413,7 @@ public class VGWRequest extends RESTClient {
             }
             
             public String getData() {
-                return "[" + String.join(",", interf) + "]";
+                return (interf.size() > 1) ? "[" + String.join(",", interf) + "]" : String.join(",", interf);
             }
             
             public Data generateWanData() {
@@ -419,71 +422,74 @@ public class VGWRequest extends RESTClient {
                  * 
                  */
                 String freemarkerTemplate = "{"
-                        + "\"IF_INDEX\": ${if_index?c},"
+                        + "\"IF_INDEX\": $if_index,"
                         + "\"STATE\": 1,"
                         + "\"IF_TYPE\": \"WAN\","
                         + "\"WAN\": { "
                         + "\"IPS\": ["
-                        + "{\"IP_RESOURCE_LCUUID\": \"${ip_resource_lcuuid}\"}"
+                        + "{\"IP_RESOURCE_LCUUID\": \"$ip_resource_lcuuid\"}"
                         + "],"
                         + "\"QOS\": {"
-                        + "\"MIN_BANDWIDTH\": ${min_bandwidth?c},"
-                        + "\"MAX_BANDWIDTH\": ${max_bandwidth?c}"
+                        + "\"MIN_BANDWIDTH\": $min_bandwidth,"
+                        + "\"MAX_BANDWIDTH\": $max_bandwidth"
                         + "}"
                         + "}"
                         + "}";
                 int index = 1;
                 for (Map<String, Object> map : wan_list) {
                     map.put("if_index", index);
-                    if (map.containsKey("min_bandwidth")) {
-                        map.put("min_bandwidth", 10485760);
-                    } else if (map.containsKey("max_bandwidth")) {
-                        map.put("max_bandwidth", 10485760);
-                    }
+                    map.put("min_bandwidth", map.get("bandwidth"));
+                    map.put("max_bandwidth", map.get("bandwidth"));
                     index += 1;
-                    interf.add(Utils.freemarkerProcess(map, freemarkerTemplate));
+                    interf.add(Utils.velocityProcess(map, freemarkerTemplate));
                 }
                 return this;
             }
             
             public Data generateLanData() {
                 /*
-                 * @params: lan_list(if_index,vl2_lcuuid,address,min_bandwidth,max_bandwidth)
+                 * @params: lan_list(if_index,vl2_lcuuid,address)
                  * 
                  */
                 String freemarkerTemplate = "{"
-                        + "\"IF_INDEX\": ${if_index?c},"
+                        + "\"IF_INDEX\": $if_index,"
                         + "\"STATE\": 1,"
                         + "\"IF_TYPE\": \"LAN\","
                         + "\"LAN\": { "
-                        + "\"VL2_LCUUID\": \"${vl2_lcuuid}\","
+                        + "\"VL2_LCUUID\": \"$vl2_lcuuid\","
                         + "\"IPS\": ["
                         + "{\"VL2_NET_INDEX\": 1, "
-                        + "\"ADDRESS\": \"${address}\"}"
+                        + "\"ADDRESS\": \"$address\"}"
                         + "],"
                         + "\"QOS\": {"
-                        + "\"MIN_BANDWIDTH\": ${min_bandwidth?c},"
-                        + "\"MAX_BANDWIDTH\": ${max_bandwidth?c}"
+                        + "\"MIN_BANDWIDTH\": 0,"
+                        + "\"MAX_BANDWIDTH\": 0"
                         + "}"
                         + "}"
                         + "}";
                 int index = 10;
                 for (Map<String, Object> map : lan_list) {
                     map.put("if_index", index);
-                    if (map.containsKey("min_bandwidth")) {
-                        map.put("min_bandwidth", 1048576000);
-                    } else if (map.containsKey("max_bandwidth")) {
-                        map.put("max_bandwidth", 1048576000);
-                    }
                     index += 1;
-                    interf.add(Utils.freemarkerProcess(map, freemarkerTemplate));
+                    
+                    interf.add(Utils.velocityProcess(map, freemarkerTemplate));
                 }
                 return this;
             }
         }
-        String finalData = new Data(lan_list, wan_list).generateLanData().generateWanData().getData();
+        String finalData = new Data(wan_list, lan_list).generateLanData().generateWanData().getData();
         return this.RequestTalker("patch", "vgateways", finalData, vgateway_lcuuid);
     }
+	
+	public ResultSet modifyVgatewayFinely(String name, List<Map<String, Object>> wan_list, 
+            List<Map<String, Object>> lan_list) {
+	    /*
+         * @params: name, wan, lan
+         * 
+         */
+	    String lcuuid = this.getVgatewayUuidByName(name);
+	    return this.modifyVgateway(lcuuid, wan_list, lan_list);
+	}
 	
 	public ResultSet getVgatewayByName(String name) {
 	    /*
@@ -613,17 +619,6 @@ public class VGWRequest extends RESTClient {
     }
 	
 	/*
-    def modify_vgateway_finely(self, **kwargs):
-        '''
-        @params: name, wan, lan
-        '''
-        lcuuid = self.get_vgateway_lcuuid_by_name(name=kwargs['name'])
-        result = self._modify_vgateway(vgateway_lcuuid=lcuuid,
-                                       wan_list=kwargs['wan'],
-                                       lan_list=kwargs['lan'],
-                                       info=kwargs['info'])
-        return result
-
     def modify_vgateway_finely_adv(self, **kwargs):
         '''
         @params: name, wan, lan
@@ -658,7 +653,6 @@ public class VGWRequest extends RESTClient {
                     break
         return utils.QueryResult(200, vgateway_id_list)
 
-/*
     def _modify_vgateway_adv(self, **kwargs):
         '''
         @params: vgateway_lcuuid, wan_list, lan_list

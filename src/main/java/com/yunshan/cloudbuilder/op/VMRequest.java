@@ -5,12 +5,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import com.yunshan.cloudbuilder.RESTClient;
 import com.yunshan.cloudbuilder.ResultSet;
 import com.yunshan.cloudbuilder.Utils;
 import com.yunshan.cloudbuilder.VMState;
 
 public class VMRequest extends RESTClient {
+    
+    protected static final Logger s_logger = Logger.getLogger(VMRequest.class);
 
     private String domain;
     private int userid;
@@ -41,19 +45,19 @@ public class VMRequest extends RESTClient {
          */
         String freemarkerTemplate = "{" 
                 + "\"allocation_type\": \"manual\"," 
-                + "\"userid\": ${userid},"
-                + "\"domain\": \"${domain}\"," 
+                + "\"userid\": $userid,"
+                + "\"domain\": \"$domain\"," 
                 + "\"order_id\": 20000,"
                 + "\"passwd\": \"yunshan3302\"," 
-                + "\"name\": \"${name}\"," 
-                + "\"os\": \"${os}\","
-                + "\"pool_lcuuid\": \"${pool_lcuuid}\","
-                + "\"launch_server\": \"${launch_server}\","
-                + "\"product_specification_lcuuid\": \"${product_spec}\","
-                + "\"vcpu_num\": ${vcpu_num?c}," 
-                + "\"mem_size\": ${mem_size?c},"
-                + "\"sys_disk_size\": ${sys_disk_size?c}," 
-                + "\"user_disk_size\": ${user_disk_size?c},"
+                + "\"name\": \"$name\"," 
+                + "\"os\": \"$os\","
+                + "\"pool_lcuuid\": \"$pool_lcuuid\","
+                + "\"launch_server\": \"$launch_server\","
+                + "\"product_specification_lcuuid\": \"$product_spec\","
+                + "\"vcpu_num\": $vcpu_num," 
+                + "\"mem_size\": $mem_size,"
+                + "\"sys_disk_size\": $sys_disk_size," 
+                + "\"user_disk_size\": $user_disk_size,"
                 + "\"role\": \"GENERAL_PURPOSE\"" 
                 + "}";
 
@@ -69,7 +73,8 @@ public class VMRequest extends RESTClient {
         params.put("pool_lcuuid", (pool_lcuuid != null) ? pool_lcuuid : this.pool_lcuuid);
         params.put("userid", this.userid);
         params.put("domain", this.domain);
-        String ret = Utils.freemarkerProcess(params, freemarkerTemplate);
+        String ret = Utils.velocityProcess(params, freemarkerTemplate);
+        s_logger.info("Execute -> createEPC function.");
         return this.RequestAPP("post", "vms", ret, null);
     }
 
@@ -79,6 +84,7 @@ public class VMRequest extends RESTClient {
          * 
          * @method: DELETE /v1/vms/
          */
+        s_logger.info("Execute -> createEPC function.");
         return this.RequestAPP("delete", "vms", null, String.valueOf(vmid));
     }
 
@@ -89,11 +95,12 @@ public class VMRequest extends RESTClient {
          * @method: PATCH /v1/vms/
          */
         String freemarkerTemplate = "{" 
-                + "\"action\": \"${action}\"" 
+                + "\"action\": \"$action\"" 
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("action", "stop");
-        String ret = Utils.freemarkerProcess(params, freemarkerTemplate);
+        String ret = Utils.velocityProcess(params, freemarkerTemplate);
+        s_logger.info("Execute -> createEPC function.");
         return this.RequestAPP("patch", "vms", ret, String.valueOf(vmid));
     }
 
@@ -104,11 +111,12 @@ public class VMRequest extends RESTClient {
          * @method: PATCH /v1/vms/
          */
         String freemarkerTemplate = "{" 
-                + "\"action\": \"${action}\"" 
+                + "\"action\": \"$action\"" 
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("action", "start");
-        String ret = Utils.freemarkerProcess(params, freemarkerTemplate);
+        String ret = Utils.velocityProcess(params, freemarkerTemplate);
+        s_logger.info("Execute -> createEPC function.");
         return this.RequestAPP("patch", "vms", ret, String.valueOf(vmid));
     }
 
@@ -119,11 +127,12 @@ public class VMRequest extends RESTClient {
          * @method: PATCH /v1/vms/
          */
         String freemarkerTemplate = "{" 
-                + "\"action\": \"${action}\"" 
+                + "\"action\": \"$action\"" 
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("action", "isolate");
-        String ret = Utils.freemarkerProcess(params, freemarkerTemplate);
+        String ret = Utils.velocityProcess(params, freemarkerTemplate);
+        s_logger.info("Execute -> createEPC function.");
         return this.RequestAPP("patch", "vms", ret, String.valueOf(vmid));
     }
 
@@ -134,11 +143,11 @@ public class VMRequest extends RESTClient {
          * @method: PATCH /v1/vms/
          */
         String freemarkerTemplate = "{" 
-                + "\"action\": \"${action}\"" 
+                + "\"action\": \"$action\"" 
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("action", "reconnect");
-        String ret = Utils.freemarkerProcess(params, freemarkerTemplate);
+        String ret = Utils.velocityProcess(params, freemarkerTemplate);
         return this.RequestAPP("patch", "vms", ret, String.valueOf(vmid));
     }
 
@@ -149,11 +158,11 @@ public class VMRequest extends RESTClient {
          * @method: PATCH /v1/vms/
          */
         String freemarkerTemplate = "{" 
-                + "\"action\": \"${action}\"" 
+                + "\"action\": \"$action\"" 
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("action", "snapshot");
-        String ret = Utils.freemarkerProcess(params, freemarkerTemplate);
+        String ret = Utils.velocityProcess(params, freemarkerTemplate);
         return this.RequestAPP("patch", "vms", ret, String.valueOf(vmid));
     }
 
@@ -164,11 +173,11 @@ public class VMRequest extends RESTClient {
          * @method: PATCH /v1/vms/
          */
         String freemarkerTemplate = "{" 
-                + "\"action\": \"${action}\"" 
+                + "\"action\": \"$action\"" 
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("action", "recoversnapshot");
-        String ret = Utils.freemarkerProcess(params, freemarkerTemplate);
+        String ret = Utils.velocityProcess(params, freemarkerTemplate);
         return this.RequestAPP("patch", "vms", ret, String.valueOf(vmid));
     }
 
@@ -179,11 +188,11 @@ public class VMRequest extends RESTClient {
          * @method: PATCH /v1/vms/
          */
         String freemarkerTemplate = "{" 
-                + "\"action\": \"${action}\"" 
+                + "\"action\": \"$action\"" 
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("action", "delsnapshot");
-        String ret = Utils.freemarkerProcess(params, freemarkerTemplate);
+        String ret = Utils.velocityProcess(params, freemarkerTemplate);
         return this.RequestAPP("patch", "vms", ret, String.valueOf(vmid));
     }
 
@@ -196,19 +205,19 @@ public class VMRequest extends RESTClient {
          */
         String freemarkerTemplate = "{" 
                 + "\"action\": \"modify\"," 
-                + "\"name\": \"${name}\","
-                + "\"vcpu_num\": \"${vcpu_num?c}\"," 
-                + "\"mem_size\": \"${mem_size?c}\","
+                + "\"name\": \"$name\","
+                + "\"vcpu_num\": \"$vcpu_num\"," 
+                + "\"mem_size\": \"$mem_size\","
                 + "\"sys_disk_size\": \"30\"," 
                 + "\"user_disk_size\": \"10\","
-                + "\"product_specification_lcuuid\": \"${product_spec}\"" 
+                + "\"product_specification_lcuuid\": \"$product_spec\"" 
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("name", name);
         params.put("vcpu_num", vcpu_num);
         params.put("mem_size", mem_size);
         params.put("product_spec", product_spec);
-        String ret = Utils.freemarkerProcess(params, freemarkerTemplate);
+        String ret = Utils.velocityProcess(params, freemarkerTemplate);
         return this.RequestAPP("patch", "vms", ret, String.valueOf(vmid));
     }
     
@@ -238,12 +247,12 @@ public class VMRequest extends RESTClient {
          */
         String freemarkerTemplate = "{" 
                 + "\"action\": \"setepc\"," 
-                + "\"epc_id\": ${epc_id?c}"
+                + "\"epc_id\": $epc_id"
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("epc_id", epcId);
         params.put("vmid", vmId);
-        String ret = Utils.freemarkerProcess(params, freemarkerTemplate);
+        String ret = Utils.velocityProcess(params, freemarkerTemplate);
         return this.RequestAPP("patch", "vms", ret, String.valueOf(vmId));
     }
   
@@ -254,14 +263,14 @@ public class VMRequest extends RESTClient {
          */
         String freemarkerTemplate = "{"
                 + "\"action\": \"modifyinterface\","
-                + "\"gateway\": \"${gateway}\","
+                + "\"gateway\": \"$gateway\","
                 + "\"loopback_ips\": [],"
                 + "\"interfaces\": []"
                 + "}";
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("gateway", gateway);
-        String ret = Utils.freemarkerProcess(params, freemarkerTemplate);
+        String ret = Utils.velocityProcess(params, freemarkerTemplate);
         return this.RequestAPP("patch", "vms", ret, String.valueOf(vmId));
     }
     
@@ -272,11 +281,11 @@ public class VMRequest extends RESTClient {
          * @method: PATCH /v1/vms/<fdb_vmid>
          */
         String freemarkerTemplate = "{"
-                + "\"state\": ${state},"
+                + "\"state\": $state,"
                 + "\"if_type\": \"LAN\","
                 + "\"lan\": {"
-                + "\"vl2_lcuuid\": \"${vl2_lcuuid}\","
-                + "\"ips\": [{\"vl2_net_index\": ${vl2_net_index}, \"address\": \"${address}\"}],"
+                + "\"vl2_lcuuid\": \"$vl2_lcuuid\","
+                + "\"ips\": [{\"vl2_net_index\": $vl2_net_index, \"address\": \"$address\"}],"
                 + "\"qos\": {\"min_bandwidth\": 0, \"max_bandwidth\": 0}"
                 + "}"
                 + "}";
@@ -285,7 +294,7 @@ public class VMRequest extends RESTClient {
         params.put("vl2_lcuuid", vl2_lcuuid);
         params.put("vl2_net_index", vl2_net_index);
         params.put("address", address);
-        String ret = Utils.freemarkerProcess(params, freemarkerTemplate);
+        String ret = Utils.velocityProcess(params, freemarkerTemplate);
         String param = vmId + "/interfaces/" + index;
         return this.RequestAPP("put", "vms", ret, param);
     }
@@ -297,18 +306,18 @@ public class VMRequest extends RESTClient {
          * @method: PATCH /v1/vms/<fdb_vmid>
          */
         String freemarkerTemplate = "{"
-                + "\"state\": ${state?c},"
+                + "\"state\": $state,"
                 + "\"if_type\": \"WAN\","
                 + "\"wan\": {"
                 + "\"ips\": [{\"ip_resource_lcuuid\": \"$ip_resource_lcuuid\"}],"
-                + "\"qos\": {\"min_bandwidth\": ${bandwidth?c}, \"max_bandwidth\": ${bandwidth?c}}"
+                + "\"qos\": {\"min_bandwidth\": $bandwidth, \"max_bandwidth\": $bandwidth}"
                 + "}"
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("state", state);
         params.put("ip_resource_lcuuid", ip_resource_lcuuid);
         params.put("bandwidth", BANDWIDTH);
-        String ret = Utils.freemarkerProcess(params, freemarkerTemplate);
+        String ret = Utils.velocityProcess(params, freemarkerTemplate);
         String param = vmId + "/interfaces/" + index;
         return this.RequestAPP("put", "vms", ret, param);
     }
@@ -324,42 +333,42 @@ public class VMRequest extends RESTClient {
          * @method: PATCH /v1/vms/<fdb_vmid>
          */
         String vmLanTmpl = "{"
-                + "\"state\": ${state},"
+                + "\"state\": $state,"
                 + "\"if_type\": \"LAN\","
                 + "\"lan\": {"
-                + "\"vl2_lcuuid\": \"${vl2_lcuuid}\","
-                + "\"ips\": [{\"vl2_net_index\": ${vl2_net_index}, \"address\": \"${address}\"}],"
+                + "\"vl2_lcuuid\": \"$vl2_lcuuid\","
+                + "\"ips\": [{\"vl2_net_index\": $vl2_net_index, \"address\": \"$address\"}],"
                 + "\"qos\": {\"min_bandwidth\": 0, \"max_bandwidth\": 0}"
                 + "}"
                 + "}";
         String vmWanTmpl = "{"
-                + "\"state\": ${state},"
+                + "\"state\": $state,"
                 + "\"if_type\": \"WAN\","
                 + "\"wan\": {"
-                + "\"ips\": [{\"ip_resource_lcuuid\": \"${ip_resource_lcuuid}\"}],"
-                + "\"qos\": {\"min_bandwidth\": ${bandwidth}, \"max_bandwidth\": ${bandwidth}}"
+                + "\"ips\": [{\"ip_resource_lcuuid\": \"$ip_resource_lcuuid\"}],"
+                + "\"qos\": {\"min_bandwidth\": $bandwidth, \"max_bandwidth\": $bandwidth}"
                 + "}"
                 + "}";
         List<String> interf = new ArrayList<String>();
         
         for(Map<String, Object> map : interfaces) {
             if (map.containsKey("ip_resource_lcuuid")) {
-                interf.add(Utils.freemarkerProcess(map, vmWanTmpl));
+                interf.add(Utils.velocityProcess(map, vmWanTmpl));
             } else {
-                interf.add(Utils.freemarkerProcess(map, vmLanTmpl));
+                interf.add(Utils.velocityProcess(map, vmLanTmpl));
             }
         }
         String freemarkerTemplate = "{"
                 + "\"action\": \"modifyinterface\","
-                + "\"gateway\": \"${gateway}\","
+                + "\"gateway\": \"$gateway\","
                 + "\"loopback_ips\": [],"
-                + "\"interfaces\": ${interface_data}"
+                + "\"interfaces\": $interface_data"
                 + "}";
         String interface_data = "[" + String.join(",", interf) + "]";
         Map<String, Object> patchData = new HashMap<String, Object>();
         patchData.put("gateway", gateway);
-        patchData.put("interfaces", interface_data);
-        String finalret = Utils.freemarkerProcess(patchData, freemarkerTemplate);
+        patchData.put("interface_data", interface_data);
+        String finalret = Utils.velocityProcess(patchData, freemarkerTemplate);
         return this.RequestAPP("patch", "vms", finalret, String.valueOf(vmid));
     }
     
@@ -369,14 +378,14 @@ public class VMRequest extends RESTClient {
          * @method: POST /v1/vm_snapshot/<vmuuid>/snapshots
          */
         String freemarkerTemplate = "{"
-                + "\"NAME\": \"${name}\","
-                + "\"DESCRIPTION\": \"${name}\","
-                + "\"PRODUCT_SPECIFICATION_LCUUID\": \"${product_spec}\""
+                + "\"NAME\": \"$name\","
+                + "\"DESCRIPTION\": \"$name\","
+                + "\"PRODUCT_SPECIFICATION_LCUUID\": \"$product_spec\""
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("name", name);
         params.put("product_spec", product_spec);
-        String ret = Utils.freemarkerProcess(params, freemarkerTemplate);
+        String ret = Utils.velocityProcess(params, freemarkerTemplate);
         String param = vmuuid + "/snapshots";
         return this.RequestAPP("post", "vm_snapshot", ret, param);
     }
@@ -609,8 +618,9 @@ public class VMRequest extends RESTClient {
         }
     }
     
-    public ResultSet attachMultiIPAddress(int vmid, String gateway, 
+    public ResultSet attachMultiIPAddress(String name, String gateway, 
             List<Map<String, Object>> interfaces) {
+        int vmid = this.getVmIdByName(name);
         return this.attachMultiInterface(vmid, gateway, interfaces);
     }
     

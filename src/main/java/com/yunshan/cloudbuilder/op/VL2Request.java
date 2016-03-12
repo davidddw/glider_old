@@ -5,19 +5,25 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import com.yunshan.cloudbuilder.RESTClient;
 import com.yunshan.cloudbuilder.ResultSet;
 import com.yunshan.cloudbuilder.Utils;
 
 public class VL2Request extends RESTClient {
     
+    protected static final Logger s_logger = Logger.getLogger(VL2Request.class);
+    
     private String domain;
     private int userid;
+    private EPCRequest epcRequest = null;
 
 	public VL2Request(String host, String domain, int userid) {
 		super(host);
 		this.domain = domain;
 		this.userid = userid;
+		epcRequest = new EPCRequest(host, domain, userid);
 	}
 
 	private ResultSet createVL2(String name, int epcId, String prefix, int netmask) {
@@ -26,13 +32,13 @@ public class VL2Request extends RESTClient {
 		 * @method: POST /v1/vl2s/
 		 */
 	    String freemarkerTemplate = "{"
-	            + "\"name\": \"${name}\","
+	            + "\"name\": \"$name\","
 	            + "\"vlantag\": 0,"
-	            + "\"epc_id\": ${epc_id?c},"
-	            + "\"userid\": ${userid?c},"
-	            + "\"domain\": \"${domain}\","
+	            + "\"epc_id\": $epc_id,"
+	            + "\"userid\": $userid,"
+	            + "\"domain\": \"$domain\","
 	            + "\"nets\": "
-	            + "[{\"prefix\": \"${prefix}\",\"netmask\": ${netmask} }]"
+	            + "[{\"prefix\": \"$prefix\",\"netmask\": $netmask }]"
 	            + "}";
 	    Map<String, Object> params = new HashMap<String, Object>();
 	    params.put("name", name);
@@ -41,7 +47,7 @@ public class VL2Request extends RESTClient {
 	    params.put("netmask", netmask);
 	    params.put("userid", this.userid);
 	    params.put("domain", this.domain);
-	    String ret = Utils.freemarkerProcess(params, freemarkerTemplate);
+	    String ret = Utils.velocityProcess(params, freemarkerTemplate);
 	    return this.RequestAPP("post", "vl2s", ret, null);
 	}
 	
@@ -59,21 +65,21 @@ public class VL2Request extends RESTClient {
          * @method: PATCH /v1/vl2s/<vl2_id>/
          */
 	    String freemarkerTemplate = "{"
-	            + "\"prefix\": \"${prefix}\","
-	            + "\"netmask\": ${netmask}"
+	            + "\"prefix\": \"$prefix\","
+	            + "\"netmask\": $netmask"
 	            + "}";
 	    List<String> interf = new ArrayList<String>();
 	    
 	    for(Map<String, Object> map : netList) {
-	        interf.add(Utils.freemarkerProcess(map, freemarkerTemplate));
+	        interf.add(Utils.velocityProcess(map, freemarkerTemplate));
         }
 	    String finalFreemarkerTemplate = "{"
-                + "\"nets\": ${net_data}"
+                + "\"nets\": $net_data"
                 + "}";
         String net_data = "[" + String.join(",", interf) + "]";
         Map<String, Object> patchData = new HashMap<String, Object>();
         patchData.put("net_data", net_data);
-        String finalret = Utils.freemarkerProcess(patchData, finalFreemarkerTemplate);
+        String finalret = Utils.velocityProcess(patchData, finalFreemarkerTemplate);
         return this.RequestAPP("patch", "vl2s", finalret, String.valueOf(vl2Id));
     }
     
@@ -111,22 +117,23 @@ public class VL2Request extends RESTClient {
         return this.RequestAPP("get", "vl2s", null, String.valueOf(vl2Id));
     }
     
-    public int getVL2LcuuidByName(String name) {
+    public String getVL2LcuuidByName(String name) {
         /*
          * @params: name
          * @method: 
          */
         ResultSet vl2 = getVL2ByName(name);
-        return getIntRecordsByKey(vl2, "LCUUID");
+        return getStringRecordsByKey(vl2, "LCUUID");
     }
 
-    public ResultSet CreateVL2IfNotExist(String name, int epcId, String prefix,
+    public ResultSet CreateVL2IfNotExist(String name, String epcName, String prefix,
             int netmask) {
         /*
          * @params: name, epc_id, prefix, netmask
          * @method: 
          */
         ResultSet vl2 = getVL2ByName(name);
+        int epcId = epcRequest.getEPCIdByName(epcName);
         if (vl2.content()==null) {
             return this.createVL2(name, epcId, prefix, netmask);
         } else {

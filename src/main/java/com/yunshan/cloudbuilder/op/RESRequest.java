@@ -1,9 +1,13 @@
 package com.yunshan.cloudbuilder.op;
 
+import org.apache.log4j.Logger;
+
 import com.yunshan.cloudbuilder.RESTClient;
 import com.yunshan.cloudbuilder.ResultSet;
 
 public class RESRequest extends RESTClient {
+    
+    protected static final Logger s_logger = Logger.getLogger(RESRequest.class);
 
 	public RESRequest(String host) {
         super(host);
@@ -49,4 +53,17 @@ public class RESRequest extends RESTClient {
         return getStringRecordsByKey(rs, "LCUUID");
     }
 	
+	public String getUuidByIp(String ip) {
+        /*
+         * @params: ip
+         * 
+         */
+	    ResultSet rs = this.RequestTalker("get", "ip-resources", null, null);
+	    return getStringRecordsByKey(filterRecordsByKey(rs, "IP", ip), "LCUUID");
+	}
+	
+	public static void main(String[] args) {
+	    RESRequest rs = new RESRequest("10.33.37.28");
+	    System.out.println(rs.getUuidByIp("192.168.182.162"));
+	}
 }
