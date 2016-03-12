@@ -144,7 +144,7 @@ public class EnvBuilder {
                 }
             }
             vmRequest.attachMultiIPAddress(vmInfo.getName(), vmInfo.getVm_gw(), vmIPInfo);
-        }}
+        }} 
         
         for (LBInfo lbInfo : config.getLbs()) {
             List<Map<String, Object>> lbIPInfo = lbInfo.getLb_ip();
@@ -165,7 +165,7 @@ public class EnvBuilder {
         if (config!=null) {
             orderAll();
             try {
-                Thread.sleep(6000);
+                Thread.sleep(20000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
