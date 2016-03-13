@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import com.yunshan.cloudbuilder.HttpMethod;
 import com.yunshan.cloudbuilder.RESTClient;
 import com.yunshan.cloudbuilder.ResultSet;
 import com.yunshan.cloudbuilder.Utils;
@@ -34,7 +35,7 @@ public class ValveRequest extends RESTClient {
          * @method: POST /v1/valves/
          * 
          */
-        String freemarkerTemplate = "{"
+        String velocityTemplate = "{"
                 + "\"USERID\": $userid,"
                 + "\"WANS\": 3,"
                 + "\"LANS\": 1,"
@@ -50,8 +51,8 @@ public class ValveRequest extends RESTClient {
         params.put("product_spec", product_spec);
         params.put("userid", this.userid);
         params.put("domain", this.domain);
-        String ret = Utils.velocityProcess(params, freemarkerTemplate);
-        return this.RequestTalker("post", "valves", ret, null);
+        String ret = Utils.velocityProcess(params, velocityTemplate);
+        return this.RequestTalker(HttpMethod.POST, "valves", ret, null);
     }
 
 	private ResultSet createValveManually(String name, String product_spec, String pool_lcuuid, 
@@ -61,7 +62,7 @@ public class ValveRequest extends RESTClient {
          * @method: POST /v1/valves/
          * 
          */
-        String freemarkerTemplate = "{"
+        String velocityTemplate = "{"
                 + "\"USERID\": $userid,"
                 + "\"WANS\": 3,"
                 + "\"LANS\": 1,"
@@ -81,8 +82,8 @@ public class ValveRequest extends RESTClient {
         params.put("launch_server", launch_server);
         params.put("userid", this.userid);
         params.put("domain", this.domain);
-        String ret = Utils.velocityProcess(params, freemarkerTemplate);
-        return this.RequestTalker("post", "valves", ret, null);
+        String ret = Utils.velocityProcess(params, velocityTemplate);
+        return this.RequestTalker(HttpMethod.POST, "valves", ret, null);
     }
     
 	private ResultSet getValves() {
@@ -91,7 +92,8 @@ public class ValveRequest extends RESTClient {
          * @method: GET /v1/valves/
          * 
          */
-        return this.RequestTalker("get", "valves", null, null);
+	    s_logger.info("Execute: getValves");
+        return this.RequestTalker(HttpMethod.GET, "valves", null, null);
     }
 	
 	public ResultSet getValveByLcuuid(String lcuuid) {
@@ -100,7 +102,8 @@ public class ValveRequest extends RESTClient {
          * @method: GET /v1/vgateways/<valve_lcuuid>/
          * 
          */
-        return this.RequestTalker("get", "valves", null, lcuuid);
+	    s_logger.info("Execute: getValves");
+        return this.RequestTalker(HttpMethod.GET, "valves", null, lcuuid);
     }
 	
 	private ResultSet modifyValveLaunchServer(String valve_lcuuid, String launch_server) {
@@ -109,14 +112,15 @@ public class ValveRequest extends RESTClient {
          * @method: PATCH /v1/vgateways/<valve_lcuuid>/
          * 
          */
-        String freemarkerTemplate = "{"
+        String velocityTemplate = "{"
                 + "\"GW_LAUNCH_SERVER\": \"$launch_server\""
                 + "}";
         
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("launch_server", launch_server);
-        String ret = Utils.velocityProcess(params, freemarkerTemplate);
-        return this.RequestTalker("patch", "valves", ret, valve_lcuuid);
+        String ret = Utils.velocityProcess(params, velocityTemplate);
+        s_logger.info("Execute: getValves");
+        return this.RequestTalker(HttpMethod.PATCH, "valves", ret, valve_lcuuid);
     }
 	
 	private ResultSet modifyValveEPCId(String valve_lcuuid, int epc_id) {
@@ -125,14 +129,15 @@ public class ValveRequest extends RESTClient {
          * @method: PATCH /v1/vgateways/<valve_lcuuid>/
          * 
          */
-        String freemarkerTemplate = "{"
+        String velocityTemplate = "{"
                 + "\"EPC_ID\": $epc_id"
                 + "}";
         
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("epc_id", epc_id);
-        String ret = Utils.velocityProcess(params, freemarkerTemplate);
-        return this.RequestTalker("patch", "valves", ret, valve_lcuuid);
+        String ret = Utils.velocityProcess(params, velocityTemplate);
+        s_logger.info("Execute: getValves");
+        return this.RequestTalker(HttpMethod.PATCH, "valves", ret, valve_lcuuid);
     }
 	
 	private ResultSet deleteValve(String valve_lcuuid) {
@@ -141,7 +146,8 @@ public class ValveRequest extends RESTClient {
          * @method: DELETE /v1/vgateways/<valve_lcuuid>/
          * 
          */
-        return this.RequestTalker("delete", "valves", null, valve_lcuuid);
+	    s_logger.info("Execute: deleteValve");
+        return this.RequestTalker(HttpMethod.DELETE, "valves", null, valve_lcuuid);
     }
 	
 	private ResultSet modifyValve(String valve_lcuuid, List<Map<String, Object>> wan_list, 
@@ -171,7 +177,7 @@ public class ValveRequest extends RESTClient {
 	             * @params: wan_list(if_index,ip_resource_lcuuid,min_bandwidth,max_bandwidth)
 	             * 
 	             */
-	            String freemarkerTemplate = "{"
+	            String velocityTemplate = "{"
 	                    + "\"IF_INDEX\": $if_index,"
 	                    + "\"STATE\": 1,"
 	                    + "\"IF_TYPE\": \"WAN\","
@@ -191,7 +197,7 @@ public class ValveRequest extends RESTClient {
 	                map.put("min_bandwidth", BANDWIDTH);
 	                map.put("max_bandwidth", BANDWIDTH);
 	                index += 1;
-	                interf.add(Utils.velocityProcess(map, freemarkerTemplate));
+	                interf.add(Utils.velocityProcess(map, velocityTemplate));
 	            }
 	            return this;
 	        }
@@ -201,7 +207,7 @@ public class ValveRequest extends RESTClient {
 	             * @params: lan_list(if_index,vl2_lcuuid)
 	             * 
 	             */
-	            String freemarkerTemplate = "{"
+	            String velocityTemplate = "{"
 	                    + "\"IF_INDEX\": $if_index,"
 	                    + "\"STATE\": 1,"
 	                    + "\"IF_TYPE\": \"LAN\","
@@ -221,20 +227,21 @@ public class ValveRequest extends RESTClient {
 	            for (Map<String, Object> map : lan_list) {
 	                map.put("if_index", index);
 	                index += 1;
-	                interf.add(Utils.velocityProcess(map, freemarkerTemplate));
+	                interf.add(Utils.velocityProcess(map, velocityTemplate));
 	            }
 	            return this;
 	        }
 	    }
 	    String finalData = new Data(wan_list, lan_list).generateLanData().generateWanData().getData();
-	    String freemarkerTemplate = "{"
+	    String velocityTemplate = "{"
 	            + "\"GENERAL_BANDWIDTH\": 1048576,"
                 + "\"INTERFACES\": $interface_data"
                 + "}";
 	    Map<String, Object> params = new HashMap<String, Object>();
         params.put("interface_data", finalData);
-        String ret = Utils.velocityProcess(params, freemarkerTemplate);
-	    return this.RequestTalker("patch", "valves", ret, valve_lcuuid);
+        String ret = Utils.velocityProcess(params, velocityTemplate);
+        s_logger.info("Execute: modifyValve");
+	    return this.RequestTalker(HttpMethod.PATCH, "valves", ret, valve_lcuuid);
     }
 	
 	public ResultSet modifyValveFinely(String name, List<Map<String, Object>> wan_list, 

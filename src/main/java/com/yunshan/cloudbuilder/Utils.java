@@ -15,20 +15,6 @@ import org.yaml.snakeyaml.Yaml;
 import com.yunshan.config.Configuration;
 
 public class Utils {
-//    public static String freemarkerProcess(Map<String, Object> input, String templateStr) {
-//        Template t;
-//        try {
-//            t = new Template(null, new StringReader(templateStr), null);
-//            StringWriter writer = new StringWriter();
-//            t.process(input, writer);
-//            return writer.toString();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        } catch (TemplateException e) {
-//            e.printStackTrace();
-//        } 
-//        return null;
-//    }
     
     public static String velocityProcess(Map<String, Object> input, String templateStr) {
         VelocityEngine ve = new VelocityEngine();

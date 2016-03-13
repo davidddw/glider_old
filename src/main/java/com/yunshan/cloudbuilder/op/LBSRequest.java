@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import com.yunshan.cloudbuilder.HttpMethod;
 import com.yunshan.cloudbuilder.RESTClient;
 import com.yunshan.cloudbuilder.ResultSet;
 import com.yunshan.cloudbuilder.Utils;
@@ -42,7 +43,7 @@ public class LBSRequest extends RESTClient {
          * @method: POST /v1/lbs/
          * 
          */
-        String freemarkerTemplate = "{" 
+        String velocityTemplate = "{" 
                 + "\"allocation_type\": \"manual\"," 
                 + "\"userid\": $userid,"
                 + "\"domain\": \"$domain\"," 
@@ -72,9 +73,9 @@ public class LBSRequest extends RESTClient {
         params.put("pool_lcuuid", (pool_lcuuid != null) ? pool_lcuuid : this.pool_lcuuid);
         params.put("userid", this.userid);
         params.put("domain", this.domain);
-        String ret = Utils.velocityProcess(params, freemarkerTemplate);
+        String ret = Utils.velocityProcess(params, velocityTemplate);
         s_logger.info("execute -> createLB function.");
-        return this.RequestAPP("post", "lbs", ret, null);
+        return this.RequestAPP(HttpMethod.POST, "lbs", ret, null);
     }
     
     public ResultSet deleteLB(int lbId) {
@@ -84,7 +85,7 @@ public class LBSRequest extends RESTClient {
          * @method: DELETE /v1/lbs/
          */
         s_logger.info("execute -> deleteLB function.");
-        return this.RequestAPP("delete", "lbs", null, String.valueOf(lbId));
+        return this.RequestAPP(HttpMethod.DELETE, "lbs", null, String.valueOf(lbId));
     }
 
     public ResultSet modifyLB(int lbId, String name, String vcpu_num, String mem_size,
@@ -94,7 +95,7 @@ public class LBSRequest extends RESTClient {
          * 
          * @method: PATCH /v1/vms/
          */
-        String freemarkerTemplate = "{" 
+        String velocityTemplate = "{" 
                 + "\"action\": \"modify\"," 
                 + "\"name\": \"$name\","
                 + "\"vcpu_num\": \"$vcpu_num\"," 
@@ -108,9 +109,9 @@ public class LBSRequest extends RESTClient {
         params.put("vcpu_num", vcpu_num);
         params.put("mem_size", mem_size);
         params.put("product_spec", product_spec);
-        String ret = Utils.velocityProcess(params, freemarkerTemplate);
+        String ret = Utils.velocityProcess(params, velocityTemplate);
         s_logger.info("execute -> modifyLB function.");
-        return this.RequestAPP("patch", "lbs", ret, String.valueOf(lbId));
+        return this.RequestAPP(HttpMethod.PATCH, "lbs", ret, String.valueOf(lbId));
     }
 
     private ResultSet addLBToEPC(int lbId, int epcId) {
@@ -118,15 +119,15 @@ public class LBSRequest extends RESTClient {
          * @params: vmid, epc_id
          * @method: PATCH /v1/vms/<fdb_vmid>
          */
-        String freemarkerTemplate = "{" 
+        String velocityTemplate = "{" 
                 + "\"action\": \"setepc\"," 
                 + "\"epc_id\": $epc_id"
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("epc_id", epcId);
-        String ret = Utils.velocityProcess(params, freemarkerTemplate);
+        String ret = Utils.velocityProcess(params, velocityTemplate);
         s_logger.info("execute -> addLBToEPC function.");
-        return this.RequestAPP("patch", "lbs", ret, String.valueOf(lbId));
+        return this.RequestAPP(HttpMethod.PATCH, "lbs", ret, String.valueOf(lbId));
     }
     
     public ResultSet getLBById(int lbId) {
@@ -135,7 +136,7 @@ public class LBSRequest extends RESTClient {
          * 
          */
         s_logger.info("execute -> getLBById function.");
-        return this.RequestAPP("get", "lbs", null, String.valueOf(lbId));
+        return this.RequestAPP(HttpMethod.GET, "lbs", null, String.valueOf(lbId));
     }
     
     public ResultSet createLBListener(String name, String protocol, String ip, int port,
@@ -144,7 +145,7 @@ public class LBSRequest extends RESTClient {
          * @params: lcuuid, name, protocol,ip,port,balance
          * @method: PATCH /v1/vms/<fdb_vmid>
          */
-        String freemarkerTemplate = "{" 
+        String velocityTemplate = "{" 
                 + "\"NAME\": \"$name\"," 
                 + "\"PROTOCOL\": \"$protocol\"," 
                 + "\"IP\": \"$ip\"," 
@@ -160,10 +161,10 @@ public class LBSRequest extends RESTClient {
         params.put("ip", ip);
         params.put("port", port);
         params.put("balance", (balance != null) ? balance : "roundrobin");
-        String ret = Utils.velocityProcess(params, freemarkerTemplate);
+        String ret = Utils.velocityProcess(params, velocityTemplate);
         String param = lcuuid + "/lb-listeners/";
         s_logger.info("execute -> createLBListener function.");
-        return this.RequestAPP("post", "lbs", ret, param);
+        return this.RequestAPP(HttpMethod.POST, "lbs", ret, param);
     }
     
     public ResultSet deleteLBListener(String lb_lcuuid, String lb_listener_lcuuid) {
@@ -173,7 +174,7 @@ public class LBSRequest extends RESTClient {
          */
         String param = lb_lcuuid + "/lb-listeners/" + lb_listener_lcuuid;
         s_logger.info("execute -> deleteLBListener function.");
-        return this.RequestAPP("delete", "lbs", null, param);
+        return this.RequestAPP(HttpMethod.DELETE, "lbs", null, param);
     }
     
     public ResultSet getLBListener(String lblcuuid) {
@@ -183,7 +184,7 @@ public class LBSRequest extends RESTClient {
          */
         String param = lblcuuid + "/lb-listeners";
         s_logger.info("execute -> getLBListener function.");
-        return this.RequestAPP("get", "lbs", null, param);
+        return this.RequestAPP(HttpMethod.GET, "lbs", null, param);
     }
     
     public ResultSet createLBForwardRules(String name, String type, String content) {
@@ -191,7 +192,7 @@ public class LBSRequest extends RESTClient {
          * @params: name, type, content
          * @method: POST /v1/lb-forward-rules/
          */
-        String freemarkerTemplate = "{" 
+        String velocityTemplate = "{" 
                 + "\"NAME\": \"$name\"," 
                 + "\"TYPE\": \"$type\"," 
                 + "\"CONTENT\": \"$content\"," 
@@ -203,9 +204,9 @@ public class LBSRequest extends RESTClient {
         params.put("type", type);
         params.put("content", content);
         params.put("userid", userid);
-        String ret = Utils.velocityProcess(params, freemarkerTemplate);
+        String ret = Utils.velocityProcess(params, velocityTemplate);
         s_logger.info("execute -> createLBForwardRules function.");
-        return this.RequestAPP("post", "lb-forward-rules", ret, null);
+        return this.RequestAPP(HttpMethod.POST, "lb-forward-rules", ret, null);
     }
 
     public ResultSet setDefaultGW(int lbId, String gateway) {
@@ -213,7 +214,7 @@ public class LBSRequest extends RESTClient {
          * @params: vmid, gateway
          * @method: PATCH /v1/vms
          */
-        String freemarkerTemplate = "{"
+        String velocityTemplate = "{"
                 + "\"action\": \"modifyinterface\","
                 + "\"gateway\": \"$gateway\","
                 + "\"loopback_ips\": [],"
@@ -222,9 +223,9 @@ public class LBSRequest extends RESTClient {
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("gateway", gateway);
-        String ret = Utils.velocityProcess(params, freemarkerTemplate);
+        String ret = Utils.velocityProcess(params, velocityTemplate);
         s_logger.info("execute -> createLBForwardRules function.");
-        return this.RequestAPP("patch", "vms", ret, String.valueOf(lbId));
+        return this.RequestAPP(HttpMethod.PATCH, "vms", ret, String.valueOf(lbId));
     }
     
     public ResultSet putLBListener(String name, String protocol, String ip, int port,
@@ -235,7 +236,7 @@ public class LBSRequest extends RESTClient {
          * @params: port, balance, bk_vms
          * @method: POST /v1/lbs/<lb_lcuuid>/lb-listeners/<lb_listener_lcuuid>/
          */
-        String freemarkerTemplate = "{" 
+        String velocityTemplate = "{" 
                 + "\"NAME\": \"$name\"," 
                 + "\"PROTOCOL\": \"$protocol\"," 
                 + "\"IP\": \"$ip\"," 
@@ -253,10 +254,10 @@ public class LBSRequest extends RESTClient {
         params.put("port", port);
         params.put("balance", (balance != null) ? balance : "roundrobin");
         params.put("bk_vms", bk_vms);
-        String ret = Utils.velocityProcess(params, freemarkerTemplate);
+        String ret = Utils.velocityProcess(params, velocityTemplate);
         String param = lb_lcuuid + "/lb-listeners/" + lb_listener_lcuuid;
         s_logger.info("execute -> putLBListener function.");
-        return this.RequestAPP("put", "lbs", ret, param);
+        return this.RequestAPP(HttpMethod.PUT, "lbs", ret, param);
     }
     
     public ResultSet patchLBListenerbkVms(String state,
@@ -269,15 +270,15 @@ public class LBSRequest extends RESTClient {
          * @params: port, balance, bk_vms
          * @method: POST /v1/lbs/<lb_lcuuid>/lb-listeners/<lb_listener_lcuuid>/
          */
-        String freemarkerTemplate = "{" 
+        String velocityTemplate = "{" 
                 + "\"STATE\": \"$state\"" 
                 + "}";
         
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("state", (state != null) ? state : "ENABLE");
-        String ret = Utils.velocityProcess(params, freemarkerTemplate);
+        String ret = Utils.velocityProcess(params, velocityTemplate);
         String param = lb_lcuuid + "/lb-listeners/" + lb_listener_lcuuid + "/lb-bk-vms/" + vm_lcuuid;
-        return this.RequestAPP("patch", "lbs", ret, param);
+        return this.RequestAPP(HttpMethod.PATCH, "lbs", ret, param);
     }
     
     private ResultSet attachOneLanInterface(int lbId, int index, int state, 
@@ -302,7 +303,7 @@ public class LBSRequest extends RESTClient {
         params.put("address", address);
         String ret = Utils.velocityProcess(params, vmLanTmpl);
         String param = lbId + "/interfaces/" + index;
-        return this.RequestAPP("put", "vms", ret, param);
+        return this.RequestAPP(HttpMethod.PUT, "vms", ret, param);
     }
     
     private ResultSet attachOneWanInterface(int lbId, int index, int state, 
@@ -325,7 +326,7 @@ public class LBSRequest extends RESTClient {
         params.put("bandwidth", (bandwidth != 0) ? bandwidth : BANDWIDTH);
         String ret = Utils.velocityProcess(params, vmWanTmpl);
         String param = lbId + "/interfaces/" + index;
-        return this.RequestAPP("put", "vms", ret, param);
+        return this.RequestAPP(HttpMethod.PUT, "vms", ret, param);
     }
     
     private ResultSet attachMultiInterface(int lbId, String gateway, 
@@ -377,7 +378,7 @@ public class LBSRequest extends RESTClient {
         patchData.put("gateway", gateway);
         patchData.put("interface_data", interface_data);
         String finalret = Utils.velocityProcess(patchData, finalTmpl);
-        return this.RequestAPP("patch", "vms", finalret, String.valueOf(lbId));
+        return this.RequestAPP(HttpMethod.PATCH, "vms", finalret, String.valueOf(lbId));
     }
 
     public ResultSet attachIPAddress(int lbId, int index, String vl2_lcuuid, int vl2_net_index, 
@@ -416,7 +417,7 @@ public class LBSRequest extends RESTClient {
          * 
          * @method: GET /v1/lbs/
          */
-        return this.RequestAPP("get", "lbs", null, null);
+        return this.RequestAPP(HttpMethod.GET, "lbs", null, null);
     }
 
     public ResultSet getLBByName(String name) {

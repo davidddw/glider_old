@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import com.yunshan.cloudbuilder.HttpMethod;
 import com.yunshan.cloudbuilder.RESTClient;
 import com.yunshan.cloudbuilder.ResultSet;
 import com.yunshan.cloudbuilder.Utils;
@@ -21,8 +22,6 @@ public class VMRequest extends RESTClient {
     private String pool_lcuuid;
     
     private EPCRequest epcRequest = null;
-    
-    private static final int BANDWIDTH = 10485760;
 
     public VMRequest(String host, String poolName, String domain, int userid) {
         super(host);
@@ -43,7 +42,7 @@ public class VMRequest extends RESTClient {
          * @method: POST /v1/vms/
          * 
          */
-        String freemarkerTemplate = "{" 
+        String velocityTemplate = "{" 
                 + "\"allocation_type\": \"manual\"," 
                 + "\"userid\": $userid,"
                 + "\"domain\": \"$domain\"," 
@@ -73,9 +72,9 @@ public class VMRequest extends RESTClient {
         params.put("pool_lcuuid", (pool_lcuuid != null) ? pool_lcuuid : this.pool_lcuuid);
         params.put("userid", this.userid);
         params.put("domain", this.domain);
-        String ret = Utils.velocityProcess(params, freemarkerTemplate);
+        String ret = Utils.velocityProcess(params, velocityTemplate);
         s_logger.info("Execute -> createEPC function.");
-        return this.RequestAPP("post", "vms", ret, null);
+        return this.RequestAPP(HttpMethod.POST, "vms", ret, null);
     }
 
     private ResultSet deleteVM(int vmid) {
@@ -85,7 +84,7 @@ public class VMRequest extends RESTClient {
          * @method: DELETE /v1/vms/
          */
         s_logger.info("Execute -> createEPC function.");
-        return this.RequestAPP("delete", "vms", null, String.valueOf(vmid));
+        return this.RequestAPP(HttpMethod.DELETE, "vms", null, String.valueOf(vmid));
     }
 
     private ResultSet stopVM(int vmid) {
@@ -94,14 +93,14 @@ public class VMRequest extends RESTClient {
          * 
          * @method: PATCH /v1/vms/
          */
-        String freemarkerTemplate = "{" 
+        String velocityTemplate = "{" 
                 + "\"action\": \"$action\"" 
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("action", "stop");
-        String ret = Utils.velocityProcess(params, freemarkerTemplate);
+        String ret = Utils.velocityProcess(params, velocityTemplate);
         s_logger.info("Execute -> createEPC function.");
-        return this.RequestAPP("patch", "vms", ret, String.valueOf(vmid));
+        return this.RequestAPP(HttpMethod.PATCH, "vms", ret, String.valueOf(vmid));
     }
 
     private ResultSet startVM(int vmid) {
@@ -110,14 +109,14 @@ public class VMRequest extends RESTClient {
          * 
          * @method: PATCH /v1/vms/
          */
-        String freemarkerTemplate = "{" 
+        String velocityTemplate = "{" 
                 + "\"action\": \"$action\"" 
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("action", "start");
-        String ret = Utils.velocityProcess(params, freemarkerTemplate);
+        String ret = Utils.velocityProcess(params, velocityTemplate);
         s_logger.info("Execute -> createEPC function.");
-        return this.RequestAPP("patch", "vms", ret, String.valueOf(vmid));
+        return this.RequestAPP(HttpMethod.PATCH, "vms", ret, String.valueOf(vmid));
     }
 
     public ResultSet isolateVMs(int vmid) {
@@ -126,14 +125,14 @@ public class VMRequest extends RESTClient {
          * 
          * @method: PATCH /v1/vms/
          */
-        String freemarkerTemplate = "{" 
+        String velocityTemplate = "{" 
                 + "\"action\": \"$action\"" 
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("action", "isolate");
-        String ret = Utils.velocityProcess(params, freemarkerTemplate);
+        String ret = Utils.velocityProcess(params, velocityTemplate);
         s_logger.info("Execute -> createEPC function.");
-        return this.RequestAPP("patch", "vms", ret, String.valueOf(vmid));
+        return this.RequestAPP(HttpMethod.PATCH, "vms", ret, String.valueOf(vmid));
     }
 
     public ResultSet reconnectVMs(int vmid) {
@@ -142,13 +141,13 @@ public class VMRequest extends RESTClient {
          * 
          * @method: PATCH /v1/vms/
          */
-        String freemarkerTemplate = "{" 
+        String velocityTemplate = "{" 
                 + "\"action\": \"$action\"" 
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("action", "reconnect");
-        String ret = Utils.velocityProcess(params, freemarkerTemplate);
-        return this.RequestAPP("patch", "vms", ret, String.valueOf(vmid));
+        String ret = Utils.velocityProcess(params, velocityTemplate);
+        return this.RequestAPP(HttpMethod.PATCH, "vms", ret, String.valueOf(vmid));
     }
 
     public ResultSet createVmSnapshot(int vmid) {
@@ -157,13 +156,13 @@ public class VMRequest extends RESTClient {
          * 
          * @method: PATCH /v1/vms/
          */
-        String freemarkerTemplate = "{" 
+        String velocityTemplate = "{" 
                 + "\"action\": \"$action\"" 
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("action", "snapshot");
-        String ret = Utils.velocityProcess(params, freemarkerTemplate);
-        return this.RequestAPP("patch", "vms", ret, String.valueOf(vmid));
+        String ret = Utils.velocityProcess(params, velocityTemplate);
+        return this.RequestAPP(HttpMethod.PATCH, "vms", ret, String.valueOf(vmid));
     }
 
     public ResultSet revertVmSnapshot(int vmid) {
@@ -172,13 +171,13 @@ public class VMRequest extends RESTClient {
          * 
          * @method: PATCH /v1/vms/
          */
-        String freemarkerTemplate = "{" 
+        String velocityTemplate = "{" 
                 + "\"action\": \"$action\"" 
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("action", "recoversnapshot");
-        String ret = Utils.velocityProcess(params, freemarkerTemplate);
-        return this.RequestAPP("patch", "vms", ret, String.valueOf(vmid));
+        String ret = Utils.velocityProcess(params, velocityTemplate);
+        return this.RequestAPP(HttpMethod.PATCH, "vms", ret, String.valueOf(vmid));
     }
 
     public ResultSet deleteVmSnapshot(int vmid) {
@@ -187,13 +186,13 @@ public class VMRequest extends RESTClient {
          * 
          * @method: PATCH /v1/vms/
          */
-        String freemarkerTemplate = "{" 
+        String velocityTemplate = "{" 
                 + "\"action\": \"$action\"" 
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("action", "delsnapshot");
-        String ret = Utils.velocityProcess(params, freemarkerTemplate);
-        return this.RequestAPP("patch", "vms", ret, String.valueOf(vmid));
+        String ret = Utils.velocityProcess(params, velocityTemplate);
+        return this.RequestAPP(HttpMethod.PATCH, "vms", ret, String.valueOf(vmid));
     }
 
     public ResultSet modifyVMs(int vmid, String name, String vcpu_num, String mem_size,
@@ -203,7 +202,7 @@ public class VMRequest extends RESTClient {
          * 
          * @method: PATCH /v1/vms/
          */
-        String freemarkerTemplate = "{" 
+        String velocityTemplate = "{" 
                 + "\"action\": \"modify\"," 
                 + "\"name\": \"$name\","
                 + "\"vcpu_num\": \"$vcpu_num\"," 
@@ -217,8 +216,8 @@ public class VMRequest extends RESTClient {
         params.put("vcpu_num", vcpu_num);
         params.put("mem_size", mem_size);
         params.put("product_spec", product_spec);
-        String ret = Utils.velocityProcess(params, freemarkerTemplate);
-        return this.RequestAPP("patch", "vms", ret, String.valueOf(vmid));
+        String ret = Utils.velocityProcess(params, velocityTemplate);
+        return this.RequestAPP(HttpMethod.PATCH, "vms", ret, String.valueOf(vmid));
     }
     
     private ResultSet getVMs() {
@@ -227,7 +226,7 @@ public class VMRequest extends RESTClient {
          * 
          * @method: GET /v1/vms/
          */
-        return this.RequestAPP("get", "vms", null, null);
+        return this.RequestAPP(HttpMethod.GET, "vms", null, null);
     }
     
     public ResultSet getVmByUserEPC(int userid, int epc_id) {
@@ -237,7 +236,7 @@ public class VMRequest extends RESTClient {
          * @method: GET /v1/vms/
          */
         String param = "vms?userid=" + userid + "&epc_id=" + epc_id;
-        return this.RequestAPP("get", "vms", null, param);
+        return this.RequestAPP(HttpMethod.GET, "vms", null, param);
     }
     
     private ResultSet addVMToEPC(int vmId, int epcId) {
@@ -245,15 +244,15 @@ public class VMRequest extends RESTClient {
          * @params: vmid, epc_id
          * @method: PATCH /v1/vms/<fdb_vmid>
          */
-        String freemarkerTemplate = "{" 
+        String velocityTemplate = "{" 
                 + "\"action\": \"setepc\"," 
                 + "\"epc_id\": $epc_id"
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("epc_id", epcId);
         params.put("vmid", vmId);
-        String ret = Utils.velocityProcess(params, freemarkerTemplate);
-        return this.RequestAPP("patch", "vms", ret, String.valueOf(vmId));
+        String ret = Utils.velocityProcess(params, velocityTemplate);
+        return this.RequestAPP(HttpMethod.PATCH, "vms", ret, String.valueOf(vmId));
     }
   
     public ResultSet setDefaultGW(int vmId, String gateway) {
@@ -261,7 +260,7 @@ public class VMRequest extends RESTClient {
          * @params: vmid, gateway
          * @method: PATCH /v1/vms
          */
-        String freemarkerTemplate = "{"
+        String velocityTemplate = "{"
                 + "\"action\": \"modifyinterface\","
                 + "\"gateway\": \"$gateway\","
                 + "\"loopback_ips\": [],"
@@ -270,8 +269,8 @@ public class VMRequest extends RESTClient {
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("gateway", gateway);
-        String ret = Utils.velocityProcess(params, freemarkerTemplate);
-        return this.RequestAPP("patch", "vms", ret, String.valueOf(vmId));
+        String ret = Utils.velocityProcess(params, velocityTemplate);
+        return this.RequestAPP(HttpMethod.PATCH, "vms", ret, String.valueOf(vmId));
     }
     
     private ResultSet attachOneLanInterface(int vmId, int index, int state, 
@@ -280,7 +279,7 @@ public class VMRequest extends RESTClient {
          * @params: vmid, index, state, vl2_lcuuid, vl2_net_index, address
          * @method: PATCH /v1/vms/<fdb_vmid>
          */
-        String freemarkerTemplate = "{"
+        String velocityTemplate = "{"
                 + "\"state\": $state,"
                 + "\"if_type\": \"LAN\","
                 + "\"lan\": {"
@@ -294,9 +293,9 @@ public class VMRequest extends RESTClient {
         params.put("vl2_lcuuid", vl2_lcuuid);
         params.put("vl2_net_index", vl2_net_index);
         params.put("address", address);
-        String ret = Utils.velocityProcess(params, freemarkerTemplate);
+        String ret = Utils.velocityProcess(params, velocityTemplate);
         String param = vmId + "/interfaces/" + index;
-        return this.RequestAPP("put", "vms", ret, param);
+        return this.RequestAPP(HttpMethod.PUT, "vms", ret, param);
     }
     
     private ResultSet attachOneWanInterface(int vmId, int index, int state, 
@@ -305,7 +304,7 @@ public class VMRequest extends RESTClient {
          * @params: vmid, index, state, ip_resource_lcuuid
          * @method: PATCH /v1/vms/<fdb_vmid>
          */
-        String freemarkerTemplate = "{"
+        String velocityTemplate = "{"
                 + "\"state\": $state,"
                 + "\"if_type\": \"WAN\","
                 + "\"wan\": {"
@@ -316,10 +315,10 @@ public class VMRequest extends RESTClient {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("state", state);
         params.put("ip_resource_lcuuid", ip_resource_lcuuid);
-        params.put("bandwidth", BANDWIDTH);
-        String ret = Utils.velocityProcess(params, freemarkerTemplate);
+        params.put("bandwidth", Integer.parseInt(props.getProperty("VM.BANDWIDTH")));
+        String ret = Utils.velocityProcess(params, velocityTemplate);
         String param = vmId + "/interfaces/" + index;
-        return this.RequestAPP("put", "vms", ret, param);
+        return this.RequestAPP(HttpMethod.PUT, "vms", ret, param);
     }
     
     private ResultSet attachMultiInterface(int vmid, String gateway, 
@@ -358,7 +357,7 @@ public class VMRequest extends RESTClient {
                 interf.add(Utils.velocityProcess(map, vmLanTmpl));
             }
         }
-        String freemarkerTemplate = "{"
+        String velocityTemplate = "{"
                 + "\"action\": \"modifyinterface\","
                 + "\"gateway\": \"$gateway\","
                 + "\"loopback_ips\": [],"
@@ -368,8 +367,8 @@ public class VMRequest extends RESTClient {
         Map<String, Object> patchData = new HashMap<String, Object>();
         patchData.put("gateway", gateway);
         patchData.put("interface_data", interface_data);
-        String finalret = Utils.velocityProcess(patchData, freemarkerTemplate);
-        return this.RequestAPP("patch", "vms", finalret, String.valueOf(vmid));
+        String finalret = Utils.velocityProcess(patchData, velocityTemplate);
+        return this.RequestAPP(HttpMethod.PATCH, "vms", finalret, String.valueOf(vmid));
     }
     
     private ResultSet createBlockSnapshots(String vmuuid, String name, String product_spec) {
@@ -377,7 +376,7 @@ public class VMRequest extends RESTClient {
          * @params: vmid, name, product_spec
          * @method: POST /v1/vm_snapshot/<vmuuid>/snapshots
          */
-        String freemarkerTemplate = "{"
+        String velocityTemplate = "{"
                 + "\"NAME\": \"$name\","
                 + "\"DESCRIPTION\": \"$name\","
                 + "\"PRODUCT_SPECIFICATION_LCUUID\": \"$product_spec\""
@@ -385,9 +384,9 @@ public class VMRequest extends RESTClient {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("name", name);
         params.put("product_spec", product_spec);
-        String ret = Utils.velocityProcess(params, freemarkerTemplate);
+        String ret = Utils.velocityProcess(params, velocityTemplate);
         String param = vmuuid + "/snapshots";
-        return this.RequestAPP("post", "vm_snapshot", ret, param);
+        return this.RequestAPP(HttpMethod.POST, "vm_snapshot", ret, param);
     }
     
     public ResultSet getVmSnapshots(String vmuuid) {
@@ -396,7 +395,7 @@ public class VMRequest extends RESTClient {
          * @method: GET /v1/vm_snapshot/snapshots
          */
         String param = vmuuid + "/snapshots";
-        return this.RequestTalker("get", "vms", null, param);
+        return this.RequestTalker(HttpMethod.GET, "vms", null, param);
     }
 
     private ResultSet deleteBlockSnapshots(String vmuuid, String snapuuid) {
@@ -405,7 +404,7 @@ public class VMRequest extends RESTClient {
          * @method: DELETE /v1/vm_snapshot/<vmuuid>/snapshots/<snapuuid>
          */
         String param = vmuuid + "/snapshots/" + snapuuid;
-        return this.RequestAPP("delete", "vm_snapshot", null, param);
+        return this.RequestAPP(HttpMethod.DELETE, "vm_snapshot", null, param);
     }
     
     private ResultSet getBlockSnapshots() {
@@ -414,7 +413,7 @@ public class VMRequest extends RESTClient {
          * @method: GET /v1/vm_snapshot/snapshots
          */
         String param = "snapshots";
-        return this.RequestAPP("get", "vm_snapshot", null, param);
+        return this.RequestAPP(HttpMethod.GET, "vm_snapshot", null, param);
     }
     
     private ResultSet revertBlockSnapshots(String vmuuid, String snapuuid) {
@@ -423,7 +422,7 @@ public class VMRequest extends RESTClient {
          * @method: POST /v1/vm_snapshot/<vm_id>/snapshots/<snap_id>/reversion
          */
         String param = vmuuid + "/snapshots/" + snapuuid + "/reversion";
-        return this.RequestAPP("post", "vm_snapshot", null, param);
+        return this.RequestAPP(HttpMethod.POST, "vm_snapshot", null, param);
     }
     
     public ResultSet getVmByName(String name) {
@@ -466,7 +465,7 @@ public class VMRequest extends RESTClient {
          * @params: vmid
          * 
          */
-        return this.RequestAPP("get", "vms", null, String.valueOf(vmid));
+        return this.RequestAPP(HttpMethod.GET, "vms", null, String.valueOf(vmid));
     }
     
     public ResultSet setVMToEPC(String name, String epcName) {

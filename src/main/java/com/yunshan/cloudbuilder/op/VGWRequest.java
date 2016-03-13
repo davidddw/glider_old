@@ -9,6 +9,7 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import com.yunshan.cloudbuilder.HttpMethod;
 import com.yunshan.cloudbuilder.RESTClient;
 import com.yunshan.cloudbuilder.ResultSet;
 import com.yunshan.cloudbuilder.Utils;
@@ -34,7 +35,7 @@ public class VGWRequest extends RESTClient {
          * @method: POST /v1/vgateways/
          * 
          */
-        String freemarkerTemplate = "{"
+        String velocityTemplate = "{"
                 + "\"USERID\": $userid,"
                 + "\"WANS\": 3,"
                 + "\"LANS\": 3,"
@@ -48,8 +49,8 @@ public class VGWRequest extends RESTClient {
         params.put("product_spec", product_spec);
         params.put("userid", this.userid);
         params.put("domain", this.domain);
-        String ret = Utils.velocityProcess(params, freemarkerTemplate);
-        return this.RequestTalker("post", "vgateways", ret, null);
+        String ret = Utils.velocityProcess(params, velocityTemplate);
+        return this.RequestTalker(HttpMethod.POST, "vgateways", ret, null);
     }
 
 	private ResultSet createVgatewayManually(String name, String product_spec, String pool_lcuuid, 
@@ -59,7 +60,7 @@ public class VGWRequest extends RESTClient {
          * @method: POST /v1/vgateways/
          * 
          */
-        String freemarkerTemplate = "{"
+        String velocityTemplate = "{"
                 + "\"USERID\": $userid,"
                 + "\"WANS\": 3,"
                 + "\"LANS\": 3,"
@@ -78,8 +79,8 @@ public class VGWRequest extends RESTClient {
         params.put("launch_server", launch_server);
         params.put("userid", this.userid);
         params.put("domain", this.domain);
-        String ret = Utils.velocityProcess(params, freemarkerTemplate);
-        return this.RequestTalker("post", "vgateways", ret, null);
+        String ret = Utils.velocityProcess(params, velocityTemplate);
+        return this.RequestTalker(HttpMethod.POST, "vgateways", ret, null);
     }
     
 	private ResultSet getVgateways() {
@@ -88,7 +89,7 @@ public class VGWRequest extends RESTClient {
          * @method: GET /v1/vgateways/
          * 
          */
-        return this.RequestTalker("get", "vgateways", null, null);
+        return this.RequestTalker(HttpMethod.GET, "vgateways", null, null);
     }
 	
 	public ResultSet getVgatewayByLcuuid(String lcuuid) {
@@ -97,7 +98,7 @@ public class VGWRequest extends RESTClient {
          * @method: GET /v1/vgateways/<vgateway_lcuuid>/
          * 
          */
-        return this.RequestTalker("get", "vgateways", null, lcuuid);
+        return this.RequestTalker(HttpMethod.GET, "vgateways", null, lcuuid);
     }
 	
 	public ResultSet modifyVgatewayLaunchServer(String vgateway_lcuuid, String launch_server) {
@@ -106,14 +107,14 @@ public class VGWRequest extends RESTClient {
          * @method: PATCH /v1/vgateways/<vgateway_lcuuid>/
          * 
          */
-        String freemarkerTemplate = "{"
+        String velocityTemplate = "{"
                 + "\"GW_LAUNCH_SERVER\": \"$launch_server\""
                 + "}";
         
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("launch_server", launch_server);
-        String ret = Utils.velocityProcess(params, freemarkerTemplate);
-        return this.RequestTalker("patch", "vgateways", ret, vgateway_lcuuid);
+        String ret = Utils.velocityProcess(params, velocityTemplate);
+        return this.RequestTalker(HttpMethod.PATCH, "vgateways", ret, vgateway_lcuuid);
     }
 	
 	private ResultSet modifyVgatewayEPCId(String vgateway_lcuuid, int epc_id) {
@@ -122,14 +123,14 @@ public class VGWRequest extends RESTClient {
          * @method: PATCH /v1/vgateways/<vgateway_lcuuid>/
          * 
          */
-        String freemarkerTemplate = "{"
+        String velocityTemplate = "{"
                 + "\"EPC_ID\": $epc_id"
                 + "}";
         
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("epc_id", epc_id);
-        String ret = Utils.velocityProcess(params, freemarkerTemplate);
-        return this.RequestTalker("patch", "vgateways", ret, vgateway_lcuuid);
+        String ret = Utils.velocityProcess(params, velocityTemplate);
+        return this.RequestTalker(HttpMethod.PATCH, "vgateways", ret, vgateway_lcuuid);
     }
 	
 	private ResultSet getSnat(String vgateway_lcuuid) {
@@ -138,7 +139,7 @@ public class VGWRequest extends RESTClient {
          * @method: get /v1/vgateways/<vgateway_lcuuid>/snats/
          */
 	    String param = vgateway_lcuuid + "/snats";
-	    return this.RequestTalker("get", "vgateways", null, param);
+	    return this.RequestTalker(HttpMethod.GET, "vgateways", null, param);
 	}
 	
 	private ResultSet getDnat(String vgateway_lcuuid) {
@@ -147,7 +148,7 @@ public class VGWRequest extends RESTClient {
          * @method: get /v1/vgateways/<vgateway_lcuuid>/dnats/
          */
         String param = vgateway_lcuuid + "/dnats";
-        return this.RequestTalker("get", "vgateways", null, param);
+        return this.RequestTalker(HttpMethod.GET, "vgateways", null, param);
     }
 	
 	public ResultSet getRoutes(String vgateway_lcuuid) {
@@ -156,7 +157,7 @@ public class VGWRequest extends RESTClient {
          * @method: get /v1/vgateways/<vgateway_lcuuid>/routes/
          */
         String param = vgateway_lcuuid + "/routes";
-        return this.RequestTalker("get", "vgateways", null, param);
+        return this.RequestTalker(HttpMethod.GET, "vgateways", null, param);
     }
 	
 	private ResultSet getForwardAcls(String vgateway_lcuuid) {
@@ -165,7 +166,7 @@ public class VGWRequest extends RESTClient {
          * @method: get /v1/vgateways/<vgateway_lcuuid>/forward_acls/
          */
         String param = vgateway_lcuuid + "/forward_acls";
-        return this.RequestTalker("get", "vgateways", null, param);
+        return this.RequestTalker(HttpMethod.GET, "vgateways", null, param);
     }
 	
 	private ResultSet getVpns(String vgateway_lcuuid) {
@@ -174,7 +175,7 @@ public class VGWRequest extends RESTClient {
          * @method: get /v1/vgateways/<vgateway_lcuuid>/dnats/
          */
         String param = vgateway_lcuuid + "/vpns";
-        return this.RequestTalker("get", "vgateways", null, param);
+        return this.RequestTalker(HttpMethod.GET, "vgateways", null, param);
     }
 	
 	private ResultSet modifyVgatewaySnat(String vgateway_lcuuid, String name, String isp, String if_index, 
@@ -184,7 +185,7 @@ public class VGWRequest extends RESTClient {
          * @method: PUT /v1/vgateways/<vgateway_lcuuid>/snats/
          * 
          */
-        String freemarkerTemplate = "{"
+        String velocityTemplate = "{"
                 + "\"NAME\": \"$name\","
                 + "\"STATE\": 1,"
                 + "\"RULE_ID\": $ruleId,"
@@ -224,10 +225,10 @@ public class VGWRequest extends RESTClient {
         params.put("sip2", sip2);
         params.put("dip", dip);
         params.put("ruleId", ruleId);
-        interf.add(Utils.velocityProcess(params, freemarkerTemplate));
+        interf.add(Utils.velocityProcess(params, velocityTemplate));
         String finalData = (interf.size() > 1) ? "[" + String.join(",", interf) + "]" : String.join(",", interf);
         String param = vgateway_lcuuid + "/snats";
-        return this.RequestTalker("put", "vgateways", finalData, param);
+        return this.RequestTalker(HttpMethod.PUT, "vgateways", finalData, param);
     }
 	
 	private ResultSet modifyVgatewayDnat(String vgateway_lcuuid, String name, String isp, String if_index, 
@@ -237,7 +238,7 @@ public class VGWRequest extends RESTClient {
          * @method: PUT /v1/vgateways/<vgateway_lcuuid>/dnats/
          * 
          */
-        String freemarkerTemplate = "{"
+        String velocityTemplate = "{"
                 + "\"NAME\": \"$name\","
                 + "\"STATE\": 1,"
                 + "\"RULE_ID\": $ruleId,"
@@ -278,10 +279,10 @@ public class VGWRequest extends RESTClient {
         params.put("dip", dip);
         params.put("dport", dport);
         params.put("ruleId", ruleId);
-        interf.add(Utils.velocityProcess(params, freemarkerTemplate));
+        interf.add(Utils.velocityProcess(params, velocityTemplate));
         String finalData = (interf.size() > 1) ? "[" + String.join(",", interf) + "]" : String.join(",", interf);
         String param = vgateway_lcuuid + "/dnats";
-        return this.RequestTalker("put", "vgateways", finalData, param);
+        return this.RequestTalker(HttpMethod.PUT, "vgateways", finalData, param);
     }
 	
 	private ResultSet modifyVgatewayAcl(String vgateway_lcuuid, String name, String isp, String if_index, 
@@ -291,7 +292,7 @@ public class VGWRequest extends RESTClient {
          * @method: PUT /v1/vgateways/<vgateway_lcuuid>/forward_acls/
          * 
          */
-        String freemarkerTemplate = "{"
+        String velocityTemplate = "{"
                 + "\"NAME\": \"$name\","
                 + "\"STATE\": 1,"
                 + "\"RULE_ID\": $ruleId,"
@@ -331,10 +332,10 @@ public class VGWRequest extends RESTClient {
         params.put("sip2", sip2);
         params.put("sport", sport);
         params.put("ruleId", ruleId);
-        interf.add(Utils.velocityProcess(params, freemarkerTemplate));
+        interf.add(Utils.velocityProcess(params, velocityTemplate));
         String finalData = (interf.size() > 1) ? "[" + String.join(",", interf) + "]" : String.join(",", interf);
         String param = vgateway_lcuuid + "/forward_acls";
-        return this.RequestTalker("put", "vgateways", finalData, param);
+        return this.RequestTalker(HttpMethod.PUT, "vgateways", finalData, param);
     }
 	
 	private ResultSet modifyVgatewayVpn(String vgateway_lcuuid, String name, String local_ip_addr, 
@@ -345,7 +346,7 @@ public class VGWRequest extends RESTClient {
          * @method: PUT /v1/vgateways/<vgateway_lcuuid>/vpns/
          * 
          */
-        String freemarkerTemplate = "{"
+        String velocityTemplate = "{"
                 + "\"NAME\": \"$name\","
                 + "\"RULE_ID\": $ruleId,"
                 + "\"STATE\": 1,"
@@ -379,10 +380,10 @@ public class VGWRequest extends RESTClient {
         params.put("remote_net_addr", remote_net_addr);
         params.put("remote_net_mask", remote_net_mask);
         params.put("ruleId", ruleId);
-        interf.add(Utils.velocityProcess(params, freemarkerTemplate));
+        interf.add(Utils.velocityProcess(params, velocityTemplate));
         String finalData = (interf.size() > 1) ? "[" + String.join(",", interf) + "]" : String.join(",", interf);
         String param = vgateway_lcuuid + "/vpns";
-        return this.RequestTalker("put", "vgateways", finalData, param);
+        return this.RequestTalker(HttpMethod.PUT, "vgateways", finalData, param);
     }
 
 	private ResultSet deleteVgateway(String vgateway_lcuuid) {
@@ -391,7 +392,7 @@ public class VGWRequest extends RESTClient {
          * @method: DELETE /v1/vgateways/<vgateway_lcuuid>/
          * 
          */
-        return this.RequestTalker("delete", "vgateways", null, vgateway_lcuuid);
+        return this.RequestTalker(HttpMethod.DELETE, "vgateways", null, vgateway_lcuuid);
     }
 	
 	private ResultSet modifyVgateway(String vgateway_lcuuid, List<Map<String, Object>> wan_list, 
@@ -421,7 +422,7 @@ public class VGWRequest extends RESTClient {
                  * @params: wan_list(if_index,ip_resource_lcuuid,min_bandwidth,max_bandwidth)
                  * 
                  */
-                String freemarkerTemplate = "{"
+                String velocityTemplate = "{"
                         + "\"IF_INDEX\": $if_index,"
                         + "\"STATE\": 1,"
                         + "\"IF_TYPE\": \"WAN\","
@@ -441,7 +442,7 @@ public class VGWRequest extends RESTClient {
                     map.put("min_bandwidth", map.get("bandwidth"));
                     map.put("max_bandwidth", map.get("bandwidth"));
                     index += 1;
-                    interf.add(Utils.velocityProcess(map, freemarkerTemplate));
+                    interf.add(Utils.velocityProcess(map, velocityTemplate));
                 }
                 return this;
             }
@@ -451,7 +452,7 @@ public class VGWRequest extends RESTClient {
                  * @params: lan_list(if_index,vl2_lcuuid,address)
                  * 
                  */
-                String freemarkerTemplate = "{"
+                String velocityTemplate = "{"
                         + "\"IF_INDEX\": $if_index,"
                         + "\"STATE\": 1,"
                         + "\"IF_TYPE\": \"LAN\","
@@ -472,13 +473,13 @@ public class VGWRequest extends RESTClient {
                     map.put("if_index", index);
                     index += 1;
                     
-                    interf.add(Utils.velocityProcess(map, freemarkerTemplate));
+                    interf.add(Utils.velocityProcess(map, velocityTemplate));
                 }
                 return this;
             }
         }
         String finalData = new Data(wan_list, lan_list).generateLanData().generateWanData().getData();
-        return this.RequestTalker("patch", "vgateways", finalData, vgateway_lcuuid);
+        return this.RequestTalker(HttpMethod.PATCH, "vgateways", finalData, vgateway_lcuuid);
     }
 	
 	public ResultSet modifyVgatewayFinely(String name, List<Map<String, Object>> wan_list, 

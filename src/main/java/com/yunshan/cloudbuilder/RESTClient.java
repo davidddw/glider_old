@@ -38,6 +38,7 @@ import org.apache.http.ssl.TrustStrategy;
 import org.apache.http.util.EntityUtils;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -48,18 +49,14 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 
 import javax.net.ssl.SSLContext;
 
 public class RESTClient {
     protected static final Logger s_logger = Logger.getLogger(RESTClient.class);
-
-    private final static String VERSION = "v1";
-    private final static String USERNAME = "admin";
-    private final static String PASSWORD = "admin1";
-    private final static String APPKEY = "5ee218a0-25ec-463a-81f5-6c5364707cda";
-    private final static String CONTENTTYPE = "application/json; charset=utf-8";
-    private final static int CONST_TIME_OUT = 6000;
+    
+    protected static Properties props = readProperties("config.properties");
 
     private String host;
 
@@ -75,11 +72,28 @@ public class RESTClient {
 
     public RESTClient(String host) {
         this.host = host;
-        setHeader("Content-Type", CONTENTTYPE);
-        setHeader("APPKEY", APPKEY);
-        String str = USERNAME + ":" + PASSWORD;
+        setHeader("Content-Type", props.getProperty("CONTENTTYPE"));
+        setHeader("APPKEY", props.getProperty("APPKEY"));
+        String str = props.getProperty("USERNAME") + ":" + props.getProperty("PASSWORD");
         final byte[] bytes = str.getBytes();
         setHeader("Authorization", "Basic " + new String(Base64.encodeBase64(bytes)));
+    }
+    
+    private static Properties readProperties(String filename) {
+        Properties prop = new Properties();
+        InputStream  ips;
+        try {
+            ips = RESTClient.class.getClassLoader().getResourceAsStream(filename);
+            prop.load(ips);
+            ips.close();
+        } catch (FileNotFoundException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return prop;
     }
 
     private static HttpClient acceptsUntrustedCerts() {
@@ -122,20 +136,20 @@ public class RESTClient {
             urlSuffix = "/" + url_type;
             schema = "https://";
         }
-        return schema + host + urlSuffix + "/" + VERSION + "/" + cmd_string;
+        return schema + host + urlSuffix + "/" + props.getProperty("VERSION") + "/" + cmd_string;
 
     }
 
-    public ResultSet makeRequest(String method, String uri) {
+    public ResultSet makeRequest(HttpMethod method, String uri) {
         return makeRequest(method, uri, null, null);
     }
 
-    protected ResultSet RequestAPP(String method, String cmd, String body, String param) {
+    protected ResultSet RequestAPP(HttpMethod method, String cmd, String body, String param) {
         String uri = generateURL(this.host, cmd, param, true);
         return makeRequest(method, uri, body, param);
     }
 
-    protected ResultSet RequestTalker(String method, String cmd, String body, String param) {
+    protected ResultSet RequestTalker(HttpMethod method, String cmd, String body, String param) {
         String uri = generateURL(this.host, cmd, param, false);
         return makeRequest(method, uri, body, param);
     }
@@ -173,7 +187,7 @@ public class RESTClient {
 
     public String getStringRecordsByKey(ResultSet jsonBody, String key) {
         JsonElement je = jsonBody.content();
-        return (je != null) ? je.getAsJsonObject().get(key).getAsString() : "";
+        return (je != null) ? je.getAsJsonObject().get(key).getAsString() : null;
     }
 
     public int getIntRecordsByKey(ResultSet jsonBody, String key) {
@@ -227,22 +241,22 @@ public class RESTClient {
         return resultSet;
     }
 
-    public ResultSet makeRequest(String method, String uri, String data, String param) {
+    public ResultSet makeRequest(HttpMethod method, String uri, String data, String param) {
         HttpRequestBase request = null;
-        switch (method.toUpperCase()) {
-        case "GET":
+        switch (method) {
+        case GET:
             request = new HttpGet(uri);
             break;
-        case "PUT":
+        case PUT:
             request = new HttpPut(uri);
             break;
-        case "POST":
+        case POST:
             request = new HttpPost(uri);
             break;
-        case "PATCH":
+        case PATCH:
             request = new HttpPatch(uri);
             break;
-        case "DELETE":
+        case DELETE:
             request = new HttpDelete(uri);
             break;
         default:
@@ -272,6 +286,7 @@ public class RESTClient {
             }
         }
         HttpClient client = acceptsUntrustedCerts();
+        int CONST_TIME_OUT = Integer.parseInt(props.getProperty("CONST_TIME_OUT"));
         RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(CONST_TIME_OUT)
                 .setConnectTimeout(CONST_TIME_OUT).setConnectionRequestTimeout(CONST_TIME_OUT)
                 .build();

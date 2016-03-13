@@ -2,6 +2,7 @@ package com.yunshan.cloudbuilder.op;
 
 import org.apache.log4j.Logger;
 
+import com.yunshan.cloudbuilder.HttpMethod;
 import com.yunshan.cloudbuilder.RESTClient;
 import com.yunshan.cloudbuilder.ResultSet;
 
@@ -19,7 +20,8 @@ public class RESRequest extends RESTClient {
          * @method: POST /v1/epcs/
          * 
          */
-	    ResultSet rs = this.RequestTalker("get", "pools", null, null);
+        s_logger.info("Execute: getPoolByName");
+	    ResultSet rs = this.RequestTalker(HttpMethod.GET, "pools", null, null);
 	    return filterRecordsByKey(rs, "NAME", name);
     }
 	
@@ -39,7 +41,8 @@ public class RESRequest extends RESTClient {
          * @method: POST /v1/epcs/
          * 
          */
-        ResultSet rs = this.RequestTalker("get", "ip-resources", null, null);
+	    s_logger.info("Execute: getValidIp");
+        ResultSet rs = this.RequestTalker(HttpMethod.GET, "ip-resources", null, null);
         return filterRecordsByKey(rs, "VIFID", "0");
     }
 
@@ -58,7 +61,8 @@ public class RESRequest extends RESTClient {
          * @params: ip
          * 
          */
-	    ResultSet rs = this.RequestTalker("get", "ip-resources", null, null);
+	    s_logger.info("Execute: getUuidByIp");
+	    ResultSet rs = this.RequestTalker(HttpMethod.GET, "ip-resources", null, null);
 	    return getStringRecordsByKey(filterRecordsByKey(rs, "IP", ip), "LCUUID");
 	}
 	

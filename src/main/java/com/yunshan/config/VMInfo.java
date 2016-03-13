@@ -10,6 +10,7 @@ public class VMInfo {
     private String template;
     private String vm_gw;
     private List<Map<String, Object>> vm_ip;
+    private List<Map<String, Object>> blocks;
     public String getName() {
         return name;
     }
@@ -46,10 +47,16 @@ public class VMInfo {
     public void setVm_ip(List<Map<String, Object>> vm_ip) {
         this.vm_ip = vm_ip;
     }
+    public List<Map<String, Object>> getBlocks() {
+        return blocks;
+    }
+    public void setBlocks(List<Map<String, Object>> blocks) {
+        this.blocks = blocks;
+    }
     @Override
     public String toString() {
         return "VMInfo [name=" + name + ", info=" + info + ", product_spec=" + product_spec
-                + ", template=" + template + ", vm_gw=" + vm_gw + ", vm_ip=" + vm_ip + "]";
+                + ", template=" + template + ", vm_gw=" + vm_gw + ", vm_ip=" + vm_ip + ", blocks="
+                + blocks + "]";
     }
-    
 }

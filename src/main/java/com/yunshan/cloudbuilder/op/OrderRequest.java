@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import com.yunshan.cloudbuilder.HttpMethod;
 import com.yunshan.cloudbuilder.RESTClient;
 import com.yunshan.cloudbuilder.ResultSet;
 import com.yunshan.cloudbuilder.Utils;
@@ -48,7 +49,7 @@ public class OrderRequest extends RESTClient {
 	     * @params: name, product_spec, os_template, domain_lcuuid
 	     */
 	    List<String> list = new ArrayList<String>();
-	    String freemarkerTemplate = "{"
+	    String velocityTemplate = "{"
 	        + "\"NAME\": \"$name\","
 	        + "\"PASSWD\": \"yunshan3302\","
 	        + "\"PRODUCT_SPECIFICATION_LCUUID\": \"$product_spec\","
@@ -63,7 +64,7 @@ public class OrderRequest extends RESTClient {
 	    if (vm_info==null)
             return list.toString();
         for (Map<String, Object> map : vm_info) {
-            String ret = Utils.velocityProcess(map, freemarkerTemplate);
+            String ret = Utils.velocityProcess(map, velocityTemplate);
             list.add(ret);
         }
         return  "[" + String.join(",", list) + "]";
@@ -74,7 +75,7 @@ public class OrderRequest extends RESTClient {
          * @params: name, product_spec, domain_lcuuid
          */
         List<String> list = new ArrayList<String>();
-        String freemarkerTemplate = "{"
+        String velocityTemplate = "{"
             + "\"NAME\": \"$name\","
             + "\"PASSWD\": \"yunshan3302\","
             + "\"PRODUCT_SPECIFICATION_LCUUID\": \"$product_spec\","
@@ -89,7 +90,7 @@ public class OrderRequest extends RESTClient {
         if (lb_info==null)
             return list.toString();
         for (Map<String, Object> map : lb_info) {
-            String ret = Utils.velocityProcess(map, freemarkerTemplate);
+            String ret = Utils.velocityProcess(map, velocityTemplate);
             list.add(ret);
         }
         return  "[" + String.join(",", list) + "]";
@@ -100,7 +101,7 @@ public class OrderRequest extends RESTClient {
          * @params: name, product_spec, domain_lcuuid
          */
         List<String> list = new ArrayList<String>();
-        String freemarkerTemplate = "{"
+        String velocityTemplate = "{"
             + "\"NAME\": \"$name\","
             + "\"PRODUCT_SPECIFICATION_LCUUID\": \"$product_spec\","
             + "\"DOMAIN\":\"$domain_lcuuid\""
@@ -109,7 +110,7 @@ public class OrderRequest extends RESTClient {
         if (vgateway_info==null)
             return list.toString();
         for (Map<String, Object> map : vgateway_info) {
-            String ret = Utils.velocityProcess(map, freemarkerTemplate);
+            String ret = Utils.velocityProcess(map, velocityTemplate);
             list.add(ret);
         }
         return  "[" + String.join(",", list) + "]";
@@ -120,7 +121,7 @@ public class OrderRequest extends RESTClient {
          * @params: name, product_spec, domain_lcuuid
          */
         List<String> list = new ArrayList<String>();
-        String freemarkerTemplate = "{"
+        String velocityTemplate = "{"
             + "\"NAME\": \"$name\","
             + "\"PRODUCT_SPECIFICATION_LCUUID\": \"$product_spec\","
             + "\"DOMAIN\":\"$domain_lcuuid\""
@@ -129,7 +130,7 @@ public class OrderRequest extends RESTClient {
         if (valve_info==null)
             return list.toString();
         for (Map<String, Object> map : valve_info) {
-            String ret = Utils.velocityProcess(map, freemarkerTemplate);
+            String ret = Utils.velocityProcess(map, velocityTemplate);
             list.add(ret);
         }
         return  "[" + String.join(",", list) + "]";
@@ -140,7 +141,7 @@ public class OrderRequest extends RESTClient {
          * @params: isp, number, product_spec
          */
         List<String> list = new ArrayList<String>();
-        String freemarkerTemplate = "{"
+        String velocityTemplate = "{"
             + "\"ISP\": $isp,"
             + "\"IP_NUM\": $number,"
             + "\"PRODUCT_SPECIFICATION_LCUUID\": \"$product_spec\","
@@ -150,7 +151,7 @@ public class OrderRequest extends RESTClient {
         if (ip_info==null)
             return list.toString();
         for (Map<String, Object> map : ip_info) {
-            String ret = Utils.velocityProcess(map, freemarkerTemplate);
+            String ret = Utils.velocityProcess(map, velocityTemplate);
             list.add(ret);
         }
         return  "[" + String.join(",", list) + "]";
@@ -161,7 +162,7 @@ public class OrderRequest extends RESTClient {
          * @params: isp, bandw, product_spec, domain_lcuuid
          */
         List<String> list = new ArrayList<String>();
-        String freemarkerTemplate = "{"
+        String velocityTemplate = "{"
             + "\"ISP\": $isp,"
             + "\"BANDWIDTH\": $bandw,"
             + "\"PRODUCT_SPECIFICATION_LCUUID\": \"$product_spec\","
@@ -170,7 +171,7 @@ public class OrderRequest extends RESTClient {
         if (bandw_info==null)
             return list.toString();
         for (Map<String, Object> map : bandw_info) {
-            String ret = Utils.velocityProcess(map, freemarkerTemplate);
+            String ret = Utils.velocityProcess(map, velocityTemplate);
             list.add(ret);
         }
         return  "[" + String.join(",", list) + "]";
@@ -182,7 +183,7 @@ public class OrderRequest extends RESTClient {
 		 * @method: POST /v1/orders/
 		 * 
 		 */
-	    String freemarkerTemplate = "{"
+	    String velocityTemplate = "{"
 	            + "\"ORDER_ID\": $id,"
 	            + "\"USERID\": $userid,"
 	            + "\"DOMAIN\": \"$domain_lcuuid\","
@@ -203,9 +204,9 @@ public class OrderRequest extends RESTClient {
 	    params.put("userid", this.userid);
 	    params.put("domain_lcuuid", this.domain);
 	    params.put("id", 10000);
-	    String ret = Utils.velocityProcess(params, freemarkerTemplate);
-	    s_logger.info("Execute -> execute order function.");
-	    return this.RequestAPP("post", "orders", ret, null);
+	    String ret = Utils.velocityProcess(params, velocityTemplate);
+	    s_logger.info("Execute: order all");
+	    return this.RequestAPP(HttpMethod.POST, "orders", ret, null);
 	}
 	
 	public OrderRequest orderVM(String name, String product_spec, String os_template) {

@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import com.yunshan.cloudbuilder.HttpMethod;
 import com.yunshan.cloudbuilder.RESTClient;
 import com.yunshan.cloudbuilder.ResultSet;
 import com.yunshan.cloudbuilder.Utils;
@@ -31,7 +32,7 @@ public class VL2Request extends RESTClient {
 		 * @params: name, epc_id, prefix, netmask
 		 * @method: POST /v1/vl2s/
 		 */
-	    String freemarkerTemplate = "{"
+	    String velocityTemplate = "{"
 	            + "\"name\": \"$name\","
 	            + "\"vlantag\": 0,"
 	            + "\"epc_id\": $epc_id,"
@@ -47,8 +48,8 @@ public class VL2Request extends RESTClient {
 	    params.put("netmask", netmask);
 	    params.put("userid", this.userid);
 	    params.put("domain", this.domain);
-	    String ret = Utils.velocityProcess(params, freemarkerTemplate);
-	    return this.RequestAPP("post", "vl2s", ret, null);
+	    String ret = Utils.velocityProcess(params, velocityTemplate);
+	    return this.RequestAPP(HttpMethod.POST, "vl2s", ret, null);
 	}
 	
 	private ResultSet getVL2s() {
@@ -56,7 +57,7 @@ public class VL2Request extends RESTClient {
          * @params: 
          * @method: GET /v1/vl2s/
          */
-        return this.RequestAPP("get", "vl2s", null, null);
+        return this.RequestAPP(HttpMethod.GET, "vl2s", null, null);
     }
 	
 	private ResultSet modifyVL2(int vl2Id, List<Map<String, Object>> netList) {
@@ -64,23 +65,23 @@ public class VL2Request extends RESTClient {
          * @params: vl2id, netList
          * @method: PATCH /v1/vl2s/<vl2_id>/
          */
-	    String freemarkerTemplate = "{"
+	    String velocityTemplate = "{"
 	            + "\"prefix\": \"$prefix\","
 	            + "\"netmask\": $netmask"
 	            + "}";
 	    List<String> interf = new ArrayList<String>();
 	    
 	    for(Map<String, Object> map : netList) {
-	        interf.add(Utils.velocityProcess(map, freemarkerTemplate));
+	        interf.add(Utils.velocityProcess(map, velocityTemplate));
         }
-	    String finalFreemarkerTemplate = "{"
+	    String finalvelocityTemplate = "{"
                 + "\"nets\": $net_data"
                 + "}";
         String net_data = "[" + String.join(",", interf) + "]";
         Map<String, Object> patchData = new HashMap<String, Object>();
         patchData.put("net_data", net_data);
-        String finalret = Utils.velocityProcess(patchData, finalFreemarkerTemplate);
-        return this.RequestAPP("patch", "vl2s", finalret, String.valueOf(vl2Id));
+        String finalret = Utils.velocityProcess(patchData, finalvelocityTemplate);
+        return this.RequestAPP(HttpMethod.PATCH, "vl2s", finalret, String.valueOf(vl2Id));
     }
     
 	private ResultSet deleteVL2s(int vl2Id) {
@@ -88,7 +89,7 @@ public class VL2Request extends RESTClient {
          * @params: vl2id
          * @method: DELETE /v1/vl2s/<vl2_id>/
          */
-        return this.RequestAPP("delete", "vl2s", null, String.valueOf(vl2Id));
+        return this.RequestAPP(HttpMethod.DELETE, "vl2s", null, String.valueOf(vl2Id));
     }
 
     public ResultSet getVL2ByName(String name) {
@@ -114,7 +115,7 @@ public class VL2Request extends RESTClient {
          * @params: vl2_id
          * @method: GET /v1/vl2s/<vl2_id>/
          */
-        return this.RequestAPP("get", "vl2s", null, String.valueOf(vl2Id));
+        return this.RequestAPP(HttpMethod.GET, "vl2s", null, String.valueOf(vl2Id));
     }
     
     public String getVL2LcuuidByName(String name) {
@@ -141,7 +142,7 @@ public class VL2Request extends RESTClient {
         }
     }
 
-    public ResultSet DeleteVL2IfExist(String name) {
+    public ResultSet deleteVL2IfExist(String name) {
         /*
          * @params: name
          * @method: 
