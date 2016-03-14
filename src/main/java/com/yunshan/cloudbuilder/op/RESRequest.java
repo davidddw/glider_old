@@ -1,8 +1,14 @@
 package com.yunshan.cloudbuilder.op;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import com.yunshan.cloudbuilder.HttpMethod;
 import com.yunshan.cloudbuilder.RESTClient;
 import com.yunshan.cloudbuilder.ResultSet;
+import com.yunshan.cloudbuilder.Utils;
 
 public class RESRequest extends RESTClient {
     
@@ -60,7 +66,24 @@ public class RESRequest extends RESTClient {
 	}
 	
 	public static void main(String[] args) {
-	    RESRequest rs = new RESRequest("10.33.37.28");
-	    System.out.println(rs.getUuidByIp("192.168.182.162"));
+	    List<String> list = new ArrayList<String>();
+	    String velocityTemplate = "{"
+                + "\"userid\": $!userid,"
+                + "\"domain\": $!domain"
+                + "}";
+	    Map<String, Object> params = new HashMap<String, Object>();
+        params.put("userid", 111);
+        params.put("domain", 333);
+        String ret = Utils.velocityProcess(params, velocityTemplate);
+        list.add(ret);
+        String velocityTemplate1 = "{"
+                + "\"userid1\": $!userid,"
+                + "\"domain1\": $!domain"
+                + "}";
+        Map<String, Object> params1 = new HashMap<String, Object>();
+        params1.put("userid1", 111);
+        params1.put("domain", list);
+        String ret2 = Utils.velocityProcess(params1, velocityTemplate1);
+	    System.out.println(ret2);
 	}
 }

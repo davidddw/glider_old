@@ -40,19 +40,19 @@ public class VMRequest extends RESTClient {
          */
         String velocityTemplate = "{" 
                 + "\"allocation_type\": \"manual\"," 
-                + "\"userid\": $userid,"
-                + "\"domain\": \"$domain\"," 
+                + "\"userid\": $!userid,"
+                + "\"domain\": \"$!domain\"," 
                 + "\"order_id\": 20000,"
                 + "\"passwd\": \"yunshan3302\"," 
-                + "\"name\": \"$name\"," 
-                + "\"os\": \"$os\","
-                + "\"pool_lcuuid\": \"$pool_lcuuid\","
-                + "\"launch_server\": \"$launch_server\","
-                + "\"product_specification_lcuuid\": \"$product_spec\","
-                + "\"vcpu_num\": $vcpu_num," 
-                + "\"mem_size\": $mem_size,"
-                + "\"sys_disk_size\": $sys_disk_size," 
-                + "\"user_disk_size\": $user_disk_size,"
+                + "\"name\": \"$!name\"," 
+                + "\"os\": \"$!os\","
+                + "\"pool_lcuuid\": \"$!pool_lcuuid\","
+                + "\"launch_server\": \"$!launch_server\","
+                + "\"product_specification_lcuuid\": \"$!product_spec\","
+                + "\"vcpu_num\": $!vcpu_num," 
+                + "\"mem_size\": $!mem_size,"
+                + "\"sys_disk_size\": $!sys_disk_size," 
+                + "\"user_disk_size\": $!user_disk_size,"
                 + "\"role\": \"GENERAL_PURPOSE\"" 
                 + "}";
 
@@ -88,7 +88,7 @@ public class VMRequest extends RESTClient {
          * @method: PATCH /v1/vms/
          */
         String velocityTemplate = "{" 
-                + "\"action\": \"$action\"" 
+                + "\"action\": \"$!action\"" 
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("action", "stop");
@@ -103,7 +103,7 @@ public class VMRequest extends RESTClient {
          * @method: PATCH /v1/vms/
          */
         String velocityTemplate = "{" 
-                + "\"action\": \"$action\"" 
+                + "\"action\": \"$!action\"" 
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("action", "start");
@@ -118,7 +118,7 @@ public class VMRequest extends RESTClient {
          * @method: PATCH /v1/vms/
          */
         String velocityTemplate = "{" 
-                + "\"action\": \"$action\"" 
+                + "\"action\": \"$!action\"" 
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("action", "isolate");
@@ -133,7 +133,7 @@ public class VMRequest extends RESTClient {
          * @method: PATCH /v1/vms/
          */
         String velocityTemplate = "{" 
-                + "\"action\": \"$action\"" 
+                + "\"action\": \"$!action\"" 
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("action", "reconnect");
@@ -148,7 +148,7 @@ public class VMRequest extends RESTClient {
          * @method: PATCH /v1/vms/
          */
         String velocityTemplate = "{" 
-                + "\"action\": \"$action\"" 
+                + "\"action\": \"$!action\"" 
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("action", "snapshot");
@@ -163,7 +163,7 @@ public class VMRequest extends RESTClient {
          * @method: PATCH /v1/vms/
          */
         String velocityTemplate = "{" 
-                + "\"action\": \"$action\"" 
+                + "\"action\": \"$!action\"" 
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("action", "recoversnapshot");
@@ -178,7 +178,7 @@ public class VMRequest extends RESTClient {
          * @method: PATCH /v1/vms/
          */
         String velocityTemplate = "{" 
-                + "\"action\": \"$action\"" 
+                + "\"action\": \"$!action\"" 
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("action", "delsnapshot");
@@ -195,12 +195,12 @@ public class VMRequest extends RESTClient {
          */
         String velocityTemplate = "{" 
                 + "\"action\": \"modify\"," 
-                + "\"name\": \"$name\","
-                + "\"vcpu_num\": \"$vcpu_num\"," 
-                + "\"mem_size\": \"$mem_size\","
+                + "\"name\": \"$!name\","
+                + "\"vcpu_num\": \"$!vcpu_num\"," 
+                + "\"mem_size\": \"$!mem_size\","
                 + "\"sys_disk_size\": \"30\"," 
                 + "\"user_disk_size\": \"10\","
-                + "\"product_specification_lcuuid\": \"$product_spec\"" 
+                + "\"product_specification_lcuuid\": \"$!product_spec\"" 
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("name", name);
@@ -237,7 +237,7 @@ public class VMRequest extends RESTClient {
          */
         String velocityTemplate = "{" 
                 + "\"action\": \"setepc\"," 
-                + "\"epc_id\": $epc_id"
+                + "\"epc_id\": $!epc_id"
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("epc_id", epcId);
@@ -253,7 +253,7 @@ public class VMRequest extends RESTClient {
          */
         String velocityTemplate = "{"
                 + "\"action\": \"modifyinterface\","
-                + "\"gateway\": \"$gateway\","
+                + "\"gateway\": \"$!gateway\","
                 + "\"loopback_ips\": [],"
                 + "\"interfaces\": []"
                 + "}";
@@ -271,11 +271,11 @@ public class VMRequest extends RESTClient {
          * @method: PATCH /v1/vms/<fdb_vmid>
          */
         String velocityTemplate = "{"
-                + "\"state\": $state,"
+                + "\"state\": $!state,"
                 + "\"if_type\": \"LAN\","
                 + "\"lan\": {"
-                + "\"vl2_lcuuid\": \"$vl2_lcuuid\","
-                + "\"ips\": [{\"vl2_net_index\": $vl2_net_index, \"address\": \"$address\"}],"
+                + "\"vl2_lcuuid\": \"$!vl2_lcuuid\","
+                + "\"ips\": [{\"vl2_net_index\": $!vl2_net_index, \"address\": \"$!address\"}],"
                 + "\"qos\": {\"min_bandwidth\": 0, \"max_bandwidth\": 0}"
                 + "}"
                 + "}";
@@ -296,17 +296,17 @@ public class VMRequest extends RESTClient {
          * @method: PATCH /v1/vms/<fdb_vmid>
          */
         String velocityTemplate = "{"
-                + "\"state\": $state,"
+                + "\"state\": $!state,"
                 + "\"if_type\": \"WAN\","
                 + "\"wan\": {"
-                + "\"ips\": [{\"ip_resource_lcuuid\": \"$ip_resource_lcuuid\"}],"
-                + "\"qos\": {\"min_bandwidth\": $bandwidth, \"max_bandwidth\": $bandwidth}"
+                + "\"ips\": [{\"ip_resource_lcuuid\": \"$!ip_resource_lcuuid\"}],"
+                + "\"qos\": {\"min_bandwidth\": $!bandwidth, \"max_bandwidth\": $!bandwidth}"
                 + "}"
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("state", state);
         params.put("ip_resource_lcuuid", ip_resource_lcuuid);
-        params.put("bandwidth", Integer.parseInt(props.getProperty("VM.BANDWIDTH")));
+        params.put("bandwidth", Integer.parseInt(props.getProperty("BANDWIDTH")));
         String ret = Utils.velocityProcess(params, velocityTemplate);
         String param = vmId + "/interfaces/" + index;
         return this.RequestAPP(HttpMethod.PUT, "vms", ret, param);
@@ -323,24 +323,23 @@ public class VMRequest extends RESTClient {
          * @method: PATCH /v1/vms/<fdb_vmid>
          */
         String vmLanTmpl = "{"
-                + "\"state\": $state,"
+                + "\"state\": $!state,"
                 + "\"if_type\": \"LAN\","
                 + "\"lan\": {"
-                + "\"vl2_lcuuid\": \"$vl2_lcuuid\","
-                + "\"ips\": [{\"vl2_net_index\": $vl2_net_index, \"address\": \"$address\"}],"
+                + "\"vl2_lcuuid\": \"$!vl2_lcuuid\","
+                + "\"ips\": [{\"vl2_net_index\": $!vl2_net_index, \"address\": \"$!address\"}],"
                 + "\"qos\": {\"min_bandwidth\": 0, \"max_bandwidth\": 0}"
                 + "}"
                 + "}";
         String vmWanTmpl = "{"
-                + "\"state\": $state,"
+                + "\"state\": $!state,"
                 + "\"if_type\": \"WAN\","
                 + "\"wan\": {"
-                + "\"ips\": [{\"ip_resource_lcuuid\": \"$ip_resource_lcuuid\"}],"
-                + "\"qos\": {\"min_bandwidth\": $bandwidth, \"max_bandwidth\": $bandwidth}"
+                + "\"ips\": [{\"ip_resource_lcuuid\": \"$!ip_resource_lcuuid\"}],"
+                + "\"qos\": {\"min_bandwidth\": $!bandwidth, \"max_bandwidth\": $!bandwidth}"
                 + "}"
                 + "}";
         List<String> interf = new ArrayList<String>();
-        
         for(Map<String, Object> map : interfaces) {
             if (map.containsKey("ip_resource_lcuuid")) {
                 interf.add(Utils.velocityProcess(map, vmWanTmpl));
@@ -350,14 +349,13 @@ public class VMRequest extends RESTClient {
         }
         String velocityTemplate = "{"
                 + "\"action\": \"modifyinterface\","
-                + "\"gateway\": \"$gateway\","
+                + "\"gateway\": \"$!gateway\","
                 + "\"loopback_ips\": [],"
-                + "\"interfaces\": $interface_data"
+                + "\"interfaces\": $!interface_data"
                 + "}";
-        String interface_data = "[" + String.join(",", interf) + "]";
         Map<String, Object> patchData = new HashMap<String, Object>();
         patchData.put("gateway", gateway);
-        patchData.put("interface_data", interface_data);
+        patchData.put("interface_data", interf);
         String finalret = Utils.velocityProcess(patchData, velocityTemplate);
         return this.RequestAPP(HttpMethod.PATCH, "vms", finalret, String.valueOf(vmid));
     }
@@ -368,9 +366,9 @@ public class VMRequest extends RESTClient {
          * @method: POST /v1/vm_snapshot/<vmuuid>/snapshots
          */
         String velocityTemplate = "{"
-                + "\"NAME\": \"$name\","
-                + "\"DESCRIPTION\": \"$name\","
-                + "\"PRODUCT_SPECIFICATION_LCUUID\": \"$product_spec\""
+                + "\"NAME\": \"$!name\","
+                + "\"DESCRIPTION\": \"$!name\","
+                + "\"PRODUCT_SPECIFICATION_LCUUID\": \"$!product_spec\""
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("name", name);

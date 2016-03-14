@@ -16,8 +16,6 @@ public class ValveRequest extends RESTClient {
     private int userid;
     private EPCRequest epcRequest = null;
     
-    private static final int BANDWIDTH = 10485760;
-
 	public ValveRequest(String host, String domain, int userid) {
 		super(host);
 		this.domain = domain;
@@ -32,14 +30,14 @@ public class ValveRequest extends RESTClient {
          * 
          */
         String velocityTemplate = "{"
-                + "\"USERID\": $userid,"
+                + "\"USERID\": $!userid,"
                 + "\"WANS\": 3,"
                 + "\"LANS\": 1,"
                 + "\"IPS\": 9,"
                 + "\"BW_WEIGHT\": {\"1\": 2, \"2\": 3, \"3\": 2, \"4\": 1},"
-                + "\"NAME\": \"$name\","
-                + "\"DOMAIN\": \"$domain\","
-                + "\"PRODUCT_SPECIFICATION_LCUUID\": \"$product_spec\""
+                + "\"NAME\": \"$!name\","
+                + "\"DOMAIN\": \"$!domain\","
+                + "\"PRODUCT_SPECIFICATION_LCUUID\": \"$!product_spec\""
                 + "}";
 
         Map<String, Object> params = new HashMap<String, Object>();
@@ -59,18 +57,17 @@ public class ValveRequest extends RESTClient {
          * 
          */
         String velocityTemplate = "{"
-                + "\"USERID\": $userid,"
+                + "\"USERID\": $!userid,"
                 + "\"WANS\": 3,"
                 + "\"LANS\": 1,"
                 + "\"IPS\": 9,"
                 + "\"BW_WEIGHT\": {\"1\": 2, \"2\": 3, \"3\": 2, \"4\": 1},"
-                + "\"NAME\": \"$name\","
-                + "\"DOMAIN\": \"$domain\","
-                + "\"GW_POOL_LCUUID\": \"$pool_lcuuid\","
-                + "\"GW_LAUNCH_SERVER\": \"$launch_server\","
-                + "\"PRODUCT_SPECIFICATION_LCUUID\": \"$product_spec\""
+                + "\"NAME\": \"$!name\","
+                + "\"DOMAIN\": \"$!domain\","
+                + "\"GW_POOL_LCUUID\": \"$!pool_lcuuid\","
+                + "\"GW_LAUNCH_SERVER\": \"$!launch_server\","
+                + "\"PRODUCT_SPECIFICATION_LCUUID\": \"$!product_spec\""
                 + "}";
-        
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("name", name);
         params.put("product_spec", product_spec);
@@ -107,9 +104,8 @@ public class ValveRequest extends RESTClient {
          * 
          */
         String velocityTemplate = "{"
-                + "\"GW_LAUNCH_SERVER\": \"$launch_server\""
+                + "\"GW_LAUNCH_SERVER\": \"$!launch_server\""
                 + "}";
-        
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("launch_server", launch_server);
         String ret = Utils.velocityProcess(params, velocityTemplate);
@@ -123,9 +119,8 @@ public class ValveRequest extends RESTClient {
          * 
          */
         String velocityTemplate = "{"
-                + "\"EPC_ID\": $epc_id"
+                + "\"EPC_ID\": $!epc_id"
                 + "}";
-        
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("epc_id", epc_id);
         String ret = Utils.velocityProcess(params, velocityTemplate);
@@ -148,88 +143,59 @@ public class ValveRequest extends RESTClient {
          * @method: PATCH /v1/vgateways/<valve_lcuuid>/
          * 
          */
-	    class Data {
-	        private List<Map<String, Object>> wan_list;
-	        private List<Map<String, Object>> lan_list;
-	        private List<String> interf;
-	        
-	        public Data(List<Map<String, Object>> wan_list, List<Map<String, Object>> lan_list) {
-	            this.wan_list = wan_list;
-	            this.lan_list = lan_list;
-	            interf = new ArrayList<String>();
-	        }
-	        
-	        public String getData() {
-	            return (interf.size() > 1) ? "[" + String.join(",", interf) + "]" : String.join(",", interf);
-	        }
-	        
-	        public Data generateWanData() {
-	            /*
-	             * @params: wan_list(if_index,ip_resource_lcuuid,min_bandwidth,max_bandwidth)
-	             * 
-	             */
-	            String velocityTemplate = "{"
-	                    + "\"IF_INDEX\": $if_index,"
-	                    + "\"STATE\": 1,"
-	                    + "\"IF_TYPE\": \"WAN\","
-	                    + "\"WAN\": { "
-	                    + "\"IPS\": ["
-	                    + "{\"IP_RESOURCE_LCUUID\": \"$ip_resource_lcuuid\"}"
-	                    + "],"
-	                    + "\"QOS\": {"
-	                    + "\"MIN_BANDWIDTH\": $min_bandwidth,"
-	                    + "\"MAX_BANDWIDTH\": $max_bandwidth"
-	                    + "}"
-	                    + "}"
-	                    + "}";
-	            int index = 1;
-	            for (Map<String, Object> map : wan_list) {
-	                map.put("if_index", index);
-	                map.put("min_bandwidth", BANDWIDTH);
-	                map.put("max_bandwidth", BANDWIDTH);
-	                index += 1;
-	                interf.add(Utils.velocityProcess(map, velocityTemplate));
-	            }
-	            return this;
-	        }
-	        
-	        public Data generateLanData() {
-	            /*
-	             * @params: lan_list(if_index,vl2_lcuuid)
-	             * 
-	             */
-	            String velocityTemplate = "{"
-	                    + "\"IF_INDEX\": $if_index,"
-	                    + "\"STATE\": 1,"
-	                    + "\"IF_TYPE\": \"LAN\","
-	                    + "\"LAN\": { "
-	                    + "\"VL2_LCUUID\": \"$vl2_lcuuid\","
-	                    + "\"IPS\": ["
-	                    + "{\"VL2_NET_INDEX\": 1, "
-	                    + "\"ADDRESS\": \"0.0.0.0\"}"
-	                    + "],"
-	                    + "\"QOS\": {"
-	                    + "\"MIN_BANDWIDTH\": 0,"
-	                    + "\"MAX_BANDWIDTH\": 0"
-	                    + "}"
-	                    + "}"
-	                    + "}";
-	            int index = 10;
-	            for (Map<String, Object> map : lan_list) {
-	                map.put("if_index", index);
-	                index += 1;
-	                interf.add(Utils.velocityProcess(map, velocityTemplate));
-	            }
-	            return this;
-	        }
-	    }
-	    String finalData = new Data(wan_list, lan_list).generateLanData().generateWanData().getData();
+	    List<String> interf = new ArrayList<String>();
+	    String velocityWTemplate = "{"
+                + "\"IF_INDEX\": $!if_index,"
+                + "\"STATE\": 1,"
+                + "\"IF_TYPE\": \"WAN\","
+                + "\"WAN\": { "
+                + "\"IPS\": ["
+                + "{\"IP_RESOURCE_LCUUID\": \"$!ip_resource_lcuuid\"}"
+                + "],"
+                + "\"QOS\": {"
+                + "\"MIN_BANDWIDTH\": $!min_bandwidth,"
+                + "\"MAX_BANDWIDTH\": $!max_bandwidth"
+                + "}"
+                + "}"
+                + "}";
+        int index = 1;
+        for (Map<String, Object> map : wan_list) {
+            map.put("if_index", index);
+            map.put("min_bandwidth", Integer.parseInt(props.getProperty("BANDWIDTH")));
+            map.put("max_bandwidth", Integer.parseInt(props.getProperty("BANDWIDTH")));
+            index += 1;
+            interf.add(Utils.velocityProcess(map, velocityWTemplate));
+        }
+        
+        String velocityLTemplate = "{"
+                + "\"IF_INDEX\": $!if_index,"
+                + "\"STATE\": 1,"
+                + "\"IF_TYPE\": \"LAN\","
+                + "\"LAN\": { "
+                + "\"VL2_LCUUID\": \"$!vl2_lcuuid\","
+                + "\"IPS\": ["
+                + "{\"VL2_NET_INDEX\": 1, "
+                + "\"ADDRESS\": \"0.0.0.0\"}"
+                + "],"
+                + "\"QOS\": {"
+                + "\"MIN_BANDWIDTH\": 0,"
+                + "\"MAX_BANDWIDTH\": 0"
+                + "}"
+                + "}"
+                + "}";
+        index = 10;
+        for (Map<String, Object> map : lan_list) {
+            map.put("if_index", index);
+            index += 1;
+            interf.add(Utils.velocityProcess(map, velocityLTemplate));
+        }
+        
 	    String velocityTemplate = "{"
 	            + "\"GENERAL_BANDWIDTH\": 1048576,"
-                + "\"INTERFACES\": $interface_data"
+                + "\"INTERFACES\": $!interface_data"
                 + "}";
 	    Map<String, Object> params = new HashMap<String, Object>();
-        params.put("interface_data", finalData);
+        params.put("interface_data", interf);
         String ret = Utils.velocityProcess(params, velocityTemplate);
 	    return this.RequestTalker(HttpMethod.PATCH, "valves", ret, valve_lcuuid);
     }
@@ -376,15 +342,15 @@ public class ValveRequest extends RESTClient {
         def generate_wan_data_adv(**kwargs):
             final_data = list()
             wan_tmpl = """{
-                "IF_INDEX": $if_index,
+                "IF_INDEX": $!if_index,
                 "STATE": 1,
                 "IF_TYPE": "WAN",
                 "WAN": {
                     "IPS": [
                     ],
                     "QOS": {
-                        "MIN_BANDWIDTH": $min_bandwidth,
-                        "MAX_BANDWIDTH": $max_bandwidth
+                        "MIN_BANDWIDTH": $!min_bandwidth,
+                        "MAX_BANDWIDTH": $!max_bandwidth
                     }
                 }
             }"""
@@ -408,17 +374,17 @@ public class ValveRequest extends RESTClient {
         def generate_lan_data_adv(**kwargs):
             final_data = list()
             lan_tmpl = """{
-                "IF_INDEX": $if_index,
+                "IF_INDEX": $!if_index,
                 "STATE": 1,
                 "IF_TYPE": "LAN",
                 "LAN": {
-                    "VL2_LCUUID": "$vl2_lcuuid",
+                    "VL2_LCUUID": "$!vl2_lcuuid",
                     "IPS": [
-                        {"VL2_NET_INDEX": 1, "ADDRESS": "$address"}
+                        {"VL2_NET_INDEX": 1, "ADDRESS": "$!address"}
                     ],
                     "QOS": {
-                        "MIN_BANDWIDTH": $min_bandwidth,
-                        "MAX_BANDWIDTH": $max_bandwidth
+                        "MIN_BANDWIDTH": $!min_bandwidth,
+                        "MAX_BANDWIDTH": $!max_bandwidth
                     }
                 }
             }"""

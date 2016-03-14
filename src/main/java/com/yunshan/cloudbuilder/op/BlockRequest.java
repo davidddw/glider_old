@@ -21,11 +21,11 @@ public class BlockRequest extends RESTClient {
          * 
          */
         String velocityTemplate = "{" 
-                + "\"NAME\": \"$name\"," 
-                + "\"SIZE\": \"$size\","
+                + "\"NAME\": \"$!name\"," 
+                + "\"SIZE\": \"$!size\","
                 + "\"FROM_VOLUME\": false," 
-                + "\"USER_LCUUID\": \"$useruuid\","
-                + "\"PRODUCT_SPECIFICATION_LCUUID\": \"$product_spec\"," 
+                + "\"USER_LCUUID\": \"$!useruuid\","
+                + "\"PRODUCT_SPECIFICATION_LCUUID\": \"$!product_spec\"," 
                 + "\"ORDER_ID\": 100003"
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
@@ -57,7 +57,7 @@ public class BlockRequest extends RESTClient {
          * @method: PATCH /v1/blocks/<block_id>/
          */
         String velocityTemplate = "{" 
-                + "\"SIZE\": \"$size\"" 
+                + "\"SIZE\": \"$!size\"" 
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("size", size);
@@ -79,9 +79,9 @@ public class BlockRequest extends RESTClient {
          * @method: PATCH /v1/blocks/<block_id>/snapshots
          */
         String velocityTemplate = "{" 
-                + "\"NAME\": \"$name\"," 
-                + "\"DESCRIPTION\": \"$description\"," 
-                + "\"PRODUCT_SPECIFICATION_LCUUID\": \"$product_spec\"" 
+                + "\"NAME\": \"$!name\"," 
+                + "\"DESCRIPTION\": \"$!description\"," 
+                + "\"PRODUCT_SPECIFICATION_LCUUID\": \"$!product_spec\"" 
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("name", name);

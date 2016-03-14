@@ -26,6 +26,10 @@ public class VGWRequest extends RESTClient {
 		epcRequest = new EPCRequest(host, domain, userid);
 	}
 	
+	private List<String> jsonToList(ResultSet resultSet) {
+	    return Arrays.asList(StringUtils.substringBetween(resultSet.content().toString(), "[", "]").split(","));
+	}
+	
 	private ResultSet createVgateway(String name, String product_spec) {
         /*
          * @params: name, product_spec
@@ -33,12 +37,12 @@ public class VGWRequest extends RESTClient {
          * 
          */
         String velocityTemplate = "{"
-                + "\"USERID\": $userid,"
+                + "\"USERID\": $!userid,"
                 + "\"WANS\": 3,"
                 + "\"LANS\": 3,"
-                + "\"NAME\": \"$name\","
-                + "\"DOMAIN\": \"$domain\","
-                + "\"PRODUCT_SPECIFICATION_LCUUID\": \"$product_spec\""
+                + "\"NAME\": \"$!name\","
+                + "\"DOMAIN\": \"$!domain\","
+                + "\"PRODUCT_SPECIFICATION_LCUUID\": \"$!product_spec\""
                 + "}";
 
         Map<String, Object> params = new HashMap<String, Object>();
@@ -58,15 +62,15 @@ public class VGWRequest extends RESTClient {
          * 
          */
         String velocityTemplate = "{"
-                + "\"USERID\": $userid,"
+                + "\"USERID\": $!userid,"
                 + "\"WANS\": 3,"
                 + "\"LANS\": 3,"
                 + "\"RATE\": 1572864000,"
-                + "\"NAME\": \"$name\","
-                + "\"DOMAIN\": \"$domain\","
-                + "\"GW_POOL_LCUUID\": \"$pool_lcuuid\","
-                + "\"GW_LAUNCH_SERVER\": \"$launch_server\","
-                + "\"PRODUCT_SPECIFICATION_LCUUID\": \"$product_spec\""
+                + "\"NAME\": \"$!name\","
+                + "\"DOMAIN\": \"$!domain\","
+                + "\"GW_POOL_LCUUID\": \"$!pool_lcuuid\","
+                + "\"GW_LAUNCH_SERVER\": \"$!launch_server\","
+                + "\"PRODUCT_SPECIFICATION_LCUUID\": \"$!product_spec\""
                 + "}";
         
         Map<String, Object> params = new HashMap<String, Object>();
@@ -105,7 +109,7 @@ public class VGWRequest extends RESTClient {
          * 
          */
         String velocityTemplate = "{"
-                + "\"GW_LAUNCH_SERVER\": \"$launch_server\""
+                + "\"GW_LAUNCH_SERVER\": \"$!launch_server\""
                 + "}";
         
         Map<String, Object> params = new HashMap<String, Object>();
@@ -121,7 +125,7 @@ public class VGWRequest extends RESTClient {
          * 
          */
         String velocityTemplate = "{"
-                + "\"EPC_ID\": $epc_id"
+                + "\"EPC_ID\": $!epc_id"
                 + "}";
         
         Map<String, Object> params = new HashMap<String, Object>();
@@ -183,24 +187,24 @@ public class VGWRequest extends RESTClient {
          * 
          */
         String velocityTemplate = "{"
-                + "\"NAME\": \"$name\","
+                + "\"NAME\": \"$!name\","
                 + "\"STATE\": 1,"
-                + "\"RULE_ID\": $ruleId,"
-                + "\"ISP\": \"$isp\","
+                + "\"RULE_ID\": $!ruleId,"
+                + "\"ISP\": \"$!isp\","
                 + "\"PROTOCOL\": 0,"
                 + "\"MATCH\": {"
                 + "\"IF_TYPE\": \"ANY\","
                 + "\"IF_INDEX\": 0,"
-                + "\"MIN_ADDRESS\": \"$sip1\","
-                + "\"MAX_ADDRESS\": \"$sip2\","
+                + "\"MIN_ADDRESS\": \"$!sip1\","
+                + "\"MAX_ADDRESS\": \"$!sip2\","
                 + "\"MIN_PORT\": 1,"
                 + "\"MAX_PORT\": 65535"
                 + "}"
                 + "\"TARGET\": {"
                 + "\"IF_TYPE\": \"WAN\","
-                + "\"IF_INDEX\": \"$if_index\","
-                + "\"MIN_ADDRESS\": \"$dip\","
-                + "\"MAX_ADDRESS\": \"$dip\","
+                + "\"IF_INDEX\": \"$!if_index\","
+                + "\"MIN_ADDRESS\": \"$!dip\","
+                + "\"MAX_ADDRESS\": \"$!dip\","
                 + "\"MIN_PORT\": 1,"
                 + "\"MAX_PORT\": 65535"
                 + "}"
@@ -210,7 +214,7 @@ public class VGWRequest extends RESTClient {
         if (!override) {
             ResultSet resultSet = this.getSnat(vgateway_lcuuid);
             if (resultSet.content()!=null) {
-                interf = Arrays.asList(StringUtils.substringBetween(resultSet.content().toString(), "[", "]").split(","));
+                interf = jsonToList(resultSet);
                 ruleId += interf.size();
             }
         }
@@ -223,7 +227,7 @@ public class VGWRequest extends RESTClient {
         params.put("dip", dip);
         params.put("ruleId", ruleId);
         interf.add(Utils.velocityProcess(params, velocityTemplate));
-        String finalData = (interf.size() > 1) ? "[" + String.join(",", interf) + "]" : String.join(",", interf);
+        String finalData = objectToJson(interf);
         String param = vgateway_lcuuid + "/snats";
         return this.RequestTalker(HttpMethod.PUT, "vgateways", finalData, param);
     }
@@ -236,26 +240,26 @@ public class VGWRequest extends RESTClient {
          * 
          */
         String velocityTemplate = "{"
-                + "\"NAME\": \"$name\","
+                + "\"NAME\": \"$!name\","
                 + "\"STATE\": 1,"
-                + "\"RULE_ID\": $ruleId,"
-                + "\"ISP\": \"$isp\","
+                + "\"RULE_ID\": $!ruleId,"
+                + "\"ISP\": \"$!isp\","
                 + "\"PROTOCOL\": 0,"
                 + "\"MATCH\": {"
                 + "\"IF_TYPE\": \"WAN\","
-                + "\"IF_INDEX\": \"$if_index\","
-                + "\"MIN_ADDRESS\": \"$sip\","
-                + "\"MAX_ADDRESS\": \"$sip\","
-                + "\"MIN_PORT\": $sport,"
-                + "\"MAX_PORT\": $sport"
+                + "\"IF_INDEX\": \"$!if_index\","
+                + "\"MIN_ADDRESS\": \"$!sip\","
+                + "\"MAX_ADDRESS\": \"$!sip\","
+                + "\"MIN_PORT\": $!sport,"
+                + "\"MAX_PORT\": $!sport"
                 + "}"
                 + "\"TARGET\": {"
                 + "\"IF_TYPE\": \"ANY\","
                 + "\"IF_INDEX\": 0,"
-                + "\"MIN_ADDRESS\": \"$dip\","
-                + "\"MAX_ADDRESS\": \"$dip\","
-                + "\"MIN_PORT\": $dport,"
-                + "\"MAX_PORT\": $dport"
+                + "\"MIN_ADDRESS\": \"$!dip\","
+                + "\"MAX_ADDRESS\": \"$!dip\","
+                + "\"MIN_PORT\": $!dport,"
+                + "\"MAX_PORT\": $!dport"
                 + "}"
                 + "}";
         int ruleId = 1;
@@ -263,7 +267,7 @@ public class VGWRequest extends RESTClient {
         if (!override) {
             ResultSet resultSet = this.getDnat(vgateway_lcuuid);
             if (resultSet.content()!=null) {
-                interf = Arrays.asList(StringUtils.substringBetween(resultSet.content().toString(), "[", "]").split(","));
+                interf = jsonToList(resultSet);
                 ruleId += interf.size();
             }
         }
@@ -277,7 +281,7 @@ public class VGWRequest extends RESTClient {
         params.put("dport", dport);
         params.put("ruleId", ruleId);
         interf.add(Utils.velocityProcess(params, velocityTemplate));
-        String finalData = (interf.size() > 1) ? "[" + String.join(",", interf) + "]" : String.join(",", interf);
+        String finalData = objectToJson(interf);
         String param = vgateway_lcuuid + "/dnats";
         return this.RequestTalker(HttpMethod.PUT, "vgateways", finalData, param);
     }
@@ -290,18 +294,18 @@ public class VGWRequest extends RESTClient {
          * 
          */
         String velocityTemplate = "{"
-                + "\"NAME\": \"$name\","
+                + "\"NAME\": \"$!name\","
                 + "\"STATE\": 1,"
-                + "\"RULE_ID\": $ruleId,"
-                + "\"ISP\": \"$isp}\","
+                + "\"RULE_ID\": $!ruleId,"
+                + "\"ISP\": \"$!isp}\","
                 + "\"PROTOCOL\": 0,"
                 + "\"MATCH_SRC\": {"
                 + "\"IF_TYPE\": \"LAN\","
-                + "\"IF_INDEX\": \"$if_index\","
-                + "\"MIN_ADDRESS\": \"$sip1\","
-                + "\"MAX_ADDRESS\": \"$sip2\","
-                + "\"MIN_PORT\": $sport,"
-                + "\"MAX_PORT\": $sport"
+                + "\"IF_INDEX\": \"$!if_index\","
+                + "\"MIN_ADDRESS\": \"$!sip1\","
+                + "\"MAX_ADDRESS\": \"$!sip2\","
+                + "\"MIN_PORT\": $!sport,"
+                + "\"MAX_PORT\": $!sport"
                 + "}"
                 + "\"MATCH_DST\": {"
                 + "\"IF_TYPE\": \"ANY\","
@@ -317,7 +321,7 @@ public class VGWRequest extends RESTClient {
         if (!override) {
             ResultSet resultSet = this.getForwardAcls(vgateway_lcuuid);
             if (resultSet.content()!=null) {
-                interf = Arrays.asList(StringUtils.substringBetween(resultSet.content().toString(), "[", "]").split(","));
+                interf = jsonToList(resultSet);
                 ruleId += interf.size();
             }
         }
@@ -330,7 +334,7 @@ public class VGWRequest extends RESTClient {
         params.put("sport", sport);
         params.put("ruleId", ruleId);
         interf.add(Utils.velocityProcess(params, velocityTemplate));
-        String finalData = (interf.size() > 1) ? "[" + String.join(",", interf) + "]" : String.join(",", interf);
+        String finalData = objectToJson(interf);
         String param = vgateway_lcuuid + "/forward_acls";
         return this.RequestTalker(HttpMethod.PUT, "vgateways", finalData, param);
     }
@@ -344,27 +348,27 @@ public class VGWRequest extends RESTClient {
          * 
          */
         String velocityTemplate = "{"
-                + "\"NAME\": \"$name\","
-                + "\"RULE_ID\": $ruleId,"
+                + "\"NAME\": \"$!name\","
+                + "\"RULE_ID\": $!ruleId,"
                 + "\"STATE\": 1,"
-                + "\"LEFT\": \"$local_ip_addr\","
+                + "\"LEFT\": \"$!local_ip_addr\","
                 + "\"LNETWORK\": {"
-                + "\"ADDRESS\": \"$local_net_addr\","
-                + "\"NETMASK\": \"$local_net_mask\""
+                + "\"ADDRESS\": \"$!local_net_addr\","
+                + "\"NETMASK\": \"$!local_net_mask\""
                 + "}"
-                + "\"RIGHT\": \"$remote_ip_addr\","
+                + "\"RIGHT\": \"$!remote_ip_addr\","
                 + "\"RNETWORK\": {"
-                + "\"ADDRESS\": \"$remote_net_addr\","
-                + "\"NETMASK\": \"$remote_net_mask\""
+                + "\"ADDRESS\": \"$!remote_net_addr\","
+                + "\"NETMASK\": \"$!remote_net_mask\""
                 + "}"
-                + "\"PSK\": \"$psk}\""
+                + "\"PSK\": \"$!psk}\""
                 + "}";
         int ruleId = 1;
         List<String> interf = new ArrayList<String>();
         if (!override) {
             ResultSet resultSet = this.getVpns(vgateway_lcuuid);
             if (resultSet.content()!=null) {
-                interf = Arrays.asList(StringUtils.substringBetween(resultSet.content().toString(), "[", "]").split(","));
+                interf = jsonToList(resultSet);
                 ruleId += interf.size();
             }
         }
@@ -378,7 +382,7 @@ public class VGWRequest extends RESTClient {
         params.put("remote_net_mask", remote_net_mask);
         params.put("ruleId", ruleId);
         interf.add(Utils.velocityProcess(params, velocityTemplate));
-        String finalData = (interf.size() > 1) ? "[" + String.join(",", interf) + "]" : String.join(",", interf);
+        String finalData = objectToJson(interf);
         String param = vgateway_lcuuid + "/vpns";
         return this.RequestTalker(HttpMethod.PUT, "vgateways", finalData, param);
     }
@@ -399,83 +403,52 @@ public class VGWRequest extends RESTClient {
          * @method: PATCH /v1/vgateways/<vgateway_lcuuid>/
          * 
          */
-        class Data {
-            private List<Map<String, Object>> wan_list;
-            private List<Map<String, Object>> lan_list;
-            private List<String> interf;
-            
-            public Data(List<Map<String, Object>> wan_list, List<Map<String, Object>> lan_list) {
-                this.wan_list = wan_list;
-                this.lan_list = lan_list;
-                interf = new ArrayList<String>();
-            }
-            
-            public String getData() {
-                return (interf.size() > 1) ? "[" + String.join(",", interf) + "]" : String.join(",", interf);
-            }
-            
-            public Data generateWanData() {
-                /*
-                 * @params: wan_list(if_index,ip_resource_lcuuid,min_bandwidth,max_bandwidth)
-                 * 
-                 */
-                String velocityTemplate = "{"
-                        + "\"IF_INDEX\": $if_index,"
-                        + "\"STATE\": 1,"
-                        + "\"IF_TYPE\": \"WAN\","
-                        + "\"WAN\": { "
-                        + "\"IPS\": ["
-                        + "{\"IP_RESOURCE_LCUUID\": \"$ip_resource_lcuuid\"}"
-                        + "],"
-                        + "\"QOS\": {"
-                        + "\"MIN_BANDWIDTH\": $min_bandwidth,"
-                        + "\"MAX_BANDWIDTH\": $max_bandwidth"
-                        + "}"
-                        + "}"
-                        + "}";
-                int index = 1;
-                for (Map<String, Object> map : wan_list) {
-                    map.put("if_index", index);
-                    map.put("min_bandwidth", map.get("bandwidth"));
-                    map.put("max_bandwidth", map.get("bandwidth"));
-                    index += 1;
-                    interf.add(Utils.velocityProcess(map, velocityTemplate));
-                }
-                return this;
-            }
-            
-            public Data generateLanData() {
-                /*
-                 * @params: lan_list(if_index,vl2_lcuuid,address)
-                 * 
-                 */
-                String velocityTemplate = "{"
-                        + "\"IF_INDEX\": $if_index,"
-                        + "\"STATE\": 1,"
-                        + "\"IF_TYPE\": \"LAN\","
-                        + "\"LAN\": { "
-                        + "\"VL2_LCUUID\": \"$vl2_lcuuid\","
-                        + "\"IPS\": ["
-                        + "{\"VL2_NET_INDEX\": 1, "
-                        + "\"ADDRESS\": \"$address\"}"
-                        + "],"
-                        + "\"QOS\": {"
-                        + "\"MIN_BANDWIDTH\": 0,"
-                        + "\"MAX_BANDWIDTH\": 0"
-                        + "}"
-                        + "}"
-                        + "}";
-                int index = 10;
-                for (Map<String, Object> map : lan_list) {
-                    map.put("if_index", index);
-                    index += 1;
-                    
-                    interf.add(Utils.velocityProcess(map, velocityTemplate));
-                }
-                return this;
-            }
+	    List<String> interf = new ArrayList<String>();
+	    String velocityWTemplate = "{"
+                + "\"IF_INDEX\": $!if_index,"
+                + "\"STATE\": 1,"
+                + "\"IF_TYPE\": \"WAN\","
+                + "\"WAN\": { "
+                + "\"IPS\": ["
+                + "{\"IP_RESOURCE_LCUUID\": \"$!ip_resource_lcuuid\"}"
+                + "],"
+                + "\"QOS\": {"
+                + "\"MIN_BANDWIDTH\": $!min_bandwidth,"
+                + "\"MAX_BANDWIDTH\": $!max_bandwidth"
+                + "}"
+                + "}"
+                + "}";
+        int index = 1;
+        for (Map<String, Object> map : wan_list) {
+            map.put("if_index", index);
+            map.put("min_bandwidth", map.get("bandwidth"));
+            map.put("max_bandwidth", map.get("bandwidth"));
+            index += 1;
+            interf.add(Utils.velocityProcess(map, velocityWTemplate));
         }
-        String finalData = new Data(wan_list, lan_list).generateLanData().generateWanData().getData();
+        String velocityLTemplate = "{"
+                + "\"IF_INDEX\": $!if_index,"
+                + "\"STATE\": 1,"
+                + "\"IF_TYPE\": \"LAN\","
+                + "\"LAN\": { "
+                + "\"VL2_LCUUID\": \"$!vl2_lcuuid\","
+                + "\"IPS\": ["
+                + "{\"VL2_NET_INDEX\": 1, "
+                + "\"ADDRESS\": \"$!address\"}"
+                + "],"
+                + "\"QOS\": {"
+                + "\"MIN_BANDWIDTH\": 0,"
+                + "\"MAX_BANDWIDTH\": 0"
+                + "}"
+                + "}"
+                + "}";
+        index = 10;
+        for (Map<String, Object> map : lan_list) {
+            map.put("if_index", index);
+            index += 1;
+            interf.add(Utils.velocityProcess(map, velocityLTemplate));
+        }
+        String finalData = objectToJson(interf);
         return this.RequestTalker(HttpMethod.PATCH, "vgateways", finalData, vgateway_lcuuid);
     }
 	
@@ -659,15 +632,15 @@ public class VGWRequest extends RESTClient {
         def generate_wan_data_adv(**kwargs):
             final_data = list()
             wan_tmpl = """{
-                "IF_INDEX": $if_index,
+                "IF_INDEX": $!if_index,
                 "STATE": 1,
                 "IF_TYPE": "WAN",
                 "WAN": {
                     "IPS": [
                     ],
                     "QOS": {
-                        "MIN_BANDWIDTH": $min_bandwidth,
-                        "MAX_BANDWIDTH": $max_bandwidth
+                        "MIN_BANDWIDTH": $!min_bandwidth,
+                        "MAX_BANDWIDTH": $!max_bandwidth
                     }
                 }
             }"""
@@ -691,17 +664,17 @@ public class VGWRequest extends RESTClient {
         def generate_lan_data_adv(**kwargs):
             final_data = list()
             lan_tmpl = """{
-                "IF_INDEX": $if_index,
+                "IF_INDEX": $!if_index,
                 "STATE": 1,
                 "IF_TYPE": "LAN",
                 "LAN": {
-                    "VL2_LCUUID": "$vl2_lcuuid",
+                    "VL2_LCUUID": "$!vl2_lcuuid",
                     "IPS": [
-                        {"VL2_NET_INDEX": 1, "ADDRESS": "$address"}
+                        {"VL2_NET_INDEX": 1, "ADDRESS": "$!address"}
                     ],
                     "QOS": {
-                        "MIN_BANDWIDTH": $min_bandwidth,
-                        "MAX_BANDWIDTH": $max_bandwidth
+                        "MIN_BANDWIDTH": $!min_bandwidth,
+                        "MAX_BANDWIDTH": $!max_bandwidth
                     }
                 }
             }"""

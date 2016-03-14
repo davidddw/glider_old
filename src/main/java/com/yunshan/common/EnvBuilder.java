@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -25,6 +27,7 @@ import com.yunshan.config.BWInfo;
 import com.yunshan.config.Configuration;
 import com.yunshan.config.IPInfo;
 import com.yunshan.config.LBInfo;
+import com.yunshan.config.LBListenerInfo;
 import com.yunshan.config.VGWInfo;
 import com.yunshan.config.VL2Info;
 import com.yunshan.config.VMInfo;
@@ -47,7 +50,7 @@ public class EnvBuilder {
     public EnvBuilder(String filename) {
         this.config = getConfigFromYaml(filename);
         if (config != null) {
-            orderRequest = new OrderRequest(config.getHost(), config.getDomain(),
+            orderRequest = new OrderRequest(config.getHost(), config.getPool_name(), config.getDomain(),
                     config.getUserid());
             vmRequest = new VMRequest(config.getHost(), config.getPool_name(), config.getDomain(),
                     config.getUserid());
@@ -209,6 +212,43 @@ public class EnvBuilder {
         }
         return this;
     }
+    
+    public void configLBRule() {
+        for (LBInfo lbInfo : emptyIfNull(config.getLbs())) {
+            ResultSet loadbalance = lbRequest.getLBByName(lbInfo.getName());
+            String lbUuid = lbRequest.getStringRecordsByKey(loadbalance, "LCUUID");
+            List<LBListenerInfo> lbListeners = lbInfo.getLb_listener();
+            for (LBListenerInfo lbListenerInfo : emptyIfNull(lbListeners)) {
+                ResultSet lbListener = lbRequest.createLBListenerIfNotExist(lbListenerInfo.getName(), 
+                        lbUuid, lbListenerInfo.getProtocol(), (String)lbInfo.getLb_ip().get(0).get("wan_ip"),
+                        lbListenerInfo.getPort(), lbListenerInfo.getBalance());
+                List<Map<String, Object>> vmList = new ArrayList<Map<String, Object>>();
+                for (Map<String, Object> map : emptyIfNull(lbListenerInfo.getVms())) {
+                    ResultSet vmInst = vmRequest.getVmByName((String)map.get("name"));
+                    String vmUuid = vmRequest.getStringRecordsByKey(vmInst, "LCUUID");
+                    Map<String, Object> vmDict = new HashMap<String, Object>();
+                    vmDict.put("NAME", map.get("name"));
+                    if (vmInst.content()!=null) {
+                        vmDict.put("IP", vmInst.content().getAsJsonObject().get("INTERFACES").
+                                getAsJsonArray().get(0).
+                                getAsJsonObject().get("LAN").getAsJsonObject().get("IPS").
+                                getAsJsonArray().get(0).getAsJsonObject().get("ADDRESS").getAsString());
+                    } else {
+                        vmDict.put("IP", "0.0.0.0");
+                    }
+                    vmDict.put("PORT", map.get("port"));
+                    vmDict.put("WEIGHT", map.get("weight"));
+                    vmDict.put("STATE", map.get("state"));
+                    vmDict.put("VM_LCUUID", vmUuid);
+                    vmList.add(vmDict);
+                }
+                String ipAddress = (String)lbInfo.getLb_ip().get(0).get("wan_ip");
+                lbRequest.putLBListener(lbListenerInfo.getName(), lbListenerInfo.getProtocol(), 
+                        ipAddress, lbListenerInfo.getPort(), lbListenerInfo.getBalance(), lbUuid, 
+                        lbRequest.getStringRecordsByKey(lbListener, "LCUUID"), vmList);
+            }
+        }
+    }
 
     public void build() {
         if (config != null) {
@@ -220,6 +260,7 @@ public class EnvBuilder {
             }
             plugBlockToVm();
             addResourceToEpc().network();
+            configLBRule();
         }
     }
 

@@ -47,6 +47,7 @@ import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -57,6 +58,9 @@ public class RESTClient {
     protected final Logger s_logger = Utils.getLogger();
     
     protected static Properties props = readProperties("config.properties");
+    
+    protected static Gson gson = new GsonBuilder().disableHtmlEscaping()
+            .excludeFieldsWithoutExposeAnnotation().create();  
 
     private String host;
 
@@ -68,6 +72,10 @@ public class RESTClient {
             headers = new HashMap<String, String>();
         }
         headers.put(key, value);
+    }
+    
+    protected static String objectToJson(List<String> list) {
+        return gson.toJson(list);
     }
 
     public RESTClient(String host) {
@@ -87,10 +95,8 @@ public class RESTClient {
             prop.load(ips);
             ips.close();
         } catch (FileNotFoundException e1) {
-            // TODO Auto-generated catch block
             e1.printStackTrace();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return prop;

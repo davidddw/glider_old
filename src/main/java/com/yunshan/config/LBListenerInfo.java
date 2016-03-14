@@ -9,7 +9,7 @@ public class LBListenerInfo {
     private String protocol;
     private int port;
     private String balance;
-    private List<Map<String, String>> vms;
+    private List<Map<String, Object>> vms;
     public String getName() {
         return name;
     }
@@ -40,10 +40,10 @@ public class LBListenerInfo {
     public void setBalance(String balance) {
         this.balance = balance;
     }
-    public List<Map<String, String>> getVms() {
+    public List<Map<String, Object>> getVms() {
         return vms;
     }
-    public void setVms(List<Map<String, String>> vms) {
+    public void setVms(List<Map<String, Object>> vms) {
         this.vms = vms;
     }
 }

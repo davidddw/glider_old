@@ -18,8 +18,6 @@ public class LBSRequest extends RESTClient {
     private String pool_lcuuid;
     private EPCRequest epcRequest = null;
     
-    private static final int BANDWIDTH = 10485760;
-
     public LBSRequest(String host, String poolName, String domain, int userid) {
         super(host);
         this.domain=domain;
@@ -41,19 +39,19 @@ public class LBSRequest extends RESTClient {
          */
         String velocityTemplate = "{" 
                 + "\"allocation_type\": \"manual\"," 
-                + "\"userid\": $userid,"
-                + "\"domain\": \"$domain\"," 
+                + "\"userid\": $!userid,"
+                + "\"domain\": \"$!domain\"," 
                 + "\"order_id\": 20000,"
                 + "\"passwd\": \"yunshan3302\"," 
-                + "\"name\": \"$name\"," 
-                + "\"os\": \"$os\","
-                + "\"pool_lcuuid\": \"$pool_lcuuid\","
-                + "\"launch_server\": \"$launch_server\","
-                + "\"product_specification_lcuuid\": \"$product_spec\","
-                + "\"vcpu_num\": $vcpu_num," 
-                + "\"mem_size\": $mem_size,"
-                + "\"sys_disk_size\": $sys_disk_size," 
-                + "\"user_disk_size\": $user_disk_size,"
+                + "\"name\": \"$!name\"," 
+                + "\"os\": \"$!os\","
+                + "\"pool_lcuuid\": \"$!pool_lcuuid\","
+                + "\"launch_server\": \"$!launch_server\","
+                + "\"product_specification_lcuuid\": \"$!product_spec\","
+                + "\"vcpu_num\": $!vcpu_num," 
+                + "\"mem_size\": $!mem_size,"
+                + "\"sys_disk_size\": $!sys_disk_size," 
+                + "\"user_disk_size\": $!user_disk_size,"
                 + "\"role\": \"LOAD_BALANCER\"" 
                 + "}";
         
@@ -91,12 +89,12 @@ public class LBSRequest extends RESTClient {
          */
         String velocityTemplate = "{" 
                 + "\"action\": \"modify\"," 
-                + "\"name\": \"$name\","
-                + "\"vcpu_num\": \"$vcpu_num\"," 
-                + "\"mem_size\": \"$mem_size\","
+                + "\"name\": \"$!name\","
+                + "\"vcpu_num\": \"$!vcpu_num\"," 
+                + "\"mem_size\": \"$!mem_size\","
                 + "\"sys_disk_size\": \"30\"," 
                 + "\"user_disk_size\": \"0\","
-                + "\"product_specification_lcuuid\": \"$product_spec\"" 
+                + "\"product_specification_lcuuid\": \"$!product_spec\"" 
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("name", name);
@@ -114,7 +112,7 @@ public class LBSRequest extends RESTClient {
          */
         String velocityTemplate = "{" 
                 + "\"action\": \"setepc\"," 
-                + "\"epc_id\": $epc_id"
+                + "\"epc_id\": $!epc_id"
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("epc_id", epcId);
@@ -137,11 +135,11 @@ public class LBSRequest extends RESTClient {
          * @method: PATCH /v1/vms/<fdb_vmid>
          */
         String velocityTemplate = "{" 
-                + "\"NAME\": \"$name\"," 
-                + "\"PROTOCOL\": \"$protocol\"," 
-                + "\"IP\": \"$ip\"," 
-                + "\"PORT\": $port," 
-                + "\"BALANCE\": \"$balance\"," 
+                + "\"NAME\": \"$!name\"," 
+                + "\"PROTOCOL\": \"$!protocol\"," 
+                + "\"IP\": \"$!ip\"," 
+                + "\"PORT\": $!port," 
+                + "\"BALANCE\": \"$!balance\"," 
                 + "\"SESSION\": {\"SESSION_STRICKY\": \"NONE\"},"
                 + "\"HEALTH_CHECK\": 0"
                 + "}";
@@ -181,10 +179,10 @@ public class LBSRequest extends RESTClient {
          * @method: POST /v1/lb-forward-rules/
          */
         String velocityTemplate = "{" 
-                + "\"NAME\": \"$name\"," 
-                + "\"TYPE\": \"$type\"," 
-                + "\"CONTENT\": \"$content\"," 
-                + "\"USERID\": $userid" 
+                + "\"NAME\": \"$!name\"," 
+                + "\"TYPE\": \"$!type\"," 
+                + "\"CONTENT\": \"$!content\"," 
+                + "\"USERID\": $!userid" 
                 + "}";
         
         Map<String, Object> params = new HashMap<String, Object>();
@@ -203,7 +201,7 @@ public class LBSRequest extends RESTClient {
          */
         String velocityTemplate = "{"
                 + "\"action\": \"modifyinterface\","
-                + "\"gateway\": \"$gateway\","
+                + "\"gateway\": \"$!gateway\","
                 + "\"loopback_ips\": [],"
                 + "\"interfaces\": []"
                 + "}";
@@ -216,21 +214,21 @@ public class LBSRequest extends RESTClient {
     
     public ResultSet putLBListener(String name, String protocol, String ip, int port,
             String balance, String lb_lcuuid, String lb_listener_lcuuid, 
-            List<Map<String, String>> bk_vms) {
+            List<Map<String, Object>> bk_vms) {
         /*
          * @params: lb_lcuuid, lb_listener_lcuuid, name, protocol, ip,
          * @params: port, balance, bk_vms
          * @method: POST /v1/lbs/<lb_lcuuid>/lb-listeners/<lb_listener_lcuuid>/
          */
         String velocityTemplate = "{" 
-                + "\"NAME\": \"$name\"," 
-                + "\"PROTOCOL\": \"$protocol\"," 
-                + "\"IP\": \"$ip\"," 
-                + "\"PORT\": $port," 
-                + "\"BALANCE\": \"$balance\"," 
+                + "\"NAME\": \"$!name\"," 
+                + "\"PROTOCOL\": \"$!protocol\"," 
+                + "\"IP\": \"$!ip\"," 
+                + "\"PORT\": $!port," 
+                + "\"BALANCE\": \"$!balance\"," 
                 + "\"SESSION\": {\"SESSION_STRICKY\": \"NONE\"},"
                 + "\"HEALTH_CHECK\": 0,"
-                + "\"BK_VMS\": \"$bk_vms\""
+                + "\"BK_VMS\": $!bk_vms"
                 + "}";
         
         Map<String, Object> params = new HashMap<String, Object>();
@@ -239,7 +237,7 @@ public class LBSRequest extends RESTClient {
         params.put("ip", ip);
         params.put("port", port);
         params.put("balance", (balance != null) ? balance : "roundrobin");
-        params.put("bk_vms", bk_vms);
+        params.put("bk_vms", gson.toJson(bk_vms));
         String ret = Utils.velocityProcess(params, velocityTemplate);
         String param = lb_lcuuid + "/lb-listeners/" + lb_listener_lcuuid;
         return this.RequestAPP(HttpMethod.PUT, "lbs", ret, param);
@@ -256,9 +254,8 @@ public class LBSRequest extends RESTClient {
          * @method: POST /v1/lbs/<lb_lcuuid>/lb-listeners/<lb_listener_lcuuid>/
          */
         String velocityTemplate = "{" 
-                + "\"STATE\": \"$state\"" 
+                + "\"STATE\": \"$!state\"" 
                 + "}";
-        
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("state", (state != null) ? state : "ENABLE");
         String ret = Utils.velocityProcess(params, velocityTemplate);
@@ -273,11 +270,11 @@ public class LBSRequest extends RESTClient {
          * @method: PATCH /v1/vms/<fdb_vmid>
          */
         String vmLanTmpl = "{"
-                + "\"state\": $state,"
+                + "\"state\": $!state,"
                 + "\"if_type\": \"LAN\","
                 + "\"lan\": {"
-                + "\"vl2_lcuuid\": \"$vl2_lcuuid\","
-                + "\"ips\": [{\"vl2_net_index\": $vl2_net_index, \"address\": \"$address\"}],"
+                + "\"vl2_lcuuid\": \"$!vl2_lcuuid\","
+                + "\"ips\": [{\"vl2_net_index\": $!vl2_net_index, \"address\": \"$!address\"}],"
                 + "\"qos\": {\"min_bandwidth\": 0, \"max_bandwidth\": 0}"
                 + "}"
                 + "}";
@@ -298,17 +295,17 @@ public class LBSRequest extends RESTClient {
          * @method: PATCH /v1/vms/<fdb_vmid>
          */
         String vmWanTmpl = "{"
-                + "\"state\": $state,"
+                + "\"state\": $!state,"
                 + "\"if_type\": \"WAN\","
                 + "\"wan\": {"
-                + "\"ips\": [{\"ip_resource_lcuuid\": \"$ip_resource_lcuuid\"}],"
-                + "\"qos\": {\"min_bandwidth\": $bandwidth, \"max_bandwidth\": $bandwidth}"
+                + "\"ips\": [{\"ip_resource_lcuuid\": \"$!ip_resource_lcuuid\"}],"
+                + "\"qos\": {\"min_bandwidth\": $!bandwidth, \"max_bandwidth\": $!bandwidth}"
                 + "}"
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("state", state);
         params.put("ip_resource_lcuuid", ip_resource_lcuuid);
-        params.put("bandwidth", (bandwidth != 0) ? bandwidth : BANDWIDTH);
+        params.put("bandwidth", (bandwidth != 0) ? bandwidth : Integer.parseInt(props.getProperty("BANDWIDTH")));
         String ret = Utils.velocityProcess(params, vmWanTmpl);
         String param = lbId + "/interfaces/" + index;
         return this.RequestAPP(HttpMethod.PUT, "vms", ret, param);
@@ -325,26 +322,25 @@ public class LBSRequest extends RESTClient {
          * @method: PATCH /v1/vms/<fdb_vmid>
          */
         String vmLanTmpl = "{"
-                + "\"state\": $state,"
+                + "\"state\": $!state,"
                 + "\"if_type\": \"LAN\","
-                + "\"if_index\": $if_index,"
+                + "\"if_index\": $!if_index,"
                 + "\"lan\": {"
-                + "\"vl2_lcuuid\": \"$vl2_lcuuid\","
-                + "\"ips\": [{\"vl2_net_index\": $vl2_net_index, \"address\": \"$address\"}],"
+                + "\"vl2_lcuuid\": \"$!vl2_lcuuid\","
+                + "\"ips\": [{\"vl2_net_index\": $!vl2_net_index, \"address\": \"$!address\"}],"
                 + "\"qos\": {\"min_bandwidth\": 0, \"max_bandwidth\": 0}"
                 + "}"
                 + "}";
         String vmWanTmpl = "{"
-                + "\"state\": $state,"
+                + "\"state\": $!state,"
                 + "\"if_type\": \"WAN\","
-                + "\"if_index\": $if_index,"
+                + "\"if_index\": $!if_index,"
                 + "\"wan\": {"
-                + "\"ips\": [{\"ip_resource_lcuuid\": \"$ip_resource_lcuuid\"}],"
-                + "\"qos\": {\"min_bandwidth\": $bandwidth, \"max_bandwidth\": $bandwidth}"
+                + "\"ips\": [{\"ip_resource_lcuuid\": \"$!ip_resource_lcuuid\"}],"
+                + "\"qos\": {\"min_bandwidth\": $!bandwidth, \"max_bandwidth\": $!bandwidth}"
                 + "}"
                 + "}";
         List<String> interf = new ArrayList<String>();
-        
         for(Map<String, Object> map : interfaces) {
             if (map.containsKey("ip_resource_lcuuid")) {
                 interf.add(Utils.velocityProcess(map, vmWanTmpl));
@@ -354,14 +350,13 @@ public class LBSRequest extends RESTClient {
         }
         String finalTmpl = "{"
                 + "\"action\": \"modifyinterface\","
-                + "\"gateway\": \"$gateway\","
+                + "\"gateway\": \"$!gateway\","
                 + "\"loopback_ips\": [],"
-                + "\"interfaces\": $interface_data"
+                + "\"interfaces\": $!interface_data"
                 + "}";
-        String interface_data = "[" + String.join(",", interf) + "]";
         Map<String, Object> patchData = new HashMap<String, Object>();
         patchData.put("gateway", gateway);
-        patchData.put("interface_data", interface_data);
+        patchData.put("interface_data", interf);
         String finalret = Utils.velocityProcess(patchData, finalTmpl);
         return this.RequestAPP(HttpMethod.PATCH, "vms", finalret, String.valueOf(lbId));
     }

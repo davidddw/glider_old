@@ -14,7 +14,7 @@ public class OrderRequestTest {
 
     @Before
     public void setUp() throws Exception {
-        rc = new OrderRequest("10.33.37.28", "19c206ba-9d4e-44ce-8bae-0b8a5857a798", 2);
+        rc = new OrderRequest("10.33.37.28", "KVMPool", "19c206ba-9d4e-44ce-8bae-0b8a5857a798", 2);
     }
 
     @After

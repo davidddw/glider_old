@@ -26,9 +26,9 @@ public class EPCRequest extends RESTClient {
 		 * 
 		 */
 	    String velocityTemplate = "{"
-	            + "\"userid\": $userid,"
-	            + "\"name\": \"$name\","
-	            + "\"domain\": \"$domain\""
+	            + "\"userid\": $!userid,"
+	            + "\"name\": \"$!name\","
+	            + "\"domain\": \"$!domain\""
 	            + "}";
 	    Map<String, Object> params = new HashMap<String, Object>();
 	    params.put("name", name);
@@ -44,8 +44,8 @@ public class EPCRequest extends RESTClient {
 	     * @method: PATCH /v1/epcs/<epcid>
 	     */
 	    String velocityTemplate = "{"
-	            + "\"userid\": $userid,"
-	            + "\"name\": \"$name\""
+	            + "\"userid\": $!userid,"
+	            + "\"name\": \"$!name\""
 	            + "}";
 	    Map<String, Object> params = new HashMap<String, Object>();
         params.put("name", name);

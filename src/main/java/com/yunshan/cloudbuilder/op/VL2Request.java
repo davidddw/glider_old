@@ -29,13 +29,13 @@ public class VL2Request extends RESTClient {
 		 * @method: POST /v1/vl2s/
 		 */
 	    String velocityTemplate = "{"
-	            + "\"name\": \"$name\","
+	            + "\"name\": \"$!name\","
 	            + "\"vlantag\": 0,"
-	            + "\"epc_id\": $epc_id,"
-	            + "\"userid\": $userid,"
-	            + "\"domain\": \"$domain\","
+	            + "\"epc_id\": $!epc_id,"
+	            + "\"userid\": $!userid,"
+	            + "\"domain\": \"$!domain\","
 	            + "\"nets\": "
-	            + "[{\"prefix\": \"$prefix\",\"netmask\": $netmask }]"
+	            + "[{\"prefix\": \"$!prefix\",\"netmask\": $!netmask }]"
 	            + "}";
 	    Map<String, Object> params = new HashMap<String, Object>();
 	    params.put("name", name);
@@ -62,8 +62,8 @@ public class VL2Request extends RESTClient {
          * @method: PATCH /v1/vl2s/<vl2_id>/
          */
 	    String velocityTemplate = "{"
-	            + "\"prefix\": \"$prefix\","
-	            + "\"netmask\": $netmask"
+	            + "\"prefix\": \"$!prefix\","
+	            + "\"netmask\": $!netmask"
 	            + "}";
 	    List<String> interf = new ArrayList<String>();
 	    
@@ -71,11 +71,10 @@ public class VL2Request extends RESTClient {
 	        interf.add(Utils.velocityProcess(map, velocityTemplate));
         }
 	    String finalvelocityTemplate = "{"
-                + "\"nets\": $net_data"
+                + "\"nets\": $!net_data"
                 + "}";
-        String net_data = "[" + String.join(",", interf) + "]";
         Map<String, Object> patchData = new HashMap<String, Object>();
-        patchData.put("net_data", net_data);
+        patchData.put("net_data", interf);
         String finalret = Utils.velocityProcess(patchData, finalvelocityTemplate);
         return this.RequestAPP(HttpMethod.PATCH, "vl2s", finalret, String.valueOf(vl2Id));
     }

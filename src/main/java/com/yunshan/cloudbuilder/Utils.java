@@ -46,14 +46,14 @@ public class Utils {
     
     public static void main(String[] args) {
         String freemarkerTemplate = "{"
-                + "\"userid\": $userid,"
-                + "\"name\": \"$name\","
-                + "\"domain\": \"$domain\""
+                + "\"userid\": $!userid,"
+                + "\"name\": \"$!name\","
+                + "\"domain\": \"$!domain\""
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("name", "david");
-        params.put("userid", 11000000);
-        params.put("domain", "sadfa");
+        params.put("userid", null);
+        params.put("domain", null);
         String ret = Utils.velocityProcess(params, freemarkerTemplate);
         System.out.println(ret);
     }
