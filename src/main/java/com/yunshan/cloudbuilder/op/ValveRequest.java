@@ -5,16 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
-
 import com.yunshan.cloudbuilder.HttpMethod;
 import com.yunshan.cloudbuilder.RESTClient;
 import com.yunshan.cloudbuilder.ResultSet;
 import com.yunshan.cloudbuilder.Utils;
 
 public class ValveRequest extends RESTClient {
-    
-    protected static final Logger s_logger = Logger.getLogger(ValveRequest.class);
     
     private String domain;
     private int userid;
@@ -92,7 +88,6 @@ public class ValveRequest extends RESTClient {
          * @method: GET /v1/valves/
          * 
          */
-	    s_logger.info("Execute: getValves");
         return this.RequestTalker(HttpMethod.GET, "valves", null, null);
     }
 	
@@ -102,7 +97,6 @@ public class ValveRequest extends RESTClient {
          * @method: GET /v1/vgateways/<valve_lcuuid>/
          * 
          */
-	    s_logger.info("Execute: getValves");
         return this.RequestTalker(HttpMethod.GET, "valves", null, lcuuid);
     }
 	
@@ -119,7 +113,6 @@ public class ValveRequest extends RESTClient {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("launch_server", launch_server);
         String ret = Utils.velocityProcess(params, velocityTemplate);
-        s_logger.info("Execute: getValves");
         return this.RequestTalker(HttpMethod.PATCH, "valves", ret, valve_lcuuid);
     }
 	
@@ -136,7 +129,6 @@ public class ValveRequest extends RESTClient {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("epc_id", epc_id);
         String ret = Utils.velocityProcess(params, velocityTemplate);
-        s_logger.info("Execute: getValves");
         return this.RequestTalker(HttpMethod.PATCH, "valves", ret, valve_lcuuid);
     }
 	
@@ -146,7 +138,6 @@ public class ValveRequest extends RESTClient {
          * @method: DELETE /v1/vgateways/<valve_lcuuid>/
          * 
          */
-	    s_logger.info("Execute: deleteValve");
         return this.RequestTalker(HttpMethod.DELETE, "valves", null, valve_lcuuid);
     }
 	
@@ -240,7 +231,6 @@ public class ValveRequest extends RESTClient {
 	    Map<String, Object> params = new HashMap<String, Object>();
         params.put("interface_data", finalData);
         String ret = Utils.velocityProcess(params, velocityTemplate);
-        s_logger.info("Execute: modifyValve");
 	    return this.RequestTalker(HttpMethod.PATCH, "valves", ret, valve_lcuuid);
     }
 	

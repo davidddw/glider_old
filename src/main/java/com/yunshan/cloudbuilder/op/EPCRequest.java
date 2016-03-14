@@ -3,16 +3,12 @@ package com.yunshan.cloudbuilder.op;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
-
 import com.yunshan.cloudbuilder.HttpMethod;
 import com.yunshan.cloudbuilder.RESTClient;
 import com.yunshan.cloudbuilder.ResultSet;
 import com.yunshan.cloudbuilder.Utils;
 
 public class EPCRequest extends RESTClient {
-    
-    protected static final Logger s_logger = Logger.getLogger(EPCRequest.class);
     
     private String domain;
     private int userid;
@@ -39,7 +35,6 @@ public class EPCRequest extends RESTClient {
 	    params.put("userid", this.userid);
 	    params.put("domain", this.domain);
 	    String ret = Utils.velocityProcess(params, velocityTemplate);
-	    s_logger.info("Execute: createEPC");
 	    return this.RequestAPP(HttpMethod.POST, "epcs", ret, null);
 	}
 	
@@ -56,7 +51,6 @@ public class EPCRequest extends RESTClient {
         params.put("name", name);
         params.put("userid", this.userid);
         String ret = Utils.velocityProcess(params, velocityTemplate);
-        s_logger.info("Execute: modifyEPC");
         return this.RequestAPP(HttpMethod.PATCH, "epcs", ret, String.valueOf(epcid));
 	}
 	
@@ -65,7 +59,6 @@ public class EPCRequest extends RESTClient {
          * @params: 
          * @method: GET /v1/epcs
          */
-	    s_logger.info("Execute: getEPCs");
 	    return this.RequestAPP(HttpMethod.GET, "epcs", null, null);
 	}
 	
@@ -74,7 +67,6 @@ public class EPCRequest extends RESTClient {
 	     * @params: epc_id
 	     * @method: GET /v1/epcs/<epc_id>/
 	     */
-	    s_logger.info("Execute: getEPCById");
         return this.RequestAPP(HttpMethod.GET, "epcs", null, String.valueOf(epcid));
     }
 	
@@ -83,7 +75,6 @@ public class EPCRequest extends RESTClient {
          * @params: epc_id
          * @method: DELETE /v1/epcs/<epc_id>/
          */
-	    s_logger.info("Execute: deleteEPC");
         return this.RequestAPP(HttpMethod.DELETE, "epcs", null, String.valueOf(epcid));
 	}
 	

@@ -14,15 +14,20 @@ public class Client {
         CommandLineParser parser = new DefaultParser();
         // create the Options
         Options options = new Options();
-        options.addOption(Option.builder("a").longOpt("autocreate")
+        options.addOption(Option.builder("b").longOpt("build")
                 .required(false).desc("auto create env from yaml config.")
-                .hasArg(true).argName("autocreate").build());
+                .hasArg(true).argName("build").build());
+        
+        options.addOption(Option.builder("d").longOpt("destroy")
+                .required(false).desc("auto delete env from yaml config.")
+                .hasArg(true).argName("destroy").build());
 
         options.addOption(Option.builder("h").longOpt("help")
                 .required(false).desc("help for glider.")
                 .hasArg(true).argName("help").build());
         
-        args = new String[]{ "--autocreate=d:/autotest.yml" };
+        args = new String[]{ "--build=d:/autotest.yml" };
+        //args = new String[]{ "--destroy=d:/autotest.yml" };
         try {
             // parse the command line arguments
             CommandLine line = parser.parse(options, args);
@@ -31,9 +36,12 @@ public class Client {
             HelpFormatter formatter = new HelpFormatter();
             if (line.hasOption("help")) {
                 formatter.printHelp("glider", options);
-            } else if(line.hasOption("autocreate")) {
-                String filename = line.getOptionValue("autocreate");
+            } else if(line.hasOption("build")) {
+                String filename = line.getOptionValue("build");
                 new EnvBuilder(filename).build();
+            } else if(line.hasOption("destroy")) {
+                String filename = line.getOptionValue("destroy");
+                new EnvBuilder(filename).destroy();
             } else {
                 formatter.printHelp("glider", options);
             }

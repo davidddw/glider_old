@@ -54,7 +54,7 @@ import java.util.Properties;
 import javax.net.ssl.SSLContext;
 
 public class RESTClient {
-    protected static final Logger s_logger = Logger.getLogger(RESTClient.class);
+    protected final Logger s_logger = Utils.getLogger();
     
     protected static Properties props = readProperties("config.properties");
 
@@ -96,7 +96,7 @@ public class RESTClient {
         return prop;
     }
 
-    private static HttpClient acceptsUntrustedCerts() {
+    private HttpClient acceptsUntrustedCerts() {
         SSLContext trustStrategy;
         try {
             trustStrategy = new SSLContextBuilder().loadTrustMaterial(null, new TrustStrategy() {
@@ -242,6 +242,9 @@ public class RESTClient {
     }
 
     public ResultSet makeRequest(HttpMethod method, String uri, String data, String param) {
+        final Throwable t = new Throwable();
+        final StackTraceElement methodCaller = t.getStackTrace()[2];
+        s_logger.info("====> Execute function: " + methodCaller.getMethodName());
         HttpRequestBase request = null;
         switch (method) {
         case GET:

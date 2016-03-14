@@ -141,6 +141,18 @@ public class EnvBuilder {
         }
         return this;
     }
+    
+    public EnvBuilder unplugAndDeleteBlock() {
+        for (VMInfo vmInfo : emptyIfNull(config.getVms())) {
+            String vmUuid = vmRequest.getVmUuidByName(vmInfo.getName());
+            for (Map<String, Object> block : emptyIfNull(vmInfo.getBlocks())) {
+                String blockUuid = blockRequest.getBlockUuidByName((String)block.get("name"));
+                blockRequest.unplugBlockToVm(blockUuid, vmUuid);
+                blockRequest.deleteBlockIfExist((String)block.get("name"));
+            }
+        }
+        return this;
+    }
 
     public EnvBuilder network() {
         for (VL2Info vl2Info : emptyIfNull(config.getVl2s())) {
@@ -202,7 +214,7 @@ public class EnvBuilder {
         if (config != null) {
             orderAll();
             try {
-                Thread.sleep(20000);
+                Thread.sleep(60000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -212,6 +224,7 @@ public class EnvBuilder {
     }
 
     public void destroy() {
+        unplugAndDeleteBlock();
         for (LBInfo lbInfo : emptyIfNull(config.getLbs())) {
             lbRequest.deleteLBIfExist(lbInfo.getName());
         }

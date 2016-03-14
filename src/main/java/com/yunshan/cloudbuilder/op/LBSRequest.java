@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
-
 import com.yunshan.cloudbuilder.HttpMethod;
 import com.yunshan.cloudbuilder.RESTClient;
 import com.yunshan.cloudbuilder.ResultSet;
@@ -15,8 +13,6 @@ import com.yunshan.cloudbuilder.VMState;
 
 public class LBSRequest extends RESTClient {
     
-    protected static final Logger s_logger = Logger.getLogger(LBSRequest.class);
-
     private String domain;
     private int userid;
     private String pool_lcuuid;
@@ -74,7 +70,6 @@ public class LBSRequest extends RESTClient {
         params.put("userid", this.userid);
         params.put("domain", this.domain);
         String ret = Utils.velocityProcess(params, velocityTemplate);
-        s_logger.info("execute -> createLB function.");
         return this.RequestAPP(HttpMethod.POST, "lbs", ret, null);
     }
     
@@ -84,7 +79,6 @@ public class LBSRequest extends RESTClient {
          * 
          * @method: DELETE /v1/lbs/
          */
-        s_logger.info("execute -> deleteLB function.");
         return this.RequestAPP(HttpMethod.DELETE, "lbs", null, String.valueOf(lbId));
     }
 
@@ -110,7 +104,6 @@ public class LBSRequest extends RESTClient {
         params.put("mem_size", mem_size);
         params.put("product_spec", product_spec);
         String ret = Utils.velocityProcess(params, velocityTemplate);
-        s_logger.info("execute -> modifyLB function.");
         return this.RequestAPP(HttpMethod.PATCH, "lbs", ret, String.valueOf(lbId));
     }
 
@@ -126,7 +119,6 @@ public class LBSRequest extends RESTClient {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("epc_id", epcId);
         String ret = Utils.velocityProcess(params, velocityTemplate);
-        s_logger.info("execute -> addLBToEPC function.");
         return this.RequestAPP(HttpMethod.PATCH, "lbs", ret, String.valueOf(lbId));
     }
     
@@ -135,7 +127,6 @@ public class LBSRequest extends RESTClient {
          * @params: vmid
          * 
          */
-        s_logger.info("execute -> getLBById function.");
         return this.RequestAPP(HttpMethod.GET, "lbs", null, String.valueOf(lbId));
     }
     
@@ -163,7 +154,6 @@ public class LBSRequest extends RESTClient {
         params.put("balance", (balance != null) ? balance : "roundrobin");
         String ret = Utils.velocityProcess(params, velocityTemplate);
         String param = lcuuid + "/lb-listeners/";
-        s_logger.info("execute -> createLBListener function.");
         return this.RequestAPP(HttpMethod.POST, "lbs", ret, param);
     }
     
@@ -173,7 +163,6 @@ public class LBSRequest extends RESTClient {
          * @method: PATCH /v1/vms/<fdb_vmid>
          */
         String param = lb_lcuuid + "/lb-listeners/" + lb_listener_lcuuid;
-        s_logger.info("execute -> deleteLBListener function.");
         return this.RequestAPP(HttpMethod.DELETE, "lbs", null, param);
     }
     
@@ -183,7 +172,6 @@ public class LBSRequest extends RESTClient {
          * @method: GET /v1/lbs/<lb_lcuuid>/lb-listeners
          */
         String param = lblcuuid + "/lb-listeners";
-        s_logger.info("execute -> getLBListener function.");
         return this.RequestAPP(HttpMethod.GET, "lbs", null, param);
     }
     
@@ -205,7 +193,6 @@ public class LBSRequest extends RESTClient {
         params.put("content", content);
         params.put("userid", userid);
         String ret = Utils.velocityProcess(params, velocityTemplate);
-        s_logger.info("execute -> createLBForwardRules function.");
         return this.RequestAPP(HttpMethod.POST, "lb-forward-rules", ret, null);
     }
 
@@ -224,7 +211,6 @@ public class LBSRequest extends RESTClient {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("gateway", gateway);
         String ret = Utils.velocityProcess(params, velocityTemplate);
-        s_logger.info("execute -> createLBForwardRules function.");
         return this.RequestAPP(HttpMethod.PATCH, "vms", ret, String.valueOf(lbId));
     }
     
@@ -256,7 +242,6 @@ public class LBSRequest extends RESTClient {
         params.put("bk_vms", bk_vms);
         String ret = Utils.velocityProcess(params, velocityTemplate);
         String param = lb_lcuuid + "/lb-listeners/" + lb_listener_lcuuid;
-        s_logger.info("execute -> putLBListener function.");
         return this.RequestAPP(HttpMethod.PUT, "lbs", ret, param);
     }
     

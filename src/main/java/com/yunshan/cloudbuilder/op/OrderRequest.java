@@ -5,16 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
-
 import com.yunshan.cloudbuilder.HttpMethod;
 import com.yunshan.cloudbuilder.RESTClient;
 import com.yunshan.cloudbuilder.ResultSet;
 import com.yunshan.cloudbuilder.Utils;
 
 public class OrderRequest extends RESTClient {
-    
-    protected static final Logger s_logger = Logger.getLogger(OrderRequest.class);
     
     private int userid;
     private String domain;
@@ -205,7 +201,6 @@ public class OrderRequest extends RESTClient {
 	    params.put("domain_lcuuid", this.domain);
 	    params.put("id", 10000);
 	    String ret = Utils.velocityProcess(params, velocityTemplate);
-	    s_logger.info("Execute: order all");
 	    return this.RequestAPP(HttpMethod.POST, "orders", ret, null);
 	}
 	

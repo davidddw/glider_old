@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 
 import com.yunshan.cloudbuilder.HttpMethod;
 import com.yunshan.cloudbuilder.RESTClient;
@@ -15,8 +14,6 @@ import com.yunshan.cloudbuilder.ResultSet;
 import com.yunshan.cloudbuilder.Utils;
 
 public class VGWRequest extends RESTClient {
-    
-    protected static final Logger s_logger = Logger.getLogger(VGWRequest.class);
     
     private String domain;
     private int userid;

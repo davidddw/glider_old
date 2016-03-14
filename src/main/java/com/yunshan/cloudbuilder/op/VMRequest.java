@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
-
 import com.yunshan.cloudbuilder.HttpMethod;
 import com.yunshan.cloudbuilder.RESTClient;
 import com.yunshan.cloudbuilder.ResultSet;
@@ -15,8 +13,6 @@ import com.yunshan.cloudbuilder.VMState;
 
 public class VMRequest extends RESTClient {
     
-    protected static final Logger s_logger = Logger.getLogger(VMRequest.class);
-
     private String domain;
     private int userid;
     private String pool_lcuuid;
@@ -73,7 +69,6 @@ public class VMRequest extends RESTClient {
         params.put("userid", this.userid);
         params.put("domain", this.domain);
         String ret = Utils.velocityProcess(params, velocityTemplate);
-        s_logger.info("Execute -> createEPC function.");
         return this.RequestAPP(HttpMethod.POST, "vms", ret, null);
     }
 
@@ -83,7 +78,6 @@ public class VMRequest extends RESTClient {
          * 
          * @method: DELETE /v1/vms/
          */
-        s_logger.info("Execute -> createEPC function.");
         return this.RequestAPP(HttpMethod.DELETE, "vms", null, String.valueOf(vmid));
     }
 
@@ -99,7 +93,6 @@ public class VMRequest extends RESTClient {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("action", "stop");
         String ret = Utils.velocityProcess(params, velocityTemplate);
-        s_logger.info("Execute -> createEPC function.");
         return this.RequestAPP(HttpMethod.PATCH, "vms", ret, String.valueOf(vmid));
     }
 
@@ -115,7 +108,6 @@ public class VMRequest extends RESTClient {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("action", "start");
         String ret = Utils.velocityProcess(params, velocityTemplate);
-        s_logger.info("Execute -> createEPC function.");
         return this.RequestAPP(HttpMethod.PATCH, "vms", ret, String.valueOf(vmid));
     }
 
@@ -131,7 +123,6 @@ public class VMRequest extends RESTClient {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("action", "isolate");
         String ret = Utils.velocityProcess(params, velocityTemplate);
-        s_logger.info("Execute -> createEPC function.");
         return this.RequestAPP(HttpMethod.PATCH, "vms", ret, String.valueOf(vmid));
     }
 
@@ -681,7 +672,7 @@ public class VMRequest extends RESTClient {
         boolean ret = false;
         while (true) {
             try {
-                Thread.sleep(10000);
+                Thread.sleep(5000);
                 count += 1;
                 VMState state = this.getVMStatusById(vmId);
                 if (state.equals(vmState)) {
@@ -691,7 +682,7 @@ public class VMRequest extends RESTClient {
                 if (count > 10) {
                     break;
                 }
-                Thread.sleep(10000);
+                Thread.sleep(5000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

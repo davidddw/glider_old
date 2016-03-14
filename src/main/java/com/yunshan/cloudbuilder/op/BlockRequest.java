@@ -3,8 +3,6 @@ package com.yunshan.cloudbuilder.op;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
-
 import com.yunshan.cloudbuilder.HttpMethod;
 import com.yunshan.cloudbuilder.RESTClient;
 import com.yunshan.cloudbuilder.ResultSet;
@@ -12,8 +10,6 @@ import com.yunshan.cloudbuilder.Utils;
 
 public class BlockRequest extends RESTClient {
     
-    protected static final Logger s_logger = Logger.getLogger(BlockRequest.class);
-
     public BlockRequest(String host) {
         super(host);
     }
@@ -38,7 +34,6 @@ public class BlockRequest extends RESTClient {
         params.put("product_spec", product_spec);
         params.put("useruuid", useruuid);
         String ret = Utils.velocityProcess(params, velocityTemplate);
-        s_logger.info("Execute -> createBlock function.");
         return this.RequestAPP(HttpMethod.POST, "blocks", ret, null);
     }
     
@@ -46,7 +41,6 @@ public class BlockRequest extends RESTClient {
         /*
          * @method: GET /v1/blocks
          */
-        s_logger.info("Execute -> getBlocks function.");
         return this.RequestAPP(HttpMethod.GET, "blocks", null, null);
     }
     
@@ -54,7 +48,6 @@ public class BlockRequest extends RESTClient {
         /*
          * @method: GET v1/blocks/<block_id>/
          */
-        s_logger.info("Execute -> getBlockById function.");
         return this.RequestAPP(HttpMethod.GET, "blocks", null, blockId);
     }
 
@@ -69,7 +62,6 @@ public class BlockRequest extends RESTClient {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("size", size);
         String ret = Utils.velocityProcess(params, velocityTemplate);
-        s_logger.info("Execute -> modifyBlocks function.");
         return this.RequestAPP(HttpMethod.PATCH, "blocks", ret, blockUuid);
     }
     
@@ -78,7 +70,6 @@ public class BlockRequest extends RESTClient {
          * @params: block_id
          * @method: DELETE /v1/block/<block_id>/
          */
-        s_logger.info("Execute -> deleteBlock function.");
         return this.RequestAPP(HttpMethod.DELETE, "blocks", null, blockUuid);
     }
 
@@ -98,7 +89,6 @@ public class BlockRequest extends RESTClient {
         params.put("product_spec", product_spec);
         String ret = Utils.velocityProcess(params, velocityTemplate);
         String param = blockUuid + "/snapshots";
-        s_logger.info("Execute: modifyBlocks");
         return this.RequestAPP(HttpMethod.POST, "blocks", ret, param);
     }
     
@@ -108,7 +98,6 @@ public class BlockRequest extends RESTClient {
          * @method: DELETE /v1/blocks/<block_id>/snapshots/<snapshot_lcuuid>
          */
         String param = blockUuid + "/snapshots/" + snapUuid;
-        s_logger.info("Execute: deleteBlockSnapshot");
         return this.RequestAPP(HttpMethod.DELETE, "blocks", null, param);
     }
 
@@ -118,7 +107,6 @@ public class BlockRequest extends RESTClient {
          * POST /v1/blocks/<block_id>/snapshots/<snap_id>/reversion
          */
         String param = blockUuid + "/snapshots/" + snap_id + "/reversion";
-        s_logger.info("Execute: deleteBlockSnapshot");
         return this.RequestAPP(HttpMethod.POST, "blocks", null, param);
     }
     
@@ -128,7 +116,6 @@ public class BlockRequest extends RESTClient {
          * @method: GET /v1/blocks/<block_id>/snapshots
          */
         String param = blockUuid + "/snapshots";
-        s_logger.info("Execute: deleteBlockSnapshot");
         return this.RequestAPP(HttpMethod.GET, "blocks", null, param);
     }
 
@@ -138,17 +125,15 @@ public class BlockRequest extends RESTClient {
          * @method: POST /v1/vm_block/<vm_lcuuid>/blocks/<block_lcuuid>
          */
         String param = vmUuid + "/blocks/" + blockUuid;
-        s_logger.info("Execute: deleteBlockSnapshot");
         return this.RequestAPP(HttpMethod.POST, "vm_block", null, param);
     }
     
-    public ResultSet unplugBlockToVm(String blockUuid, int vmUuid) {
+    public ResultSet unplugBlockToVm(String blockUuid, String vmUuid) {
         /*
          * @params: block_id, vm_id
          * @method: DELETE /v1/vm_block/<vm_lcuuid>/blocks/<block_lcuuid>
          */
         String param = vmUuid + "/blocks/" + blockUuid;
-        s_logger.info("Execute: deleteBlockSnapshot");
         return this.RequestAPP(HttpMethod.DELETE, "vm_block", null, param);
     }
     
