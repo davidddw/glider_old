@@ -227,7 +227,7 @@ public class VGWRequest extends RESTClient {
         params.put("dip", dip);
         params.put("ruleId", ruleId);
         interf.add(Utils.velocityProcess(params, velocityTemplate));
-        String finalData = objectToJson(interf);
+        String finalData = interf.toString();
         String param = vgateway_lcuuid + "/snats";
         return this.RequestTalker(HttpMethod.PUT, "vgateways", finalData, param);
     }
@@ -281,7 +281,7 @@ public class VGWRequest extends RESTClient {
         params.put("dport", dport);
         params.put("ruleId", ruleId);
         interf.add(Utils.velocityProcess(params, velocityTemplate));
-        String finalData = objectToJson(interf);
+        String finalData = interf.toString();
         String param = vgateway_lcuuid + "/dnats";
         return this.RequestTalker(HttpMethod.PUT, "vgateways", finalData, param);
     }
@@ -334,7 +334,7 @@ public class VGWRequest extends RESTClient {
         params.put("sport", sport);
         params.put("ruleId", ruleId);
         interf.add(Utils.velocityProcess(params, velocityTemplate));
-        String finalData = objectToJson(interf);
+        String finalData = interf.toString();
         String param = vgateway_lcuuid + "/forward_acls";
         return this.RequestTalker(HttpMethod.PUT, "vgateways", finalData, param);
     }
@@ -382,7 +382,7 @@ public class VGWRequest extends RESTClient {
         params.put("remote_net_mask", remote_net_mask);
         params.put("ruleId", ruleId);
         interf.add(Utils.velocityProcess(params, velocityTemplate));
-        String finalData = objectToJson(interf);
+        String finalData = interf.toString();
         String param = vgateway_lcuuid + "/vpns";
         return this.RequestTalker(HttpMethod.PUT, "vgateways", finalData, param);
     }
@@ -448,7 +448,7 @@ public class VGWRequest extends RESTClient {
             index += 1;
             interf.add(Utils.velocityProcess(map, velocityLTemplate));
         }
-        String finalData = objectToJson(interf);
+        String finalData = interf.toString();
         return this.RequestTalker(HttpMethod.PATCH, "vgateways", finalData, vgateway_lcuuid);
     }
 	

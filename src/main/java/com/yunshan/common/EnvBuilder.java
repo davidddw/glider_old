@@ -5,15 +5,15 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.yaml.snakeyaml.Yaml;
 
 import com.yunshan.cloudbuilder.ResultSet;
+import com.yunshan.cloudbuilder.Utils;
 import com.yunshan.cloudbuilder.op.BlockRequest;
 import com.yunshan.cloudbuilder.op.EPCRequest;
 import com.yunshan.cloudbuilder.op.LBSRequest;
@@ -35,7 +35,7 @@ import com.yunshan.config.ValveInfo;
 
 public class EnvBuilder {
 
-    protected static final Logger s_logger = Logger.getLogger(EnvBuilder.class);
+    protected static final Logger s_logger = Utils.getLogger();
     private Configuration config = null;
     private OrderRequest orderRequest = null;
     private EPCRequest epcRequest = null;
@@ -50,7 +50,7 @@ public class EnvBuilder {
     public EnvBuilder(String filename) {
         this.config = getConfigFromYaml(filename);
         if (config != null) {
-            orderRequest = new OrderRequest(config.getHost(), config.getPool_name(), config.getDomain(),
+            orderRequest = new OrderRequest(config.getHost(), config.getDomain(),
                     config.getUserid());
             vmRequest = new VMRequest(config.getHost(), config.getPool_name(), config.getDomain(),
                     config.getUserid());
@@ -68,10 +68,6 @@ public class EnvBuilder {
         }
     }
 
-    public static <T> Iterable<T> emptyIfNull(Iterable<T> iterable) {
-        return iterable == null ? Collections.<T> emptyList() : iterable;
-    }
-
     private Configuration getConfigFromYaml(String filename) {
         try {
             Yaml yaml = new Yaml();
@@ -84,22 +80,22 @@ public class EnvBuilder {
     }
 
     public EnvBuilder orderAll() {
-        for (VMInfo vmInfo : emptyIfNull(config.getVms())) {
+        for (VMInfo vmInfo : Utils.emptyIfNull(config.getVms())) {
             orderRequest.orderVM(vmInfo.getName(), vmInfo.getProduct_spec(), vmInfo.getTemplate());
         }
-        for (VGWInfo vgwInfo : emptyIfNull(config.getVgateways())) {
+        for (VGWInfo vgwInfo : Utils.emptyIfNull(config.getVgateways())) {
             orderRequest.orderVGW(vgwInfo.getName(), vgwInfo.getProduct_spec());
         }
-        for (ValveInfo valveInfo : emptyIfNull(config.getValves())) {
+        for (ValveInfo valveInfo : Utils.emptyIfNull(config.getValves())) {
             orderRequest.orderValve(valveInfo.getName(), valveInfo.getProduct_spec());
         }
-        for (LBInfo lbInfo : emptyIfNull(config.getLbs())) {
+        for (LBInfo lbInfo : Utils.emptyIfNull(config.getLbs())) {
             orderRequest.orderLB(lbInfo.getName(), lbInfo.getProduct_spec());
         }
-        for (IPInfo ipInfo : emptyIfNull(config.getIps())) {
+        for (IPInfo ipInfo : Utils.emptyIfNull(config.getIps())) {
             orderRequest.orderIP(ipInfo.getIsp(), ipInfo.getNumber(), ipInfo.getProduct_spec());
         }
-        for (BWInfo bwInfo : emptyIfNull(config.getBandws())) {
+        for (BWInfo bwInfo : Utils.emptyIfNull(config.getBandws())) {
             orderRequest.orderBW(bwInfo.getIsp(), bwInfo.getBandw(), bwInfo.getProduct_spec());
         }
         orderRequest.execute();
@@ -132,9 +128,9 @@ public class EnvBuilder {
     }
 
     public EnvBuilder plugBlockToVm() {
-        for (VMInfo vmInfo : emptyIfNull(config.getVms())) {
+        for (VMInfo vmInfo : Utils.emptyIfNull(config.getVms())) {
             String vmUuid = vmRequest.getVmUuidByName(vmInfo.getName());
-            for (Map<String, Object> block : emptyIfNull(vmInfo.getBlocks())) {
+            for (Map<String, Object> block : Utils.emptyIfNull(vmInfo.getBlocks())) {
                 ResultSet resultSet = blockRequest.createBlockIfNotExist((String) block.get("name"),
                         (Integer) block.get("size"), (String) block.get("product_spec"),
                         (String) block.get("useruuid"));
@@ -146,9 +142,9 @@ public class EnvBuilder {
     }
     
     public EnvBuilder unplugAndDeleteBlock() {
-        for (VMInfo vmInfo : emptyIfNull(config.getVms())) {
+        for (VMInfo vmInfo : Utils.emptyIfNull(config.getVms())) {
             String vmUuid = vmRequest.getVmUuidByName(vmInfo.getName());
-            for (Map<String, Object> block : emptyIfNull(vmInfo.getBlocks())) {
+            for (Map<String, Object> block : Utils.emptyIfNull(vmInfo.getBlocks())) {
                 String blockUuid = blockRequest.getBlockUuidByName((String)block.get("name"));
                 blockRequest.unplugBlockToVm(blockUuid, vmUuid);
                 blockRequest.deleteBlockIfExist((String)block.get("name"));
@@ -158,11 +154,11 @@ public class EnvBuilder {
     }
 
     public EnvBuilder network() {
-        for (VL2Info vl2Info : emptyIfNull(config.getVl2s())) {
+        for (VL2Info vl2Info : Utils.emptyIfNull(config.getVl2s())) {
             vl2Request.CreateVL2IfNotExist(vl2Info.getName(), config.getEpc_name(),
                     vl2Info.getPrefix(), vl2Info.getNetmask());
         }
-        for (VGWInfo vgwInfo : emptyIfNull(config.getVgateways())) {
+        for (VGWInfo vgwInfo : Utils.emptyIfNull(config.getVgateways())) {
             List<Map<String, Object>> wanInfo = vgwInfo.getWan();
             String lcuuid = resRequest.getUuidByIp((String) wanInfo.get(0).get("ip"));
             wanInfo.get(0).put("ip_resource_lcuuid", lcuuid);
@@ -172,7 +168,7 @@ public class EnvBuilder {
             lanInfo.get(0).put("vl2_lcuuid", vl2_lcuuid);
             vgwRequest.modifyVgatewayFinely(vgwInfo.getName(), wanInfo, lanInfo);
         }
-        for (ValveInfo valveInfo : emptyIfNull(config.getValves())) {
+        for (ValveInfo valveInfo : Utils.emptyIfNull(config.getValves())) {
             List<Map<String, Object>> wanInfo = valveInfo.getWan();
             String lcuuid = resRequest.getUuidByIp((String) (wanInfo.get(0).get("ip")));
             wanInfo.get(0).put("ip_resource_lcuuid", lcuuid);
@@ -182,9 +178,9 @@ public class EnvBuilder {
             lanInfo.get(0).put("vl2_lcuuid", vl2_lcuuid);
             valveRequest.modifyValveFinely(valveInfo.getName(), wanInfo, lanInfo);
         }
-        for (VMInfo vmInfo : emptyIfNull(config.getVms())) {
+        for (VMInfo vmInfo : Utils.emptyIfNull(config.getVms())) {
             List<Map<String, Object>> vmIPInfo = vmInfo.getVm_ip();
-            for (Map<String, Object> map : emptyIfNull(vmIPInfo)) {
+            for (Map<String, Object> map : Utils.emptyIfNull(vmIPInfo)) {
                 map.put("state", 1);
                 if (map.containsKey("wan_ip")) {
                     map.put("ip_resource_lcuuid",
@@ -196,9 +192,9 @@ public class EnvBuilder {
             }
             vmRequest.attachMultiIPAddress(vmInfo.getName(), vmInfo.getVm_gw(), vmIPInfo);
         }
-        for (LBInfo lbInfo : emptyIfNull(config.getLbs())) {
+        for (LBInfo lbInfo : Utils.emptyIfNull(config.getLbs())) {
             List<Map<String, Object>> lbIPInfo = lbInfo.getLb_ip();
-            for (Map<String, Object> map : emptyIfNull(lbIPInfo)) {
+            for (Map<String, Object> map : Utils.emptyIfNull(lbIPInfo)) {
                 map.put("state", 1);
                 if (map.containsKey("wan_ip")) {
                     map.put("ip_resource_lcuuid",
@@ -214,16 +210,16 @@ public class EnvBuilder {
     }
     
     public void configLBRule() {
-        for (LBInfo lbInfo : emptyIfNull(config.getLbs())) {
+        for (LBInfo lbInfo : Utils.emptyIfNull(config.getLbs())) {
             ResultSet loadbalance = lbRequest.getLBByName(lbInfo.getName());
             String lbUuid = lbRequest.getStringRecordsByKey(loadbalance, "LCUUID");
             List<LBListenerInfo> lbListeners = lbInfo.getLb_listener();
-            for (LBListenerInfo lbListenerInfo : emptyIfNull(lbListeners)) {
+            for (LBListenerInfo lbListenerInfo : Utils.emptyIfNull(lbListeners)) {
                 ResultSet lbListener = lbRequest.createLBListenerIfNotExist(lbListenerInfo.getName(), 
                         lbUuid, lbListenerInfo.getProtocol(), (String)lbInfo.getLb_ip().get(0).get("wan_ip"),
                         lbListenerInfo.getPort(), lbListenerInfo.getBalance());
                 List<Map<String, Object>> vmList = new ArrayList<Map<String, Object>>();
-                for (Map<String, Object> map : emptyIfNull(lbListenerInfo.getVms())) {
+                for (Map<String, Object> map : Utils.emptyIfNull(lbListenerInfo.getVms())) {
                     ResultSet vmInst = vmRequest.getVmByName((String)map.get("name"));
                     String vmUuid = vmRequest.getStringRecordsByKey(vmInst, "LCUUID");
                     Map<String, Object> vmDict = new HashMap<String, Object>();
@@ -243,9 +239,10 @@ public class EnvBuilder {
                     vmList.add(vmDict);
                 }
                 String ipAddress = (String)lbInfo.getLb_ip().get(0).get("wan_ip");
+                String lbListenerLcuuid = lbRequest.getStringRecordsByKey(lbListener, "LCUUID");
                 lbRequest.putLBListener(lbListenerInfo.getName(), lbListenerInfo.getProtocol(), 
                         ipAddress, lbListenerInfo.getPort(), lbListenerInfo.getBalance(), lbUuid, 
-                        lbRequest.getStringRecordsByKey(lbListener, "LCUUID"), vmList);
+                        lbListenerLcuuid, vmList);
             }
         }
     }
@@ -266,19 +263,19 @@ public class EnvBuilder {
 
     public void destroy() {
         unplugAndDeleteBlock();
-        for (LBInfo lbInfo : emptyIfNull(config.getLbs())) {
+        for (LBInfo lbInfo : Utils.emptyIfNull(config.getLbs())) {
             lbRequest.deleteLBIfExist(lbInfo.getName());
         }
-        for (VMInfo vmInfo : emptyIfNull(config.getVms())) {
+        for (VMInfo vmInfo : Utils.emptyIfNull(config.getVms())) {
             vmRequest.deleteVMIfExist(vmInfo.getName());
         }
-        for (VGWInfo vgwInfo : emptyIfNull(config.getVgateways())) {
+        for (VGWInfo vgwInfo : Utils.emptyIfNull(config.getVgateways())) {
             vgwRequest.deleteVgatewayNotExist(vgwInfo.getName());
         }
-        for (ValveInfo valveInfo : emptyIfNull(config.getValves())) {
+        for (ValveInfo valveInfo : Utils.emptyIfNull(config.getValves())) {
             valveRequest.deleteVgatewayNotExist(valveInfo.getName());
         }
-        for (VL2Info vl2Info : emptyIfNull(config.getVl2s())) {
+        for (VL2Info vl2Info : Utils.emptyIfNull(config.getVl2s())) {
             vl2Request.deleteVL2IfExist(vl2Info.getName());
         }
         epcRequest.DeleteEPCIfExist(config.getEpc_name());

@@ -23,20 +23,16 @@ public class OrderRequest extends RESTClient {
     private List<Map<String, Object>> bandw_info = new ArrayList<Map<String, Object>>();
     private VGWRequest vgwRequest = null;
     private ValveRequest valveRequest = null;
-    private VMRequest vmRequest = null;
-    private LBSRequest lbRequest = null;
     
-	public OrderRequest(String host, String poolName, String domain, int userid) {
+	public OrderRequest(String host, String domain, int userid) {
 		super(host);
 		this.userid = userid;
 		this.domain = domain;
 		vgwRequest = new VGWRequest(host, domain, userid);
         valveRequest = new ValveRequest(host, domain, userid);
-        vmRequest = new VMRequest(host, poolName, domain, userid);
-        lbRequest = new LBSRequest(host, poolName, domain, userid);
 	}
 	
-	private List<String> generateVmData(List<Map<String, Object>> vm_info) {
+	private String generateVmData(List<Map<String, Object>> vm_info) {
 	    /*
 	     * @params: name, product_spec, os_template, domain_lcuuid
 	     */
@@ -53,16 +49,14 @@ public class OrderRequest extends RESTClient {
 	        + "\"USER_DISK_SIZE\":$!USER_DISK_SIZE,"
 	        + "\"DOMAIN\":\"$!domain_lcuuid\""
 	        + "}";
-	    if (vm_info==null)
-            return list;
-        for (Map<String, Object> map : vm_info) {
-            String ret = Utils.velocityProcess(map, velocityTemplate);
-            list.add(ret);
-        }
-        return list;
+	    for (Map<String, Object> map : Utils.emptyIfNull(vm_info)) {
+	        String ret = Utils.velocityProcess(map, velocityTemplate);
+	        list.add(ret);
+	    }
+        return list.toString();
 	}
 	
-	private List<String> generateLBData(List<Map<String, Object>> lb_info) {
+	private String generateLBData(List<Map<String, Object>> lb_info) {
         /*
          * @params: name, product_spec, domain_lcuuid
          */
@@ -78,17 +72,14 @@ public class OrderRequest extends RESTClient {
             + "\"USER_DISK_SIZE\":$!USER_DISK_SIZE,"
             + "\"DOMAIN\":\"$!domain_lcuuid\""
             + "}";
-        
-        if (lb_info==null)
-            return list;
-        for (Map<String, Object> map : lb_info) {
+        for (Map<String, Object> map : Utils.emptyIfNull(lb_info)) {
             String ret = Utils.velocityProcess(map, velocityTemplate);
             list.add(ret);
         }
-        return list;
+        return list.toString();
     }
 	
-	private List<String> generateVGWData(List<Map<String, Object>> vgateway_info) {
+	private String generateVGWData(List<Map<String, Object>> vgateway_info) {
         /*
          * @params: name, product_spec, domain_lcuuid
          */
@@ -98,16 +89,14 @@ public class OrderRequest extends RESTClient {
             + "\"PRODUCT_SPECIFICATION_LCUUID\": \"$!product_spec\","
             + "\"DOMAIN\":\"$!domain_lcuuid\""
             + "}";
-        if (vgateway_info==null)
-            return list;
-        for (Map<String, Object> map : vgateway_info) {
+        for (Map<String, Object> map : Utils.emptyIfNull(vgateway_info)) {
             String ret = Utils.velocityProcess(map, velocityTemplate);
             list.add(ret);
         }
-        return list;
+        return list.toString();
     }
 	
-	private List<String> generateValveData(List<Map<String, Object>> valve_info) {
+	private String generateValveData(List<Map<String, Object>> valve_info) {
         /*
          * @params: name, product_spec, domain_lcuuid
          */
@@ -117,16 +106,14 @@ public class OrderRequest extends RESTClient {
             + "\"PRODUCT_SPECIFICATION_LCUUID\": \"$!product_spec\","
             + "\"DOMAIN\":\"$!domain_lcuuid\""
             + "}";
-        if (valve_info==null)
-            return list;
-        for (Map<String, Object> map : valve_info) {
+        for (Map<String, Object> map : Utils.emptyIfNull(valve_info)) {
             String ret = Utils.velocityProcess(map, velocityTemplate);
             list.add(ret);
         }
-        return list;
+        return list.toString();
     }
 	
-	private List<String> generateIPData(List<Map<String, Object>> ip_info) {
+	private String generateIPData(List<Map<String, Object>> ip_info) {
         /*
          * @params: isp, number, product_spec
          */
@@ -137,17 +124,14 @@ public class OrderRequest extends RESTClient {
             + "\"PRODUCT_SPECIFICATION_LCUUID\": \"$!product_spec\","
             + "\"DOMAIN\":\"$!domain_lcuuid\""
             + "}";
-        
-        if (ip_info==null)
-            return list;
-        for (Map<String, Object> map : ip_info) {
+        for (Map<String, Object> map : Utils.emptyIfNull(ip_info)) {
             String ret = Utils.velocityProcess(map, velocityTemplate);
             list.add(ret);
         }
-        return list;
+        return list.toString();
     }
 	
-	private List<String> generateBWData(List<Map<String, Object>> bandw_info) {
+	private String generateBWData(List<Map<String, Object>> bandw_info) {
         /*
          * @params: isp, bandw, product_spec, domain_lcuuid
          */
@@ -158,13 +142,11 @@ public class OrderRequest extends RESTClient {
             + "\"PRODUCT_SPECIFICATION_LCUUID\": \"$!product_spec\","
             + "\"DOMAIN\":\"$!domain_lcuuid\""
             + "}";
-        if (bandw_info==null)
-            return list;
-        for (Map<String, Object> map : bandw_info) {
+        for (Map<String, Object> map : Utils.emptyIfNull(bandw_info)) {
             String ret = Utils.velocityProcess(map, velocityTemplate);
             list.add(ret);
         }
-        return list;
+        return list.toString();
     }
 
 	public ResultSet execute() {
@@ -203,18 +185,15 @@ public class OrderRequest extends RESTClient {
 	     * @params: name, product_spec, template
 	     */
 	    Map<String, Object> map = new HashMap<String, Object>();
-	    ResultSet resultSet = vmRequest.getVmByName(name);
-	    if (resultSet.content()==null) {
-    	    map.put("name", name);
-    	    map.put("product_spec", product_spec);
-    	    map.put("os_template", os_template);
-    	    map.put("domain_lcuuid", this.domain);
-    	    map.put("VCPU_NUM", Integer.parseInt(props.getProperty("VM.VCPU_NUM")));
-            map.put("MEM_SIZE", Integer.parseInt(props.getProperty("VM.MEM_SIZE")));
-            map.put("SYS_DISK_SIZE", Integer.parseInt(props.getProperty("VM.SYS_DISK_SIZE")));
-            map.put("USER_DISK_SIZE", Integer.parseInt(props.getProperty("VM.USER_DISK_SIZE")));
-    	    vm_info.add(map);
-	    }
+    	map.put("name", name);
+    	map.put("product_spec", product_spec);
+    	map.put("os_template", os_template);
+    	map.put("domain_lcuuid", this.domain);
+    	map.put("VCPU_NUM", Integer.parseInt(props.getProperty("VM.VCPU_NUM")));
+        map.put("MEM_SIZE", Integer.parseInt(props.getProperty("VM.MEM_SIZE")));
+        map.put("SYS_DISK_SIZE", Integer.parseInt(props.getProperty("VM.SYS_DISK_SIZE")));
+        map.put("USER_DISK_SIZE", Integer.parseInt(props.getProperty("VM.USER_DISK_SIZE")));
+    	vm_info.add(map);
 	    return this;
 	}
 	
@@ -223,17 +202,14 @@ public class OrderRequest extends RESTClient {
          * @params: name, product_spec
          */
         Map<String, Object> map = new HashMap<String, Object>();
-        ResultSet resultSet = lbRequest.getLBByName(name);
-        if (resultSet.content()==null) {
-            map.put("name", name);
-            map.put("product_spec", product_spec);
-            map.put("domain_lcuuid", this.domain);
-            map.put("VCPU_NUM", Integer.parseInt(props.getProperty("LB.VCPU_NUM")));
-            map.put("MEM_SIZE", Integer.parseInt(props.getProperty("LB.MEM_SIZE")));
-            map.put("SYS_DISK_SIZE", Integer.parseInt(props.getProperty("LB.SYS_DISK_SIZE")));
-            map.put("USER_DISK_SIZE", Integer.parseInt(props.getProperty("LB.USER_DISK_SIZE")));
-            lb_info.add(map);
-        }
+        map.put("name", name);
+        map.put("product_spec", product_spec);
+        map.put("domain_lcuuid", this.domain);
+        map.put("VCPU_NUM", Integer.parseInt(props.getProperty("LB.VCPU_NUM")));
+        map.put("MEM_SIZE", Integer.parseInt(props.getProperty("LB.MEM_SIZE")));
+        map.put("SYS_DISK_SIZE", Integer.parseInt(props.getProperty("LB.SYS_DISK_SIZE")));
+        map.put("USER_DISK_SIZE", Integer.parseInt(props.getProperty("LB.USER_DISK_SIZE")));
+        lb_info.add(map);
         return this;
     }
 

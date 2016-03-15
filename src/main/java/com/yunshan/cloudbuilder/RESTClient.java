@@ -1,7 +1,6 @@
 package com.yunshan.cloudbuilder;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.log4j.Logger;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -36,6 +35,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.ssl.TrustStrategy;
 import org.apache.http.util.EntityUtils;
+import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -47,7 +47,6 @@ import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -55,7 +54,7 @@ import java.util.Properties;
 import javax.net.ssl.SSLContext;
 
 public class RESTClient {
-    protected final Logger s_logger = Utils.getLogger();
+    public static final Logger s_logger = Utils.getLogger();
     
     protected static Properties props = readProperties("config.properties");
     
@@ -74,10 +73,6 @@ public class RESTClient {
         headers.put(key, value);
     }
     
-    protected static String objectToJson(List<String> list) {
-        return gson.toJson(list);
-    }
-
     public RESTClient(String host) {
         this.host = host;
         setHeader("Content-Type", props.getProperty("CONTENTTYPE"));
@@ -219,7 +214,6 @@ public class RESTClient {
 
     protected ResultSet handleResponse(int code, String responseBody) {
         ResultSet resultSet = new ResultSet(code);
-        Gson gson = new GsonBuilder().create();
         JsonObject jsonBody = gson.fromJson(responseBody, JsonObject.class);
         JsonElement elementField = jsonBody.getAsJsonObject().get("DATA");
         if (elementField != null) {
@@ -234,7 +228,7 @@ public class RESTClient {
                     jsonBody.getAsJsonObject().get("OPT_STATUS").getAsString());
             resultSet.setResultSet(jsonObject);
         }
-        s_logger.info("Query response: " + resultSet);
+        s_logger.debug("Query response: " + resultSet);
         return resultSet;
     }
 
@@ -243,7 +237,7 @@ public class RESTClient {
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("message", responseBody);
         resultSet.setResultSet(jsonObject);
-        s_logger.info("Query response: " + resultSet);
+        s_logger.debug("Query response: " + resultSet);
         return resultSet;
     }
 
@@ -272,7 +266,7 @@ public class RESTClient {
             s_logger.error("Invalid HTTP request type: " + method);
             return null;
         }
-        s_logger.debug("query method is: " + method);
+        s_logger.trace("query method is: " + method);
 
         if (headers != null) {
             String headerStr = "";
@@ -280,7 +274,7 @@ public class RESTClient {
                 request.setHeader(header.getKey(), header.getValue());
                 headerStr = header.getKey() + ":" + header.getValue() + ",";
             }
-            s_logger.debug("header: " + headerStr);
+            s_logger.trace("header: " + headerStr);
         }
 
         if (data != null) {
@@ -300,8 +294,8 @@ public class RESTClient {
                 .setConnectTimeout(CONST_TIME_OUT).setConnectionRequestTimeout(CONST_TIME_OUT)
                 .build();
         request.setConfig(requestConfig);
-        s_logger.info("Making " + request.getMethod() + " request to: " + uri);
-        s_logger.info("Query body: " + data);
+        s_logger.debug("Making " + request.getMethod() + " request to: " + uri);
+        s_logger.debug("Query body: " + data);
         HttpResponse httpResponse;
         try {
             httpResponse = client.execute(request);
