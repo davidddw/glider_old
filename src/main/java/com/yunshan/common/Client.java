@@ -27,10 +27,10 @@ public class Client {
 		options.addOption(Option.builder("l").longOpt("log").required(false).desc("auto delete env from yaml config.")
 				.hasArg(false).argName("log").build());
 
-		options.addOption(Option.builder("h").longOpt("help").required(false).desc("help for glider.").hasArg(true)
+		options.addOption(Option.builder("h").longOpt("help").required(false).desc("help for glider.").hasArg(false)
 				.argName("help").build());
 
-		args = new String[]{ "--build=d:/autotest.yml", "--log" };
+		//args = new String[]{ "--build=d:/autotest.yml", "--log" };
 		//args = new String[]{ "--destroy=d:/autotest.yml", "--log" };
 		try {
 			// parse the command line arguments
