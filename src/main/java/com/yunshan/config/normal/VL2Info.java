@@ -1,4 +1,4 @@
-package com.yunshan.config;
+package com.yunshan.config.normal;
 
 public class VL2Info {
     private String name;

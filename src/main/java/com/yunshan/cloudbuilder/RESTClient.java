@@ -56,7 +56,7 @@ import javax.net.ssl.SSLContext;
 public class RESTClient {
     public static final Logger s_logger = Utils.getLogger();
     
-    protected static Properties props = readProperties("config.properties");
+    protected static Properties props = readProperties("const.properties");
     
     protected static Gson gson = new GsonBuilder().disableHtmlEscaping()
             .excludeFieldsWithoutExposeAnnotation().create();  
@@ -188,12 +188,24 @@ public class RESTClient {
 
     public String getStringRecordsByKey(ResultSet jsonBody, String key) {
         JsonElement je = jsonBody.content();
-        return (je != null) ? je.getAsJsonObject().get(key).getAsString() : null;
+        if (je != null) {
+        	JsonElement je1 = je.getAsJsonObject().get(key);
+        	if (je1 != null) {
+        		return je1.getAsString();
+        	}
+        }
+        return null;
     }
 
     public int getIntRecordsByKey(ResultSet jsonBody, String key) {
         JsonElement je = jsonBody.content();
-        return (je != null) ? je.getAsJsonObject().get(key).getAsInt() : 0;
+        if (je != null) {
+        	JsonElement je1 = je.getAsJsonObject().get(key);
+        	if (je1 != null) {
+        		return je1.getAsInt();
+        	}
+        }
+        return 0;
     }
     
     public JsonObject getJsonObjectRecordsByKey(ResultSet jsonBody, String key) {
@@ -242,6 +254,7 @@ public class RESTClient {
     }
 
     public ResultSet makeRequest(HttpMethod method, String uri, String data, String param) {
+
         final Throwable t = new Throwable();
         final StackTraceElement methodCaller = t.getStackTrace()[2];
         s_logger.info("====> Execute function: " + methodCaller.getMethodName());
@@ -318,7 +331,7 @@ public class RESTClient {
             s_logger.error("ParseException: ", e);
         } catch (IOException e) {
             s_logger.error("IOException: ", e);
-        }
+        } 
         return null;
     }
 

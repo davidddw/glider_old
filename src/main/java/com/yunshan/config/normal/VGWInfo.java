@@ -1,15 +1,15 @@
-package com.yunshan.config;
+package com.yunshan.config.normal;
 
 import java.util.List;
 import java.util.Map;
 
-public class ValveInfo {
+public class VGWInfo {
     private String name;
     private String info;
-    private int general_bandwidth;
     private String product_spec;
     private List<Map<String, Object>> wan;
     private List<Map<String, Object>> lan;
+    private RuleInfo rules;
     public String getName() {
         return name;
     }
@@ -21,12 +21,6 @@ public class ValveInfo {
     }
     public void setInfo(String info) {
         this.info = info;
-    }
-    public int getGeneral_bandwidth() {
-        return general_bandwidth;
-    }
-    public void setGeneral_bandwidth(int general_bandwidth) {
-        this.general_bandwidth = general_bandwidth;
     }
     public String getProduct_spec() {
         return product_spec;
@@ -45,5 +39,11 @@ public class ValveInfo {
     }
     public void setLan(List<Map<String, Object>> lan) {
         this.lan = lan;
+    }
+    public RuleInfo getRules() {
+        return rules;
+    }
+    public void setRules(RuleInfo rules) {
+        this.rules = rules;
     }
 }

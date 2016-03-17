@@ -1,9 +1,9 @@
-package com.yunshan.config;
+package com.yunshan.config.normal;
 
-public class BWInfo {
+public class IPInfo {
     private int isp;
     private String info;
-    private int bandw;
+    private int number;
     private String product_spec;
     public int getIsp() {
         return isp;
@@ -17,11 +17,11 @@ public class BWInfo {
     public void setInfo(String info) {
         this.info = info;
     }
-    public int getBandw() {
-        return bandw;
+    public int getNumber() {
+        return number;
     }
-    public void setBandw(int bandw) {
-        this.bandw = bandw;
+    public void setNumber(int number) {
+        this.number = number;
     }
     public String getProduct_spec() {
         return product_spec;

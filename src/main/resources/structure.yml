@@ -2,13 +2,13 @@
   host: 10.33.37.28                                       # oss ip address
   userid: 2
   orderid: 10001
-  domain: 19c206ba-9d4e-44ce-8bae-0b8a5857a798            # oss domain id
+  domain: OSS_Test
   pool_name: KVMPool                                      # pool name
   epc_name: autotest
 
   vms:
   - name: test001
-    product_spec: 2c02e128-1881-4fd8-90e5-e106c81c25b1    # vm product spec
+    product_spec: 2C2G                                    # vm product spec
     template: centos6.5                                   # vm template
     vm_gw: 10.25.1.1
     vm_ip:
@@ -19,12 +19,12 @@
 
     blocks:
     - name: block001
-      product_spec: bd201891-4d8d-4cdd-acc7-37136527a981    # block spec
+      product_spec: cloud_disk                            # block spec
       size: 102400
-      useruuid: 79ea7075-8d47-4152-a975-54e8944b7fe1        # user spec
+      useruuid: autotest                                  # user spec
 
   - name: test002
-    product_spec: 2c02e128-1881-4fd8-90e5-e106c81c25b1    # vm product spec
+    product_spec: 2C2G                                    # vm product spec
     template: centos6.5                                   # vm template
     vm_gw: 10.25.1.1
     vm_ip:
@@ -34,7 +34,7 @@
       address: 10.25.1.11
 
   - name: test003
-    product_spec: 2c02e128-1881-4fd8-90e5-e106c81c25b1    # vm product spec
+    product_spec: 2C2G                                    # vm product spec
     template: centos6.5                                   # vm template
     vm_gw: 10.25.2.1
     vm_ip:
@@ -44,7 +44,7 @@
       address: 10.25.2.10
 
   - name: test004
-    product_spec: 2c02e128-1881-4fd8-90e5-e106c81c25b1    # vm product spec
+    product_spec: 2C2G                                    # vm product spec
     template: centos6.5                                   # vm template
     vm_gw: 10.25.2.1
     vm_ip:
@@ -54,7 +54,7 @@
       address: 10.25.2.11
 
   - name: test005
-    product_spec: 2c02e128-1881-4fd8-90e5-e106c81c25b1    # vm product spec
+    product_spec: 2C2G                                    # vm product spec
     template: centos6.5                                   # vm template
     vm_gw: 192.168.0.1                                    # wan gateway
     vm_ip:
@@ -67,7 +67,7 @@
       bandwidth: 10485760
 
   - name: test006
-    product_spec: 2c02e128-1881-4fd8-90e5-e106c81c25b1    # vm product spec
+    product_spec: 2C2G                                    # vm product spec
     template: centos6.5                                   # vm template
     vm_gw: 192.168.0.1                                    # wan gateway
     vm_ip:
@@ -91,7 +91,7 @@
 
   vgateways:
   - name: vgateway-1501
-    product_spec: 26dc3b8a-1114-4385-b947-33e6af0298e1    # vgw product spec
+    product_spec: vgateway                                # vgw product spec
     wan:
     - if_index: 1
       state: 1
@@ -119,7 +119,7 @@
   lbs:
   - name: lb001
     lb_gw: 192.168.0.1
-    product_spec: 54950fcb-6e41-49af-a02c-b48a1def3783    # lb product spec
+    product_spec: lb                                      # lb product spec
     lb_ip:
     - wan_ip: 192.168.182.190                             # wan IP
       info: config 192.168.190.190
@@ -151,7 +151,7 @@
   valves:
   - name: valve-1501
     general_bandwidth: 0
-    product_spec: 7200a45e-388c-4a0d-9121-5356b97936ec    # valves product spec
+    product_spec: valve                                   # valves product spec
     wan:
     - if_index: 1
       ip: 192.168.182.193                                 # valves ip
@@ -163,17 +163,17 @@
   ips:
   - isp: 1
     number: 5
-    product_spec: 19c206ba-9d4e-44ce-8bae-0b8a5857a798    # isp product spec
+    product_spec: mobile_ip                               # isp product spec
 
   - isp: 2
     number: 5
-    product_spec: 19c206ba-9d4e-44ce-8bae-0b8a5857a798    # isp product spec
+    product_spec: unicom_ip                               # isp product spec
 
   bandws:
   - isp: 1
     bandw: 100
-    product_spec: bb6d88c5-3f6b-4903-a91f-2649b7b3ea1e    # band product spec
+    product_spec: mobile_bandw                            # band product spec
   - isp: 2
     bandw: 100
-    product_spec: e1cf1c6a-08ed-415e-86a3-e15595665818    # band product spec
+    product_spec: unicom_bandw                            # band product spec
 ...

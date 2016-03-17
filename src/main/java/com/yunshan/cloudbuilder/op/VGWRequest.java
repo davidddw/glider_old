@@ -179,7 +179,7 @@ public class VGWRequest extends RESTClient {
         return this.RequestTalker(HttpMethod.GET, "vgateways", null, param);
     }
 	
-	private ResultSet modifyVgatewaySnat(String vgateway_lcuuid, String name, String isp, String if_index, 
+	private ResultSet modifyVgatewaySnat(String vgateway_lcuuid, String name, int isp, int if_index, 
 	        String sip1, String sip2, String dip, boolean override) {
         /*
          * @params: vgateway_lcuuid name, isp, if_index, sip1, sip2, dip
@@ -199,7 +199,7 @@ public class VGWRequest extends RESTClient {
                 + "\"MAX_ADDRESS\": \"$!sip2\","
                 + "\"MIN_PORT\": 1,"
                 + "\"MAX_PORT\": 65535"
-                + "}"
+                + "},"
                 + "\"TARGET\": {"
                 + "\"IF_TYPE\": \"WAN\","
                 + "\"IF_INDEX\": \"$!if_index\","
@@ -232,7 +232,7 @@ public class VGWRequest extends RESTClient {
         return this.RequestTalker(HttpMethod.PUT, "vgateways", finalData, param);
     }
 	
-	private ResultSet modifyVgatewayDnat(String vgateway_lcuuid, String name, String isp, String if_index, 
+	private ResultSet modifyVgatewayDnat(String vgateway_lcuuid, String name, int isp, int if_index, 
             String sip, int sport, String dip, int dport, boolean override) {
         /*
          * @params: vgateway_lcuuid, name, isp, if_index, sip, sport, dip, dport, override
@@ -244,7 +244,7 @@ public class VGWRequest extends RESTClient {
                 + "\"STATE\": 1,"
                 + "\"RULE_ID\": $!ruleId,"
                 + "\"ISP\": \"$!isp\","
-                + "\"PROTOCOL\": 0,"
+                + "\"PROTOCOL\": 6,"
                 + "\"MATCH\": {"
                 + "\"IF_TYPE\": \"WAN\","
                 + "\"IF_INDEX\": \"$!if_index\","
@@ -252,7 +252,7 @@ public class VGWRequest extends RESTClient {
                 + "\"MAX_ADDRESS\": \"$!sip\","
                 + "\"MIN_PORT\": $!sport,"
                 + "\"MAX_PORT\": $!sport"
-                + "}"
+                + "},"
                 + "\"TARGET\": {"
                 + "\"IF_TYPE\": \"ANY\","
                 + "\"IF_INDEX\": 0,"
@@ -306,7 +306,7 @@ public class VGWRequest extends RESTClient {
                 + "\"MAX_ADDRESS\": \"$!sip2\","
                 + "\"MIN_PORT\": $!sport,"
                 + "\"MAX_PORT\": $!sport"
-                + "}"
+                + "},"
                 + "\"MATCH_DST\": {"
                 + "\"IF_TYPE\": \"ANY\","
                 + "\"IF_INDEX\": 0,"
@@ -355,12 +355,12 @@ public class VGWRequest extends RESTClient {
                 + "\"LNETWORK\": {"
                 + "\"ADDRESS\": \"$!local_net_addr\","
                 + "\"NETMASK\": \"$!local_net_mask\""
-                + "}"
+                + "},"
                 + "\"RIGHT\": \"$!remote_ip_addr\","
                 + "\"RNETWORK\": {"
                 + "\"ADDRESS\": \"$!remote_net_addr\","
                 + "\"NETMASK\": \"$!remote_net_mask\""
-                + "}"
+                + "},"
                 + "\"PSK\": \"$!psk}\""
                 + "}";
         int ruleId = 1;
@@ -500,7 +500,7 @@ public class VGWRequest extends RESTClient {
         }
     }
 
-	public ResultSet setSnatForVgateway(String vgwname, String name, String isp, String if_index, 
+	public ResultSet setSnatForVgateway(String vgwname, String name, int isp, int if_index, 
             String sip1, String sip2, String dip, boolean override) {
 	    /*
          * @params: snat(name, isp, if_index, sip1, sip2, dip)
@@ -509,7 +509,7 @@ public class VGWRequest extends RESTClient {
 	    return this.modifyVgatewaySnat(lcuuid, name, isp, if_index, sip1, sip2, dip, override);
 	}
 	
-	public ResultSet setDnatForVgateway(String vgwname, String name, String isp, String if_index, 
+	public ResultSet setDnatForVgateway(String vgwname, String name, int isp, int if_index, 
             String sip, int sport, String dip, int dport, boolean override) {
         /*
          * @params: snat(name, isp, if_index, sip1, sip2, dip)

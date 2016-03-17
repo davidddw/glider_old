@@ -1,4 +1,4 @@
-package com.yunshan.config;
+package com.yunshan.config.normal;
 
 import java.util.List;
 import java.util.Map;
