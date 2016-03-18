@@ -8,7 +8,7 @@ import java.util.Map;
 import com.yunshan.cloudbuilder.HttpMethod;
 import com.yunshan.cloudbuilder.RESTClient;
 import com.yunshan.cloudbuilder.ResultSet;
-import com.yunshan.cloudbuilder.Utils;
+import com.yunshan.utils.Util;
 
 public class SolutionRequest extends RESTClient {
     
@@ -42,15 +42,15 @@ public class SolutionRequest extends RESTClient {
             + "\"IPS\": [ {}, {} ]"
             + "}"
             + "}";
-        for (Map<String, Object> map : Utils.emptyIfNull(wan_list)) {
-        	String ret = Utils.velocityProcess(map, velocityTemplateW);
+        for (Map<String, Object> map : Util.emptyIfNull(wan_list)) {
+        	String ret = Util.velocityProcess(map, velocityTemplateW);
         	list.add(ret);
         }
         String velocityTemplateL = "{"
         		+ "\"LAN\": { \"VL2_NAME\": \"$!vl2_name\" }"
                 + "}";
-        for (Map<String, Object> map : Utils.emptyIfNull(lan_list)) {
-            String ret = Utils.velocityProcess(map, velocityTemplateL);
+        for (Map<String, Object> map : Util.emptyIfNull(lan_list)) {
+            String ret = Util.velocityProcess(map, velocityTemplateL);
             list.add(ret);
         }
         return list.toString();
@@ -75,15 +75,15 @@ public class SolutionRequest extends RESTClient {
             + "\"IPS\": [ {} ]"
             + "}"
             + "}";
-        for (Map<String, Object> map : Utils.emptyIfNull(wan_list)) {
-        	String ret = Utils.velocityProcess(map, velocityTemplateW);
+        for (Map<String, Object> map : Util.emptyIfNull(wan_list)) {
+        	String ret = Util.velocityProcess(map, velocityTemplateW);
         	list.add(ret);
         }
         String velocityTemplateL = "{"
         		+ "\"LAN\": { \"VL2_NAME\": \"$!vl2_name\" }"
                 + "}";
-        for (Map<String, Object> map : Utils.emptyIfNull(lan_list)) {
-            String ret = Utils.velocityProcess(map, velocityTemplateL);
+        for (Map<String, Object> map : Util.emptyIfNull(lan_list)) {
+            String ret = Util.velocityProcess(map, velocityTemplateL);
             list.add(ret);
         }
         return list.toString();
@@ -102,8 +102,8 @@ public class SolutionRequest extends RESTClient {
         	+ "\"NAME\": \"$!name\","
         	+ "\"INTERFACES\": $!interfaces"
             + "}";
-        for (Map<String, Object> map : Utils.emptyIfNull(vgw_info)) {
-            String ret = Utils.velocityProcess(map, velocityTemplate);
+        for (Map<String, Object> map : Util.emptyIfNull(vgw_info)) {
+            String ret = Util.velocityProcess(map, velocityTemplate);
             list.add(ret);
         }
         return list.toString();
@@ -126,8 +126,8 @@ public class SolutionRequest extends RESTClient {
 	        + "\"USER_DISK_SIZE\":0,"
 	        + "\"INTERFACES\": $!interfaces"
 	        + "}";
-	    for (Map<String, Object> map : Utils.emptyIfNull(vm_info)) {
-	        String ret = Utils.velocityProcess(map, velocityTemplate);
+	    for (Map<String, Object> map : Util.emptyIfNull(vm_info)) {
+	        String ret = Util.velocityProcess(map, velocityTemplate);
 	        list.add(ret);
 	    }
         return list.toString();
@@ -141,8 +141,8 @@ public class SolutionRequest extends RESTClient {
         String velocityTemplate = "{"
             + "\"NAME\": \"$!name\""
             + "}";
-        for (Map<String, Object> map : Utils.emptyIfNull(vl2_info)) {
-            String ret = Utils.velocityProcess(map, velocityTemplate);
+        for (Map<String, Object> map : Util.emptyIfNull(vl2_info)) {
+            String ret = Util.velocityProcess(map, velocityTemplate);
             list.add(ret);
         }
         return list.toString();
@@ -173,7 +173,7 @@ public class SolutionRequest extends RESTClient {
 	    params.put("domain_lcuuid", this.domain);
 	    params.put("epc_name", this.epc_name);
 	    params.put("id", 10000);
-	    String ret = Utils.velocityProcess(params, velocityTemplate);
+	    String ret = Util.velocityProcess(params, velocityTemplate);
 	    return this.RequestAPP(HttpMethod.POST, "solutions", ret, null);
 	}
 	

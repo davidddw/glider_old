@@ -8,7 +8,7 @@ import java.util.Map;
 import com.yunshan.cloudbuilder.HttpMethod;
 import com.yunshan.cloudbuilder.RESTClient;
 import com.yunshan.cloudbuilder.ResultSet;
-import com.yunshan.cloudbuilder.Utils;
+import com.yunshan.utils.Util;
 
 public class ValveRequest extends RESTClient {
     
@@ -45,7 +45,7 @@ public class ValveRequest extends RESTClient {
         params.put("product_spec", product_spec);
         params.put("userid", this.userid);
         params.put("domain", this.domain);
-        String ret = Utils.velocityProcess(params, velocityTemplate);
+        String ret = Util.velocityProcess(params, velocityTemplate);
         return this.RequestTalker(HttpMethod.POST, "valves", ret, null);
     }
 
@@ -75,7 +75,7 @@ public class ValveRequest extends RESTClient {
         params.put("launch_server", launch_server);
         params.put("userid", this.userid);
         params.put("domain", this.domain);
-        String ret = Utils.velocityProcess(params, velocityTemplate);
+        String ret = Util.velocityProcess(params, velocityTemplate);
         return this.RequestTalker(HttpMethod.POST, "valves", ret, null);
     }
     
@@ -108,7 +108,7 @@ public class ValveRequest extends RESTClient {
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("launch_server", launch_server);
-        String ret = Utils.velocityProcess(params, velocityTemplate);
+        String ret = Util.velocityProcess(params, velocityTemplate);
         return this.RequestTalker(HttpMethod.PATCH, "valves", ret, valve_lcuuid);
     }
 	
@@ -123,7 +123,7 @@ public class ValveRequest extends RESTClient {
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("epc_id", epc_id);
-        String ret = Utils.velocityProcess(params, velocityTemplate);
+        String ret = Util.velocityProcess(params, velocityTemplate);
         return this.RequestTalker(HttpMethod.PATCH, "valves", ret, valve_lcuuid);
     }
 	
@@ -164,7 +164,7 @@ public class ValveRequest extends RESTClient {
             map.put("min_bandwidth", Integer.parseInt(props.getProperty("BANDWIDTH")));
             map.put("max_bandwidth", Integer.parseInt(props.getProperty("BANDWIDTH")));
             index += 1;
-            interf.add(Utils.velocityProcess(map, velocityWTemplate));
+            interf.add(Util.velocityProcess(map, velocityWTemplate));
         }
         
         String velocityLTemplate = "{"
@@ -187,7 +187,7 @@ public class ValveRequest extends RESTClient {
         for (Map<String, Object> map : lan_list) {
             map.put("if_index", index);
             index += 1;
-            interf.add(Utils.velocityProcess(map, velocityLTemplate));
+            interf.add(Util.velocityProcess(map, velocityLTemplate));
         }
         
 	    String velocityTemplate = "{"
@@ -196,7 +196,7 @@ public class ValveRequest extends RESTClient {
                 + "}";
 	    Map<String, Object> params = new HashMap<String, Object>();
         params.put("interface_data", interf);
-        String ret = Utils.velocityProcess(params, velocityTemplate);
+        String ret = Util.velocityProcess(params, velocityTemplate);
 	    return this.RequestTalker(HttpMethod.PATCH, "valves", ret, valve_lcuuid);
     }
 	

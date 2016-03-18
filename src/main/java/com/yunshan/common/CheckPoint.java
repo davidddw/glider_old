@@ -2,7 +2,7 @@ package com.yunshan.common;
 
 import java.util.Map;
 
-import com.yunshan.cloudbuilder.SSHManager;
+import com.yunshan.utils.SSHManager;
 
 public class CheckPoint {
 	

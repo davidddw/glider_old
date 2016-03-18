@@ -6,7 +6,7 @@ import java.util.Map;
 import com.yunshan.cloudbuilder.HttpMethod;
 import com.yunshan.cloudbuilder.RESTClient;
 import com.yunshan.cloudbuilder.ResultSet;
-import com.yunshan.cloudbuilder.Utils;
+import com.yunshan.utils.Util;
 
 public class BlockRequest extends RESTClient {
     
@@ -33,7 +33,7 @@ public class BlockRequest extends RESTClient {
         params.put("size", size);
         params.put("product_spec", product_spec);
         params.put("useruuid", useruuid);
-        String ret = Utils.velocityProcess(params, velocityTemplate);
+        String ret = Util.velocityProcess(params, velocityTemplate);
         return this.RequestAPP(HttpMethod.POST, "blocks", ret, null);
     }
     
@@ -61,7 +61,7 @@ public class BlockRequest extends RESTClient {
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("size", size);
-        String ret = Utils.velocityProcess(params, velocityTemplate);
+        String ret = Util.velocityProcess(params, velocityTemplate);
         return this.RequestAPP(HttpMethod.PATCH, "blocks", ret, blockUuid);
     }
     
@@ -87,7 +87,7 @@ public class BlockRequest extends RESTClient {
         params.put("name", name);
         params.put("description", description);
         params.put("product_spec", product_spec);
-        String ret = Utils.velocityProcess(params, velocityTemplate);
+        String ret = Util.velocityProcess(params, velocityTemplate);
         String param = blockUuid + "/snapshots";
         return this.RequestAPP(HttpMethod.POST, "blocks", ret, param);
     }

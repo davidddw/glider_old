@@ -8,8 +8,8 @@ import java.util.Map;
 import com.yunshan.cloudbuilder.HttpMethod;
 import com.yunshan.cloudbuilder.RESTClient;
 import com.yunshan.cloudbuilder.ResultSet;
-import com.yunshan.cloudbuilder.Utils;
 import com.yunshan.cloudbuilder.VMState;
+import com.yunshan.utils.Util;
 
 public class LBSRequest extends RESTClient {
     
@@ -67,7 +67,7 @@ public class LBSRequest extends RESTClient {
         params.put("pool_lcuuid", (pool_lcuuid != null) ? pool_lcuuid : this.pool_lcuuid);
         params.put("userid", this.userid);
         params.put("domain", this.domain);
-        String ret = Utils.velocityProcess(params, velocityTemplate);
+        String ret = Util.velocityProcess(params, velocityTemplate);
         return this.RequestAPP(HttpMethod.POST, "lbs", ret, null);
     }
     
@@ -101,7 +101,7 @@ public class LBSRequest extends RESTClient {
         params.put("vcpu_num", vcpu_num);
         params.put("mem_size", mem_size);
         params.put("product_spec", product_spec);
-        String ret = Utils.velocityProcess(params, velocityTemplate);
+        String ret = Util.velocityProcess(params, velocityTemplate);
         return this.RequestAPP(HttpMethod.PATCH, "lbs", ret, String.valueOf(lbId));
     }
 
@@ -116,7 +116,7 @@ public class LBSRequest extends RESTClient {
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("epc_id", epcId);
-        String ret = Utils.velocityProcess(params, velocityTemplate);
+        String ret = Util.velocityProcess(params, velocityTemplate);
         return this.RequestAPP(HttpMethod.PATCH, "lbs", ret, String.valueOf(lbId));
     }
     
@@ -150,7 +150,7 @@ public class LBSRequest extends RESTClient {
         params.put("ip", ip);
         params.put("port", port);
         params.put("balance", (balance != null) ? balance : "roundrobin");
-        String ret = Utils.velocityProcess(params, velocityTemplate);
+        String ret = Util.velocityProcess(params, velocityTemplate);
         String param = lcuuid + "/lb-listeners/";
         return this.RequestAPP(HttpMethod.POST, "lbs", ret, param);
     }
@@ -190,7 +190,7 @@ public class LBSRequest extends RESTClient {
         params.put("type", type);
         params.put("content", content);
         params.put("userid", userid);
-        String ret = Utils.velocityProcess(params, velocityTemplate);
+        String ret = Util.velocityProcess(params, velocityTemplate);
         return this.RequestAPP(HttpMethod.POST, "lb-forward-rules", ret, null);
     }
 
@@ -208,7 +208,7 @@ public class LBSRequest extends RESTClient {
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("gateway", gateway);
-        String ret = Utils.velocityProcess(params, velocityTemplate);
+        String ret = Util.velocityProcess(params, velocityTemplate);
         return this.RequestAPP(HttpMethod.PATCH, "vms", ret, String.valueOf(lbId));
     }
     
@@ -238,7 +238,7 @@ public class LBSRequest extends RESTClient {
         params.put("port", port);
         params.put("balance", (balance != null) ? balance : "roundrobin");
         params.put("bk_vms", gson.toJson(bk_vms));
-        String ret = Utils.velocityProcess(params, velocityTemplate);
+        String ret = Util.velocityProcess(params, velocityTemplate);
         String param = lb_lcuuid + "/lb-listeners/" + lb_listener_lcuuid;
         return this.RequestAPP(HttpMethod.PUT, "lbs", ret, param);
     }
@@ -258,7 +258,7 @@ public class LBSRequest extends RESTClient {
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("state", (state != null) ? state : "ENABLE");
-        String ret = Utils.velocityProcess(params, velocityTemplate);
+        String ret = Util.velocityProcess(params, velocityTemplate);
         String param = lb_lcuuid + "/lb-listeners/" + lb_listener_lcuuid + "/lb-bk-vms/" + vm_lcuuid;
         return this.RequestAPP(HttpMethod.PATCH, "lbs", ret, param);
     }
@@ -283,7 +283,7 @@ public class LBSRequest extends RESTClient {
         params.put("vl2_lcuuid", vl2_lcuuid);
         params.put("vl2_net_index", vl2_net_index);
         params.put("address", address);
-        String ret = Utils.velocityProcess(params, vmLanTmpl);
+        String ret = Util.velocityProcess(params, vmLanTmpl);
         String param = lbId + "/interfaces/" + index;
         return this.RequestAPP(HttpMethod.PUT, "vms", ret, param);
     }
@@ -306,7 +306,7 @@ public class LBSRequest extends RESTClient {
         params.put("state", state);
         params.put("ip_resource_lcuuid", ip_resource_lcuuid);
         params.put("bandwidth", (bandwidth != 0) ? bandwidth : Integer.parseInt(props.getProperty("BANDWIDTH")));
-        String ret = Utils.velocityProcess(params, vmWanTmpl);
+        String ret = Util.velocityProcess(params, vmWanTmpl);
         String param = lbId + "/interfaces/" + index;
         return this.RequestAPP(HttpMethod.PUT, "vms", ret, param);
     }
@@ -343,9 +343,9 @@ public class LBSRequest extends RESTClient {
         List<String> interf = new ArrayList<String>();
         for(Map<String, Object> map : interfaces) {
             if (map.containsKey("ip_resource_lcuuid")) {
-                interf.add(Utils.velocityProcess(map, vmWanTmpl));
+                interf.add(Util.velocityProcess(map, vmWanTmpl));
             } else {
-                interf.add(Utils.velocityProcess(map, vmLanTmpl));
+                interf.add(Util.velocityProcess(map, vmLanTmpl));
             }
         }
         String finalTmpl = "{"
@@ -357,7 +357,7 @@ public class LBSRequest extends RESTClient {
         Map<String, Object> patchData = new HashMap<String, Object>();
         patchData.put("gateway", gateway);
         patchData.put("interface_data", interf);
-        String finalret = Utils.velocityProcess(patchData, finalTmpl);
+        String finalret = Util.velocityProcess(patchData, finalTmpl);
         return this.RequestAPP(HttpMethod.PATCH, "vms", finalret, String.valueOf(lbId));
     }
 

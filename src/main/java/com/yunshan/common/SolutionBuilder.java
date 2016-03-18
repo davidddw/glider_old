@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.yunshan.cloudbuilder.Utils;
 import com.yunshan.cloudbuilder.op.RESRequest;
 import com.yunshan.cloudbuilder.op.SolutionRequest;
 import com.yunshan.config.solution.SolutionConfig;
@@ -13,6 +12,7 @@ import com.yunshan.config.solution.Interfaces;
 import com.yunshan.config.solution.VGWInfo;
 import com.yunshan.config.solution.VL2Info;
 import com.yunshan.config.solution.VMInfo;
+import com.yunshan.utils.Util;
 
 public class SolutionBuilder extends LivecloudBase {
 
@@ -36,10 +36,10 @@ public class SolutionBuilder extends LivecloudBase {
 	
 	public SolutionBuilder createSimple() {
 		List<Map<String, Object>> vgw_info = new ArrayList<Map<String, Object>>();
-		for (VGWInfo vgwInfo : Utils.emptyIfNull(config.getVgw())) {
+		for (VGWInfo vgwInfo : Util.emptyIfNull(config.getVgw())) {
 			Map<String, Object> newVGWMap = new HashMap<String, Object>();
 			Interfaces interfaces = vgwInfo.getInterfaces();
-			for (Map<String, Object> vgw : Utils.emptyIfNull(interfaces.getWan())) {
+			for (Map<String, Object> vgw : Util.emptyIfNull(interfaces.getWan())) {
 				String lcuuid = resRequest.getUuidByIp((String)vgw.get("product_spec"));
 				vgw.put("product_spec", lcuuid);
 				vgw.put("qos_product_spec", lcuuid);
@@ -52,10 +52,10 @@ public class SolutionBuilder extends LivecloudBase {
 			vgw_info.add(newVGWMap);
 		}
 		List<Map<String, Object>> vms_info = new ArrayList<Map<String, Object>>();
-		for (VMInfo vmInfo : Utils.emptyIfNull(config.getVms())) {
+		for (VMInfo vmInfo : Util.emptyIfNull(config.getVms())) {
 			Map<String, Object> newVMMap = new HashMap<String, Object>();
 			Interfaces interfaces = vmInfo.getInterfaces();
-			for (Map<String, Object> vm : Utils.emptyIfNull(interfaces.getWan())) {
+			for (Map<String, Object> vm : Util.emptyIfNull(interfaces.getWan())) {
 				String lcuuid = resRequest.getUuidByIp((String)vm.get("product_spec"));
 				vm.put("product_spec", lcuuid);
 				vm.put("qos_product_spec", lcuuid);
@@ -69,7 +69,7 @@ public class SolutionBuilder extends LivecloudBase {
 			vms_info.add(newVMMap);
 		}
 		List<Map<String, Object>> vl2_info = new ArrayList<Map<String, Object>>();
-		for (VL2Info vl2Info : Utils.emptyIfNull(config.getVl2s())) {
+		for (VL2Info vl2Info : Util.emptyIfNull(config.getVl2s())) {
 			Map<String, Object> newMap = new HashMap<String, Object>();
 			newMap.put("name", vl2Info.getName());
 			vl2_info.add(newMap);

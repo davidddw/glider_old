@@ -8,7 +8,7 @@ import java.util.Map;
 import com.yunshan.cloudbuilder.HttpMethod;
 import com.yunshan.cloudbuilder.RESTClient;
 import com.yunshan.cloudbuilder.ResultSet;
-import com.yunshan.cloudbuilder.Utils;
+import com.yunshan.utils.Util;
 
 public class OrderRequest extends RESTClient {
     
@@ -49,8 +49,8 @@ public class OrderRequest extends RESTClient {
 	        + "\"USER_DISK_SIZE\":$!USER_DISK_SIZE,"
 	        + "\"DOMAIN\":\"$!domain_lcuuid\""
 	        + "}";
-	    for (Map<String, Object> map : Utils.emptyIfNull(vm_info)) {
-	        String ret = Utils.velocityProcess(map, velocityTemplate);
+	    for (Map<String, Object> map : Util.emptyIfNull(vm_info)) {
+	        String ret = Util.velocityProcess(map, velocityTemplate);
 	        list.add(ret);
 	    }
         return list.toString();
@@ -72,8 +72,8 @@ public class OrderRequest extends RESTClient {
             + "\"USER_DISK_SIZE\":$!USER_DISK_SIZE,"
             + "\"DOMAIN\":\"$!domain_lcuuid\""
             + "}";
-        for (Map<String, Object> map : Utils.emptyIfNull(lb_info)) {
-            String ret = Utils.velocityProcess(map, velocityTemplate);
+        for (Map<String, Object> map : Util.emptyIfNull(lb_info)) {
+            String ret = Util.velocityProcess(map, velocityTemplate);
             list.add(ret);
         }
         return list.toString();
@@ -89,8 +89,8 @@ public class OrderRequest extends RESTClient {
             + "\"PRODUCT_SPECIFICATION_LCUUID\": \"$!product_spec\","
             + "\"DOMAIN\":\"$!domain_lcuuid\""
             + "}";
-        for (Map<String, Object> map : Utils.emptyIfNull(vgateway_info)) {
-            String ret = Utils.velocityProcess(map, velocityTemplate);
+        for (Map<String, Object> map : Util.emptyIfNull(vgateway_info)) {
+            String ret = Util.velocityProcess(map, velocityTemplate);
             list.add(ret);
         }
         return list.toString();
@@ -106,8 +106,8 @@ public class OrderRequest extends RESTClient {
             + "\"PRODUCT_SPECIFICATION_LCUUID\": \"$!product_spec\","
             + "\"DOMAIN\":\"$!domain_lcuuid\""
             + "}";
-        for (Map<String, Object> map : Utils.emptyIfNull(valve_info)) {
-            String ret = Utils.velocityProcess(map, velocityTemplate);
+        for (Map<String, Object> map : Util.emptyIfNull(valve_info)) {
+            String ret = Util.velocityProcess(map, velocityTemplate);
             list.add(ret);
         }
         return list.toString();
@@ -124,8 +124,8 @@ public class OrderRequest extends RESTClient {
             + "\"PRODUCT_SPECIFICATION_LCUUID\": \"$!product_spec\","
             + "\"DOMAIN\":\"$!domain_lcuuid\""
             + "}";
-        for (Map<String, Object> map : Utils.emptyIfNull(ip_info)) {
-            String ret = Utils.velocityProcess(map, velocityTemplate);
+        for (Map<String, Object> map : Util.emptyIfNull(ip_info)) {
+            String ret = Util.velocityProcess(map, velocityTemplate);
             list.add(ret);
         }
         return list.toString();
@@ -142,8 +142,8 @@ public class OrderRequest extends RESTClient {
             + "\"PRODUCT_SPECIFICATION_LCUUID\": \"$!product_spec\","
             + "\"DOMAIN\":\"$!domain_lcuuid\""
             + "}";
-        for (Map<String, Object> map : Utils.emptyIfNull(bandw_info)) {
-            String ret = Utils.velocityProcess(map, velocityTemplate);
+        for (Map<String, Object> map : Util.emptyIfNull(bandw_info)) {
+            String ret = Util.velocityProcess(map, velocityTemplate);
             list.add(ret);
         }
         return list.toString();
@@ -176,7 +176,7 @@ public class OrderRequest extends RESTClient {
 	    params.put("userid", this.userid);
 	    params.put("domain_lcuuid", this.domain);
 	    params.put("id", 10000);
-	    String ret = Utils.velocityProcess(params, velocityTemplate);
+	    String ret = Util.velocityProcess(params, velocityTemplate);
 	    return this.RequestAPP(HttpMethod.POST, "orders", ret, null);
 	}
 	

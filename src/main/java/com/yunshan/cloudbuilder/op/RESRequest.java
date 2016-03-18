@@ -8,7 +8,7 @@ import java.util.Map;
 import com.yunshan.cloudbuilder.HttpMethod;
 import com.yunshan.cloudbuilder.RESTClient;
 import com.yunshan.cloudbuilder.ResultSet;
-import com.yunshan.cloudbuilder.Utils;
+import com.yunshan.utils.Util;
 
 public class RESRequest extends RESTClient {
     
@@ -74,7 +74,7 @@ public class RESRequest extends RESTClient {
 	    Map<String, Object> params = new HashMap<String, Object>();
         params.put("userid", 111);
         params.put("domain", 333);
-        String ret = Utils.velocityProcess(params, velocityTemplate);
+        String ret = Util.velocityProcess(params, velocityTemplate);
         list.add(ret);
         String velocityTemplate1 = "{"
                 + "\"userid1\": $!userid,"
@@ -83,7 +83,7 @@ public class RESRequest extends RESTClient {
         Map<String, Object> params1 = new HashMap<String, Object>();
         params1.put("userid1", 111);
         params1.put("domain", list);
-        String ret2 = Utils.velocityProcess(params1, velocityTemplate1);
+        String ret2 = Util.velocityProcess(params1, velocityTemplate1);
 	    System.out.println(ret2);
 	}
 }

@@ -8,7 +8,7 @@ import java.util.Map;
 import com.yunshan.cloudbuilder.HttpMethod;
 import com.yunshan.cloudbuilder.RESTClient;
 import com.yunshan.cloudbuilder.ResultSet;
-import com.yunshan.cloudbuilder.Utils;
+import com.yunshan.utils.Util;
 
 public class VL2Request extends RESTClient {
     
@@ -44,7 +44,7 @@ public class VL2Request extends RESTClient {
 	    params.put("netmask", netmask);
 	    params.put("userid", this.userid);
 	    params.put("domain", this.domain);
-	    String ret = Utils.velocityProcess(params, velocityTemplate);
+	    String ret = Util.velocityProcess(params, velocityTemplate);
 	    return this.RequestAPP(HttpMethod.POST, "vl2s", ret, null);
 	}
 	
@@ -68,14 +68,14 @@ public class VL2Request extends RESTClient {
 	    List<String> interf = new ArrayList<String>();
 	    
 	    for(Map<String, Object> map : netList) {
-	        interf.add(Utils.velocityProcess(map, velocityTemplate));
+	        interf.add(Util.velocityProcess(map, velocityTemplate));
         }
 	    String finalvelocityTemplate = "{"
                 + "\"nets\": $!net_data"
                 + "}";
         Map<String, Object> patchData = new HashMap<String, Object>();
         patchData.put("net_data", interf);
-        String finalret = Utils.velocityProcess(patchData, finalvelocityTemplate);
+        String finalret = Util.velocityProcess(patchData, finalvelocityTemplate);
         return this.RequestAPP(HttpMethod.PATCH, "vl2s", finalret, String.valueOf(vl2Id));
     }
     

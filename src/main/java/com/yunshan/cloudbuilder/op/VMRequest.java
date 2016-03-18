@@ -8,8 +8,8 @@ import java.util.Map;
 import com.yunshan.cloudbuilder.HttpMethod;
 import com.yunshan.cloudbuilder.RESTClient;
 import com.yunshan.cloudbuilder.ResultSet;
-import com.yunshan.cloudbuilder.Utils;
 import com.yunshan.cloudbuilder.VMState;
+import com.yunshan.utils.Util;
 
 public class VMRequest extends RESTClient {
     
@@ -68,7 +68,7 @@ public class VMRequest extends RESTClient {
         params.put("pool_lcuuid", (pool_lcuuid != null) ? pool_lcuuid : this.pool_lcuuid);
         params.put("userid", this.userid);
         params.put("domain", this.domain);
-        String ret = Utils.velocityProcess(params, velocityTemplate);
+        String ret = Util.velocityProcess(params, velocityTemplate);
         return this.RequestAPP(HttpMethod.POST, "vms", ret, null);
     }
 
@@ -92,7 +92,7 @@ public class VMRequest extends RESTClient {
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("action", "stop");
-        String ret = Utils.velocityProcess(params, velocityTemplate);
+        String ret = Util.velocityProcess(params, velocityTemplate);
         return this.RequestAPP(HttpMethod.PATCH, "vms", ret, String.valueOf(vmid));
     }
 
@@ -107,7 +107,7 @@ public class VMRequest extends RESTClient {
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("action", "start");
-        String ret = Utils.velocityProcess(params, velocityTemplate);
+        String ret = Util.velocityProcess(params, velocityTemplate);
         return this.RequestAPP(HttpMethod.PATCH, "vms", ret, String.valueOf(vmid));
     }
 
@@ -122,7 +122,7 @@ public class VMRequest extends RESTClient {
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("action", "isolate");
-        String ret = Utils.velocityProcess(params, velocityTemplate);
+        String ret = Util.velocityProcess(params, velocityTemplate);
         return this.RequestAPP(HttpMethod.PATCH, "vms", ret, String.valueOf(vmid));
     }
 
@@ -137,7 +137,7 @@ public class VMRequest extends RESTClient {
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("action", "reconnect");
-        String ret = Utils.velocityProcess(params, velocityTemplate);
+        String ret = Util.velocityProcess(params, velocityTemplate);
         return this.RequestAPP(HttpMethod.PATCH, "vms", ret, String.valueOf(vmid));
     }
 
@@ -152,7 +152,7 @@ public class VMRequest extends RESTClient {
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("action", "snapshot");
-        String ret = Utils.velocityProcess(params, velocityTemplate);
+        String ret = Util.velocityProcess(params, velocityTemplate);
         return this.RequestAPP(HttpMethod.PATCH, "vms", ret, String.valueOf(vmid));
     }
 
@@ -167,7 +167,7 @@ public class VMRequest extends RESTClient {
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("action", "recoversnapshot");
-        String ret = Utils.velocityProcess(params, velocityTemplate);
+        String ret = Util.velocityProcess(params, velocityTemplate);
         return this.RequestAPP(HttpMethod.PATCH, "vms", ret, String.valueOf(vmid));
     }
 
@@ -182,7 +182,7 @@ public class VMRequest extends RESTClient {
                 + "}";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("action", "delsnapshot");
-        String ret = Utils.velocityProcess(params, velocityTemplate);
+        String ret = Util.velocityProcess(params, velocityTemplate);
         return this.RequestAPP(HttpMethod.PATCH, "vms", ret, String.valueOf(vmid));
     }
 
@@ -207,7 +207,7 @@ public class VMRequest extends RESTClient {
         params.put("vcpu_num", vcpu_num);
         params.put("mem_size", mem_size);
         params.put("product_spec", product_spec);
-        String ret = Utils.velocityProcess(params, velocityTemplate);
+        String ret = Util.velocityProcess(params, velocityTemplate);
         return this.RequestAPP(HttpMethod.PATCH, "vms", ret, String.valueOf(vmid));
     }
     
@@ -242,7 +242,7 @@ public class VMRequest extends RESTClient {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("epc_id", epcId);
         params.put("vmid", vmId);
-        String ret = Utils.velocityProcess(params, velocityTemplate);
+        String ret = Util.velocityProcess(params, velocityTemplate);
         return this.RequestAPP(HttpMethod.PATCH, "vms", ret, String.valueOf(vmId));
     }
   
@@ -260,7 +260,7 @@ public class VMRequest extends RESTClient {
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("gateway", gateway);
-        String ret = Utils.velocityProcess(params, velocityTemplate);
+        String ret = Util.velocityProcess(params, velocityTemplate);
         return this.RequestAPP(HttpMethod.PATCH, "vms", ret, String.valueOf(vmId));
     }
     
@@ -284,7 +284,7 @@ public class VMRequest extends RESTClient {
         params.put("vl2_lcuuid", vl2_lcuuid);
         params.put("vl2_net_index", vl2_net_index);
         params.put("address", address);
-        String ret = Utils.velocityProcess(params, velocityTemplate);
+        String ret = Util.velocityProcess(params, velocityTemplate);
         String param = vmId + "/interfaces/" + index;
         return this.RequestAPP(HttpMethod.PUT, "vms", ret, param);
     }
@@ -307,7 +307,7 @@ public class VMRequest extends RESTClient {
         params.put("state", state);
         params.put("ip_resource_lcuuid", ip_resource_lcuuid);
         params.put("bandwidth", Integer.parseInt(props.getProperty("BANDWIDTH")));
-        String ret = Utils.velocityProcess(params, velocityTemplate);
+        String ret = Util.velocityProcess(params, velocityTemplate);
         String param = vmId + "/interfaces/" + index;
         return this.RequestAPP(HttpMethod.PUT, "vms", ret, param);
     }
@@ -342,9 +342,9 @@ public class VMRequest extends RESTClient {
         List<String> interf = new ArrayList<String>();
         for(Map<String, Object> map : interfaces) {
             if (map.containsKey("ip_resource_lcuuid")) {
-                interf.add(Utils.velocityProcess(map, vmWanTmpl));
+                interf.add(Util.velocityProcess(map, vmWanTmpl));
             } else {
-                interf.add(Utils.velocityProcess(map, vmLanTmpl));
+                interf.add(Util.velocityProcess(map, vmLanTmpl));
             }
         }
         String velocityTemplate = "{"
@@ -356,7 +356,7 @@ public class VMRequest extends RESTClient {
         Map<String, Object> patchData = new HashMap<String, Object>();
         patchData.put("gateway", gateway);
         patchData.put("interface_data", interf);
-        String finalret = Utils.velocityProcess(patchData, velocityTemplate);
+        String finalret = Util.velocityProcess(patchData, velocityTemplate);
         return this.RequestAPP(HttpMethod.PATCH, "vms", finalret, String.valueOf(vmid));
     }
     
@@ -373,7 +373,7 @@ public class VMRequest extends RESTClient {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("name", name);
         params.put("product_spec", product_spec);
-        String ret = Utils.velocityProcess(params, velocityTemplate);
+        String ret = Util.velocityProcess(params, velocityTemplate);
         String param = vmuuid + "/snapshots";
         return this.RequestAPP(HttpMethod.POST, "vm_snapshot", ret, param);
     }

@@ -7,6 +7,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.yunshan.utils.Util;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -54,7 +55,7 @@ import java.util.Properties;
 import javax.net.ssl.SSLContext;
 
 public class RESTClient {
-    public static final Logger s_logger = Utils.getLogger();
+    public static final Logger s_logger = Util.getLogger();
     
     protected static Properties props = readProperties("const.properties");
     

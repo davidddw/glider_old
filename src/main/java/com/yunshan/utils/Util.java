@@ -1,4 +1,4 @@
-package com.yunshan.cloudbuilder;
+package com.yunshan.utils;
 
 import java.io.StringWriter;
 import java.util.Collections;
@@ -12,7 +12,7 @@ import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 
-public class Utils {
+public class Util {
 
 	public static void setLevel(Logger log, Level level) {
 		LoggerContext ctx = (LoggerContext) LogManager.getContext(false);

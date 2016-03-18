@@ -10,17 +10,17 @@ import java.util.Map;
 import org.apache.logging.log4j.Logger;
 import org.yaml.snakeyaml.Yaml;
 
-import com.yunshan.cloudbuilder.Utils;
 import com.yunshan.database.bo.DomainBO;
 import com.yunshan.database.bo.ProductSpecBO;
 import com.yunshan.database.bo.UserBO;
 import com.yunshan.database.vo.DomainVO;
 import com.yunshan.database.vo.ProductSpecVO;
 import com.yunshan.database.vo.UserVO;
+import com.yunshan.utils.Util;
 
 public abstract class LivecloudBase {
 
-	protected static final Logger s_logger = Utils.getLogger();
+	protected static final Logger s_logger = Util.getLogger();
 	
 	protected Map<String, String> uuidMapper;
 

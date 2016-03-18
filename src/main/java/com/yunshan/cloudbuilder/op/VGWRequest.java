@@ -11,7 +11,7 @@ import org.apache.commons.lang.StringUtils;
 import com.yunshan.cloudbuilder.HttpMethod;
 import com.yunshan.cloudbuilder.RESTClient;
 import com.yunshan.cloudbuilder.ResultSet;
-import com.yunshan.cloudbuilder.Utils;
+import com.yunshan.utils.Util;
 
 public class VGWRequest extends RESTClient {
     
@@ -50,7 +50,7 @@ public class VGWRequest extends RESTClient {
         params.put("product_spec", product_spec);
         params.put("userid", this.userid);
         params.put("domain", this.domain);
-        String ret = Utils.velocityProcess(params, velocityTemplate);
+        String ret = Util.velocityProcess(params, velocityTemplate);
         return this.RequestTalker(HttpMethod.POST, "vgateways", ret, null);
     }
 
@@ -80,7 +80,7 @@ public class VGWRequest extends RESTClient {
         params.put("launch_server", launch_server);
         params.put("userid", this.userid);
         params.put("domain", this.domain);
-        String ret = Utils.velocityProcess(params, velocityTemplate);
+        String ret = Util.velocityProcess(params, velocityTemplate);
         return this.RequestTalker(HttpMethod.POST, "vgateways", ret, null);
     }
     
@@ -114,7 +114,7 @@ public class VGWRequest extends RESTClient {
         
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("launch_server", launch_server);
-        String ret = Utils.velocityProcess(params, velocityTemplate);
+        String ret = Util.velocityProcess(params, velocityTemplate);
         return this.RequestTalker(HttpMethod.PATCH, "vgateways", ret, vgateway_lcuuid);
     }
 	
@@ -130,7 +130,7 @@ public class VGWRequest extends RESTClient {
         
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("epc_id", epc_id);
-        String ret = Utils.velocityProcess(params, velocityTemplate);
+        String ret = Util.velocityProcess(params, velocityTemplate);
         return this.RequestTalker(HttpMethod.PATCH, "vgateways", ret, vgateway_lcuuid);
     }
 	
@@ -226,7 +226,7 @@ public class VGWRequest extends RESTClient {
         params.put("sip2", sip2);
         params.put("dip", dip);
         params.put("ruleId", ruleId);
-        interf.add(Utils.velocityProcess(params, velocityTemplate));
+        interf.add(Util.velocityProcess(params, velocityTemplate));
         String finalData = interf.toString();
         String param = vgateway_lcuuid + "/snats";
         return this.RequestTalker(HttpMethod.PUT, "vgateways", finalData, param);
@@ -280,7 +280,7 @@ public class VGWRequest extends RESTClient {
         params.put("dip", dip);
         params.put("dport", dport);
         params.put("ruleId", ruleId);
-        interf.add(Utils.velocityProcess(params, velocityTemplate));
+        interf.add(Util.velocityProcess(params, velocityTemplate));
         String finalData = interf.toString();
         String param = vgateway_lcuuid + "/dnats";
         return this.RequestTalker(HttpMethod.PUT, "vgateways", finalData, param);
@@ -333,7 +333,7 @@ public class VGWRequest extends RESTClient {
         params.put("sip2", sip2);
         params.put("sport", sport);
         params.put("ruleId", ruleId);
-        interf.add(Utils.velocityProcess(params, velocityTemplate));
+        interf.add(Util.velocityProcess(params, velocityTemplate));
         String finalData = interf.toString();
         String param = vgateway_lcuuid + "/forward_acls";
         return this.RequestTalker(HttpMethod.PUT, "vgateways", finalData, param);
@@ -381,7 +381,7 @@ public class VGWRequest extends RESTClient {
         params.put("remote_net_addr", remote_net_addr);
         params.put("remote_net_mask", remote_net_mask);
         params.put("ruleId", ruleId);
-        interf.add(Utils.velocityProcess(params, velocityTemplate));
+        interf.add(Util.velocityProcess(params, velocityTemplate));
         String finalData = interf.toString();
         String param = vgateway_lcuuid + "/vpns";
         return this.RequestTalker(HttpMethod.PUT, "vgateways", finalData, param);
@@ -424,7 +424,7 @@ public class VGWRequest extends RESTClient {
             map.put("min_bandwidth", map.get("bandwidth"));
             map.put("max_bandwidth", map.get("bandwidth"));
             index += 1;
-            interf.add(Utils.velocityProcess(map, velocityWTemplate));
+            interf.add(Util.velocityProcess(map, velocityWTemplate));
         }
         String velocityLTemplate = "{"
                 + "\"IF_INDEX\": $!if_index,"
@@ -446,7 +446,7 @@ public class VGWRequest extends RESTClient {
         for (Map<String, Object> map : lan_list) {
             map.put("if_index", index);
             index += 1;
-            interf.add(Utils.velocityProcess(map, velocityLTemplate));
+            interf.add(Util.velocityProcess(map, velocityLTemplate));
         }
         String finalData = interf.toString();
         return this.RequestTalker(HttpMethod.PATCH, "vgateways", finalData, vgateway_lcuuid);

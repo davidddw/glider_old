@@ -6,7 +6,7 @@ import java.util.Map;
 import com.yunshan.cloudbuilder.HttpMethod;
 import com.yunshan.cloudbuilder.RESTClient;
 import com.yunshan.cloudbuilder.ResultSet;
-import com.yunshan.cloudbuilder.Utils;
+import com.yunshan.utils.Util;
 
 public class EPCRequest extends RESTClient {
     
@@ -34,7 +34,7 @@ public class EPCRequest extends RESTClient {
 	    params.put("name", name);
 	    params.put("userid", this.userid);
 	    params.put("domain", this.domain);
-	    String ret = Utils.velocityProcess(params, velocityTemplate);
+	    String ret = Util.velocityProcess(params, velocityTemplate);
 	    return this.RequestAPP(HttpMethod.POST, "epcs", ret, null);
 	}
 	
@@ -50,7 +50,7 @@ public class EPCRequest extends RESTClient {
 	    Map<String, Object> params = new HashMap<String, Object>();
         params.put("name", name);
         params.put("userid", this.userid);
-        String ret = Utils.velocityProcess(params, velocityTemplate);
+        String ret = Util.velocityProcess(params, velocityTemplate);
         return this.RequestAPP(HttpMethod.PATCH, "epcs", ret, String.valueOf(epcid));
 	}
 	
