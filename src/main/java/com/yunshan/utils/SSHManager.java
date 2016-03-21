@@ -5,10 +5,8 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
@@ -16,7 +14,7 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
 public class SSHManager {
-	private static final Logger LOGGER = LogManager.getLogger(SSHManager.class);
+	public static final Logger s_logger = Util.getLogger();
 	private JSch jschSSHChannel;
 	private String strUserName;
 	private String strConnectionIP;
@@ -66,7 +64,7 @@ public class SSHManager {
 
 	private String logWarning(String warnMessage) {
 		if (warnMessage != null) {
-			LOGGER.log(Level.WARN, strConnectionIP + ":" + intConnectionPort + " " + warnMessage);
+		    s_logger.log(Level.WARN, strConnectionIP + ":" + intConnectionPort + " " + warnMessage);
 		}
 
 		return warnMessage;

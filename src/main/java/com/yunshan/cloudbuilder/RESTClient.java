@@ -36,7 +36,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.ssl.TrustStrategy;
 import org.apache.http.util.EntityUtils;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -241,7 +241,7 @@ public class RESTClient {
                     jsonBody.getAsJsonObject().get("OPT_STATUS").getAsString());
             resultSet.setResultSet(jsonObject);
         }
-        s_logger.debug("Query response: " + resultSet);
+        s_logger.info("Query response: " + resultSet);
         return resultSet;
     }
 
@@ -250,7 +250,7 @@ public class RESTClient {
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("message", responseBody);
         resultSet.setResultSet(jsonObject);
-        s_logger.debug("Query response: " + resultSet);
+        s_logger.error("Query response: " + resultSet);
         return resultSet;
     }
 
@@ -308,8 +308,8 @@ public class RESTClient {
                 .setConnectTimeout(CONST_TIME_OUT).setConnectionRequestTimeout(CONST_TIME_OUT)
                 .build();
         request.setConfig(requestConfig);
-        s_logger.debug("Making " + request.getMethod() + " request to: " + uri);
-        s_logger.debug("Query body: " + data);
+        s_logger.info("Making " + request.getMethod() + " request to: " + uri);
+        s_logger.info("Query body: " + data);
         HttpResponse httpResponse;
         try {
             httpResponse = client.execute(request);

@@ -7,9 +7,8 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.logging.log4j.Level;
+import org.apache.log4j.Level;
 
-import com.yunshan.cloudbuilder.RESTClient;
 import com.yunshan.utils.Util;
 
 public class Client {
@@ -47,8 +46,7 @@ public class Client {
 				System.exit(0);
 			}
 			if (line.hasOption("log")) {
-				Util.setLevel(EnvBuilder.s_logger, Level.TRACE);
-				Util.setLevel(RESTClient.s_logger, Level.TRACE);
+			    Util.setLevel(Level.ALL);
 			}
 			if (line.hasOption("build")) {
 				String filename = line.getOptionValue("build");

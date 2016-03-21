@@ -543,8 +543,12 @@ public class VGWRequest extends RESTClient {
          * @params: name, epc_id
          */
 	    String lcuuid = this.getVgatewayUuidByName(vgwname);
-	    int epcId = epcRequest.getEPCIdByName(epcName);
-	    return this.modifyVgatewayEPCId(lcuuid, epcId);
+	    if (lcuuid!=null) {
+	        int epcId = epcRequest.getEPCIdByName(epcName);
+	        return this.modifyVgatewayEPCId(lcuuid, epcId);
+	    }
+	    return null;
+	    
 	}
 	
 	private ResultSet migrateVgateway(String name, String gw_launch_server) {

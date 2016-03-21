@@ -418,8 +418,12 @@ public class LBSRequest extends RESTClient {
          * 
          */
         int lbId = getLBIdByName(name);
-        int epcId = epcRequest.getEPCIdByName(epcName);
-        return this.addLBToEPC(lbId, epcId);
+        if (lbId!=0) {
+            int epcId = epcRequest.getEPCIdByName(epcName);
+            return this.addLBToEPC(lbId, epcId);
+        } 
+        return null;
+        
     }
     
     public ResultSet getLBListenerByName(String name, String lblcuuid) {

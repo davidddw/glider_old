@@ -250,8 +250,12 @@ public class ValveRequest extends RESTClient {
          * @params: name, epc_id
          */
 	    String lcuuid = this.getValveUuidByName(vgwname);
-	    int epcId = epcRequest.getEPCIdByName(epcName);
-	    return this.modifyValveEPCId(lcuuid, epcId);
+	    if (lcuuid!=null) {
+	        int epcId = epcRequest.getEPCIdByName(epcName);
+	        return this.modifyValveEPCId(lcuuid, epcId);
+	    }
+	    return null;
+	    
 	}
 	
 	public ResultSet migrateValve(String name, String gw_launch_server) {

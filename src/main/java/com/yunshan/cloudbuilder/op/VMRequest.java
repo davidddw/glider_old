@@ -463,8 +463,12 @@ public class VMRequest extends RESTClient {
          * 
          */
         int vmId = getVmIdByName(name);
-        int epcId = epcRequest.getEPCIdByName(epcName);
-        return this.addVMToEPC(vmId, epcId);
+        if (vmId!=0) {
+            int epcId = epcRequest.getEPCIdByName(epcName);
+            return this.addVMToEPC(vmId, epcId);
+        }
+        return null;
+        
     }
     
     public VMState getVMStatusById(int vmid) {
