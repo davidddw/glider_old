@@ -382,7 +382,10 @@ public class LBSRequest extends RESTClient {
     public ResultSet attachMultiIPAddress(String name, String gateway, 
             List<Map<String, Object>> interfaces) {
         int lbId = this.getLBIdByName(name);
-        return this.attachMultiInterface(lbId, gateway, interfaces);
+        if (lbId!=0) {
+        	return this.attachMultiInterface(lbId, gateway, interfaces);
+        }
+        return null;
     }
     
     public ResultSet detachMultiIPAddress(int lbId, String gateway, 

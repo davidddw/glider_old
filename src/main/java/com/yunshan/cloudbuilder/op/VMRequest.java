@@ -609,7 +609,10 @@ public class VMRequest extends RESTClient {
     public ResultSet attachMultiIPAddress(String name, String gateway, 
             List<Map<String, Object>> interfaces) {
         int vmid = this.getVmIdByName(name);
-        return this.attachMultiInterface(vmid, gateway, interfaces);
+        if (vmid!=0) {
+        	return this.attachMultiInterface(vmid, gateway, interfaces);
+        }
+        return null;
     }
     
     public ResultSet detachMultiIPAddress(int vmid, String gateway, 

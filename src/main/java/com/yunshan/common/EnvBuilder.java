@@ -196,6 +196,9 @@ public class EnvBuilder extends LivecloudBase {
 	public EnvBuilder configLBRule() {
 		for (LBInfo lbInfo : Util.emptyIfNull(config.getLbs())) {
 			ResultSet loadbalance = lbRequest.getLBByName(lbInfo.getName());
+			if (loadbalance.content()==null) {
+				return null;
+			}
 			String lbUuid = lbRequest.getStringRecordsByKey(loadbalance, "LCUUID");
 			List<LBListenerInfo> lbListeners = lbInfo.getLb_listener();
 			for (LBListenerInfo lbListenerInfo : Util.emptyIfNull(lbListeners)) {

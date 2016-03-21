@@ -33,10 +33,10 @@ public class Client {
 				.desc("help for glider.").hasArg(false)
 				.argName("help").build());
 
-		//args = new String[]{ "--build=d:/autotest.yml", "--log" };
+		args = new String[]{ "--build=d:/autotest.yml", "--log" };
 		//args = new String[]{ "--destroy=d:/autotest.yml", "--log" };
 		//args = new String[]{ "--solution=d:/solution_simple.yml", "--log" };
-		args = new String[]{ "--solution=d:/solution_internet.yml", "--log" };
+		//args = new String[]{ "--solution=d:/solution_internet.yml", "--log" };
 		try {
 			// parse the command line arguments
 			CommandLine line = parser.parse(options, args);
