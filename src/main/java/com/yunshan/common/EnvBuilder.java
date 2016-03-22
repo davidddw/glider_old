@@ -45,19 +45,19 @@ public class EnvBuilder extends LivecloudBase {
 		if (config != null) {
 			uuidMapper = initMapper();
 			orderRequest = new OrderRequest(config.getHost(), getMapValueSafely(uuidMapper, config.getDomain()),
-					config.getUserid());
+					getUserIdFromDB(config.getUser()));
 			vmRequest = new VMRequest(config.getHost(), config.getPool_name(),
-					getMapValueSafely(uuidMapper, config.getDomain()), config.getUserid());
+					getMapValueSafely(uuidMapper, config.getDomain()), getUserIdFromDB(config.getUser()));
 			epcRequest = new EPCRequest(config.getHost(), getMapValueSafely(uuidMapper, config.getDomain()),
-					config.getUserid());
+					getUserIdFromDB(config.getUser()));
 			lbRequest = new LBSRequest(config.getHost(), config.getPool_name(),
-					getMapValueSafely(uuidMapper, config.getDomain()), config.getUserid());
+					getMapValueSafely(uuidMapper, config.getDomain()), getUserIdFromDB(config.getUser()));
 			vgwRequest = new VGWRequest(config.getHost(), getMapValueSafely(uuidMapper, config.getDomain()),
-					config.getUserid());
+					getUserIdFromDB(config.getUser()));
 			valveRequest = new ValveRequest(config.getHost(), getMapValueSafely(uuidMapper, config.getDomain()),
-					config.getUserid());
+					getUserIdFromDB(config.getUser()));
 			vl2Request = new VL2Request(config.getHost(), getMapValueSafely(uuidMapper, config.getDomain()),
-					config.getUserid());
+					getUserIdFromDB(config.getUser()));
 			resRequest = new RESRequest(config.getHost());
 			blockRequest = new BlockRequest(config.getHost());
 		} else {
@@ -85,7 +85,7 @@ public class EnvBuilder extends LivecloudBase {
 					getMapValueSafely(uuidMapper, ipInfo.getProduct_spec()));
 		}
 		for (BWInfo bwInfo : Util.emptyIfNull(config.getBandws())) {
-			orderRequest.orderBW(bwInfo.getIsp(), bwInfo.getBandw(),
+			orderRequest.orderBW(bwInfo.getIsp(), 1024*1024*bwInfo.getBandw(),
 					getMapValueSafely(uuidMapper, bwInfo.getProduct_spec()));
 		}
 		orderRequest.execute();

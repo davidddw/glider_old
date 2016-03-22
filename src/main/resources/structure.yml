@@ -1,6 +1,6 @@
 ---
   host: 10.33.37.28                                       # oss ip address
-  userid: 2
+  user: autotest
   orderid: 10001
   domain: OSS_Test
   pool_name: KVMPool                                      # pool name
@@ -8,7 +8,7 @@
 
   vms:
   - name: test001
-    product_spec: 2C2G                                    # vm product spec
+    product_spec: 2C2G                              # vm product spec
     template: centos6.5                                   # vm template
     vm_gw: 10.25.1.1
     vm_ip:
@@ -17,14 +17,8 @@
       if_index: 0
       address: 10.25.1.10
 
-    blocks:
-    - name: block001
-      product_spec: cloud_disk                            # block spec
-      size: 102400
-      useruuid: autotest                                  # user spec
-
   - name: test002
-    product_spec: 2C2G                                    # vm product spec
+    product_spec: 2C2G                              # vm product spec
     template: centos6.5                                   # vm template
     vm_gw: 10.25.1.1
     vm_ip:
@@ -34,7 +28,7 @@
       address: 10.25.1.11
 
   - name: test003
-    product_spec: 2C2G                                    # vm product spec
+    product_spec: 2C2G                              # vm product spec
     template: centos6.5                                   # vm template
     vm_gw: 10.25.2.1
     vm_ip:
@@ -44,7 +38,7 @@
       address: 10.25.2.10
 
   - name: test004
-    product_spec: 2C2G                                    # vm product spec
+    product_spec: 2C2G                              # vm product spec
     template: centos6.5                                   # vm template
     vm_gw: 10.25.2.1
     vm_ip:
@@ -54,7 +48,7 @@
       address: 10.25.2.11
 
   - name: test005
-    product_spec: 2C2G                                    # vm product spec
+    product_spec: 2C2G                              # vm product spec
     template: centos6.5                                   # vm template
     vm_gw: 192.168.0.1                                    # wan gateway
     vm_ip:
@@ -62,19 +56,19 @@
       vl2_net_index: 1
       if_index: 0
       address: 10.25.2.2
-    - wan_ip: 192.168.182.192                             # wan IP
+    - wan_ip: 192.168.182.162                             # wan IP
       if_index: 1
       bandwidth: 10485760
 
   - name: test006
-    product_spec: 2C2G                                    # vm product spec
+    product_spec: 2C2G                              # vm product spec
     template: centos6.5                                   # vm template
     vm_gw: 192.168.0.1                                    # wan gateway
     vm_ip:
     - vl2_name: vl2-valve
       vl2_net_index: 1
       if_index: 0
-      address: 192.168.182.193                            # wan IP
+      address: 192.168.182.163                            # wan IP
 
   vl2s:
   - name: vl2-xxx-1501
@@ -95,7 +89,7 @@
     wan:
     - if_index: 1
       state: 1
-      ip: 192.168.182.191                                 # wan IP
+      ip: 192.168.182.161                                 # wan IP
       bandwidth: 10485760
     lan:
     - if_index: 10
@@ -108,10 +102,10 @@
       snat_rules:
       - sip1: 10.25.1.1
         sip2: 10.25.1.255
-        dip: 192.168.182.191                              # wan IP
+        dip: 192.168.182.161                              # wan IP
 
       dnat_rules:
-      - sip: 192.168.182.191                              # wan IP
+      - sip: 192.168.182.161                              # wan IP
         sport: 60022
         dip: 10.25.1.11
         dport: 22
@@ -121,13 +115,11 @@
     lb_gw: 192.168.0.1
     product_spec: lb                                      # lb product spec
     lb_ip:
-    - wan_ip: 192.168.182.190                             # wan IP
-      info: config 192.168.190.190
+    - wan_ip: 192.168.182.164                             # wan IP
       if_index: 0
       bandwidth: 10485760
 
     - vl2_name: vl2-xxx-1502
-      info: config 10.25.2.1
       vl2_net_index: 1
       address: 10.25.2.1
       if_index: 1
@@ -154,7 +146,7 @@
     product_spec: valve                                   # valves product spec
     wan:
     - if_index: 1
-      ip: 192.168.182.193                                 # valves ip
+      ip: 192.168.182.163                                 # valves ip
     lan:
     - if_index: 10
       vl2_name: vl2-valve
@@ -162,11 +154,11 @@
 
   ips:
   - isp: 1
-    number: 5
+    number: 10
     product_spec: mobile_ip                               # isp product spec
 
   - isp: 2
-    number: 5
+    number: 10
     product_spec: unicom_ip                               # isp product spec
 
   bandws:

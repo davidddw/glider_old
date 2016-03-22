@@ -7,7 +7,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.yaml.snakeyaml.Yaml;
 
 import com.yunshan.database.bo.DomainBO;
@@ -66,6 +66,16 @@ public abstract class LivecloudBase {
 			s_logger.error("Cannot find file " + filename, e);
 		}
 		return null;
+	}
+	
+	protected int getUserIdFromDB(String username) throws Exception {
+		UserBO userBO = new UserBO();
+		for (UserVO userVO : userBO.getUsers()) {
+			if (username.equals(userVO.getUsername())) {
+				return userVO.getId();
+			}
+		}
+		return 0;
 	}
 
 	public abstract void build();

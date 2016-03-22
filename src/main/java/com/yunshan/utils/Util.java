@@ -2,39 +2,32 @@ package com.yunshan.utils;
 
 import java.io.StringWriter;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.Map;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 
 public class Util {
 
-    public static Level level=Level.INFO;
-    
-    @SuppressWarnings("unchecked") 
-    public static void setLevel(Level level) {
-        Enumeration<Logger> currentLoggers = LogManager.getCurrentLoggers(); 
-        while (currentLoggers.hasMoreElements()) { 
-            Logger logger = currentLoggers.nextElement(); 
-            if ("ROOT".equals(logger.getName())) { 
-                LogManager.getRootLogger().setLevel(level);
-            } else {
-                LogManager.getLogger(logger.getName()).setLevel(level);
-            }
-        } 
-    }
-    
-    public static Logger getLogger() {
-        final Throwable t = new Throwable();
-        final StackTraceElement methodCaller = t.getStackTrace()[2];
-        final Logger logger = Logger.getLogger(methodCaller.getClassName());
-        logger.setLevel(level);
-        return logger;
-    }
+	public static void setLevel(Logger log, Level level) {
+		LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
+		org.apache.logging.log4j.core.config.Configuration config = ctx.getConfiguration();
+		LoggerConfig loggerConfig = config.getLoggerConfig(log.getName());
+		loggerConfig.setLevel(level);
+		ctx.updateLoggers(config); 
+	}
+
+	public static Logger getLogger() {
+		final Throwable t = new Throwable();
+		final StackTraceElement methodCaller = t.getStackTrace()[2];
+		final Logger logger = LogManager.getLogger(methodCaller.getClassName());
+		return logger;
+	}
 
 	public static String velocityProcess(Map<String, Object> input, String templateStr) {
 		VelocityEngine ve = new VelocityEngine();
