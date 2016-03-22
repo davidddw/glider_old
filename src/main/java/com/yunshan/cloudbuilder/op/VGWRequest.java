@@ -1,13 +1,13 @@
 package com.yunshan.cloudbuilder.op;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
-
+import com.google.common.base.CharMatcher;
+import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
 import com.yunshan.cloudbuilder.HttpMethod;
 import com.yunshan.cloudbuilder.RESTClient;
 import com.yunshan.cloudbuilder.ResultSet;
@@ -27,7 +27,11 @@ public class VGWRequest extends RESTClient {
 	}
 	
 	private List<String> jsonToList(ResultSet resultSet) {
-	    return Arrays.asList(StringUtils.substringBetween(resultSet.content().toString(), "[", "]").split(","));
+        Iterable<String> splitResults2 = Splitter.on(",")
+                .trimResults(CharMatcher.inRange('[', ']'))
+                .omitEmptyStrings()
+                .split(resultSet.content().toString());
+        return Lists.newArrayList(splitResults2);
 	}
 	
 	private ResultSet createVgateway(String name, String product_spec) {

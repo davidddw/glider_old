@@ -1,7 +1,6 @@
 package com.yunshan.cloudbuilder;
 
-import org.apache.commons.codec.binary.Base64;
-
+import com.google.common.io.BaseEncoding;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -11,7 +10,6 @@ import com.yunshan.utils.Util;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
 import org.apache.http.ParseException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
@@ -32,7 +30,6 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
-import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.ssl.TrustStrategy;
 import org.apache.http.util.EntityUtils;
@@ -46,9 +43,6 @@ import java.io.InputStreamReader;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 
@@ -80,7 +74,9 @@ public class RESTClient {
         setHeader("APPKEY", props.getProperty("APPKEY"));
         String str = props.getProperty("USERNAME") + ":" + props.getProperty("PASSWORD");
         final byte[] bytes = str.getBytes();
-        setHeader("Authorization", "Basic " + new String(Base64.encodeBase64(bytes)));
+        BaseEncoding baseEncoding = BaseEncoding.base64();
+        String encoded = baseEncoding.encode(bytes); 
+        setHeader("Authorization", "Basic " + encoded);
     }
     
     private static Properties readProperties(String filename) {
@@ -154,21 +150,6 @@ public class RESTClient {
     protected ResultSet RequestTalker(HttpMethod method, String cmd, String body, String param) {
         String uri = generateURL(this.host, cmd, param, false);
         return makeRequest(method, uri, body, param);
-    }
-
-    protected LinkedList<NameValuePair> newQueryValues(String command,
-            Map<String, String> optional) {
-        LinkedList<NameValuePair> queryValues = new LinkedList<NameValuePair>();
-        queryValues.add(new BasicNameValuePair("command", command));
-        if (optional != null) {
-            Iterator<Entry<String, String>> optional_it = optional.entrySet().iterator();
-            while (optional_it.hasNext()) {
-                Map.Entry<String, String> pairs = optional_it.next();
-                if (pairs.getValue() != "")
-                    queryValues.add(new BasicNameValuePair(pairs.getKey(), pairs.getValue()));
-            }
-        }
-        return queryValues;
     }
 
     public ResultSet filterRecordsByKey(ResultSet jsonBody, String key, String value) {
