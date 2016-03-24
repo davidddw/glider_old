@@ -1,22 +1,22 @@
-package com.yunshan.database.vo;
+package com.yunshan.database.domain;
 
-public class ProductSpecVO {
+public class ProductSpec {
 	private int id;
-	private String lcuuid;
+	private String uuid;
 	private String name;
 	private String domain;
-	private String plan_name;
+	private String planName;
 	public int getId() {
 		return id;
 	}
 	public void setId(int id) {
 		this.id = id;
 	}
-	public String getLcuuid() {
-		return lcuuid;
+	public String getUuid() {
+		return uuid;
 	}
-	public void setLcuuid(String lcuuid) {
-		this.lcuuid = lcuuid;
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
 	}
 	public String getName() {
 		return name;
@@ -30,10 +30,10 @@ public class ProductSpecVO {
 	public void setDomain(String domain) {
 		this.domain = domain;
 	}
-	public String getPlan_name() {
-		return plan_name;
+	public String getPlanName() {
+		return planName;
 	}
-	public void setPlan_name(String plan_name) {
-		this.plan_name = plan_name;
+	public void setPlanName(String planName) {
+		this.planName = planName;
 	}
 }
